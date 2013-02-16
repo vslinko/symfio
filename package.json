@@ -1,6 +1,6 @@
 {
     "name": "supplier",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Glue for Node.js modules",
     "homepage": "https://github.com/rithis/supplier",
     "bugs": {
@@ -21,13 +21,14 @@
     },
     "dependencies": {
         "async": "~0.2",
-        "express": "~3.1",
-
+        "fs.extra": "~1.2",
+        "bower": "~0.7",
         "connect-coffee-script": "~0.1",
         "stylus-responsive": "~0.0",
         "jade-static": "git://github.com/vslinko/jade-static.git#patch-1",
         "stylus": "~0.32",
-        "nib": "~0.9"
+        "nib": "~0.9",
+        "express": "~3.1"
     },
     "engines": {
         "node": "~0.8",
