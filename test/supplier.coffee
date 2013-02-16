@@ -1,7 +1,7 @@
 assert = require "assert"
 
 supplier = require "../lib/supplier"
-FakePlugin = require "./mocks/fake_plugin"
+fakePlugin = require "./mocks/fake_plugin"
 
 
 describe "Supplier", ->
@@ -43,8 +43,8 @@ describe "Supplier", ->
         supply.on "configured", ->
             configured = true
 
-        plugin0 = new FakePlugin
-        plugin1 = new FakePlugin
+        plugin0 = fakePlugin()
+        plugin1 = fakePlugin()
 
         supply.use plugin0.factory()
         supply.use plugin1.factory()
@@ -65,8 +65,8 @@ describe "Supplier", ->
         supply.on "loaded", ->
             loaded = true
 
-        plugin0 = new FakePlugin
-        plugin1 = new FakePlugin
+        plugin0 = fakePlugin()
+        plugin1 = fakePlugin()
 
         supply.use plugin0.factory()
         supply.use plugin1.factory()
@@ -87,7 +87,7 @@ describe "Supplier", ->
         supply.on "loaded", ->
             loaded = true
 
-        plugin0 = new FakePlugin
+        plugin0 = fakePlugin()
 
         supply.use (supply, pluginCallback) ->
             supply.use plugin0.factory()

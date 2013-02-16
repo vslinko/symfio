@@ -1,10 +1,8 @@
 class FakePlugin
     factory: ->
-        plugin = (stack, callback) ->
+        (stack, callback) =>
             @stack = stack
             @callback = callback
-
-        plugin.bind @
 
     configured: ->
         @callback.configured()
@@ -13,4 +11,5 @@ class FakePlugin
         @callback.loaded()
 
 
-module.exports = FakePlugin
+module.exports = ->
+    new FakePlugin

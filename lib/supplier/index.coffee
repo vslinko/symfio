@@ -15,25 +15,22 @@ class Supplier extends events.EventEmitter
         @loaded = 0
         @length = 0
 
-        pluginWorker = (plugin, callback) ->
-            configured = ->
-                @configured += 1
-                @emit "configured" if @configured == @length
-
-            loaded = ->
-                @loaded += 1
-                @emit "loaded" if @loaded == @length
-
+        pluginWorker = (plugin, callback) =>
             pluginCallback = ->
                 pluginCallback.configured()
                 pluginCallback.loaded()
 
-            pluginCallback.configured = configured.bind @
-            pluginCallback.loaded = loaded.bind @
+            pluginCallback.configured = =>
+                @configured += 1
+                @emit "configured" if @configured == @length
+
+            pluginCallback.loaded = =>
+                @loaded += 1
+                @emit "loaded" if @loaded == @length
 
             plugin @, pluginCallback
 
-        @plugins = async.queue pluginWorker.bind(@), pluginsConcurrency
+        @plugins = async.queue pluginWorker, pluginsConcurrency
 
     set: (name, value) ->
         @configuration[name] = value
