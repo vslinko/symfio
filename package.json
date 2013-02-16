@@ -1,6 +1,6 @@
 {
     "name": "supplier",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Glue for Node.js modules",
     "homepage": "https://github.com/rithis/supplier",
     "bugs": {
@@ -20,7 +20,8 @@
         "test": "mocha --compilers coffee:coffee-script --reporter spec"
     },
     "dependencies": {
-        "async": "~0.2"
+        "async": "~0.2",
+        "express": "~3.1"
     },
     "engines": {
         "node": "~0.8",

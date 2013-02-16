@@ -1,3 +1,4 @@
+plugins = require "./plugins"
 events = require "events"
 async = require "async"
 
@@ -23,12 +24,14 @@ class Supplier extends events.EventEmitter
                 @loaded += 1
                 @emit "loaded" if @loaded == @length
 
-            plugin @,
-                configured: configured.bind @
-                loaded: loaded.bind @
-                done: ->
-                    @configured()
-                    @loaded()
+            pluginCallback = ->
+                pluginCallback.configured()
+                pluginCallback.loaded()
+
+            pluginCallback.configured = configured.bind @
+            pluginCallback.loaded = loaded.bind @
+
+            plugin @, pluginCallback
 
         @plugins = async.queue pluginWorker.bind(@), pluginsConcurrency
 
@@ -43,4 +46,10 @@ class Supplier extends events.EventEmitter
         @length += 1
 
 
-module.exports = Supplier
+createSupplier = (directory, name) ->
+    new Supplier directory, name
+
+
+module.exports = createSupplier
+module.exports.Supplier = Supplier
+module.exports.plugins = plugins

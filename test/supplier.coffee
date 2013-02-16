@@ -1,6 +1,6 @@
 assert = require "assert"
 
-Supplier = require "../lib/supplier"
+supplier = require "../lib/supplier"
 FakePlugin = require "./mocks/fake_plugin"
 
 
@@ -8,7 +8,7 @@ describe "Supplier", ->
     supply = null
 
     beforeEach ->
-        supply = new Supplier __dirname, "test"
+        supply = supplier __dirname, "test"
 
     describe "constructor", ->
         it "should construct directory and name", ->
@@ -92,7 +92,7 @@ describe "Supplier", ->
 
             supply.use (supply, pluginCallback) ->
                 supply.use plugin0.factory()
-                pluginCallback.done()
+                pluginCallback()
 
                 process.nextTick ->
                     assert.equal false, loaded
