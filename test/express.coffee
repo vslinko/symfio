@@ -7,7 +7,7 @@ describe "Express plugin", ->
     supply = null
 
     beforeEach ->
-        supply = supplier __dirname, "test"
+        supply = supplier()
         supply.use supplier.plugins.express
 
     afterEach (callback) ->
@@ -17,7 +17,7 @@ describe "Express plugin", ->
         catch err
             callback()
 
-    it "should inject 'app', 'port', and 'server'", (callback) ->
+    it "should inject app, port, and server", (callback) ->
         supply.on "configured", ->
             assert.notEqual undefined, supply.get "app"
             assert.notEqual undefined, supply.get "port"

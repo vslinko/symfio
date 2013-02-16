@@ -7,7 +7,8 @@ describe "Assets plugin", ->
     supply = null
 
     beforeEach ->
-        supply = supplier __dirname, "test"
+        supply = supplier()
+        supply.set "public directory", __dirname
         supply.use supplier.plugins.assets
         supply.use supplier.plugins.express
 
@@ -16,11 +17,6 @@ describe "Assets plugin", ->
         try
             server.close callback
         catch err
-            callback()
-
-    it "should inject 'publicDirectory'", (callback) ->
-        supply.on "configured", ->
-            assert.notEqual undefined, supply.get "publicDirectory"
             callback()
 
     it "should connect four middlewares", (callback) ->

@@ -4,12 +4,10 @@ async = require "async"
 
 
 class Supplier extends events.EventEmitter
-    constructor: (directory, name, pluginsConcurrency = 10) ->
+    constructor: (pluginsConcurrency = 10) ->
         super
 
-        @configuration =
-            directory: directory
-            name: name
+        @configuration = {}
 
         @configured = 0
         @loaded = 0

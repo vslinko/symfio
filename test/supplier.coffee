@@ -8,12 +8,7 @@ describe "Supplier", ->
     supply = null
 
     beforeEach ->
-        supply = supplier __dirname, "test"
-
-    describe "constructor", ->
-        it "should construct directory and name", ->
-            assert.equal __dirname, supply.get "directory"
-            assert.equal "test", supply.get "name"
+        supply = supplier()
 
     it "should be configurable", ->
         supply.set "foo", "bar"

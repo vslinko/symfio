@@ -21,12 +21,9 @@ compilerFactory = (str, path) ->
 
 
 module.exports = (supply, callback) ->
-    directory = supply.get "directory"
-    supply.set "publicDirectory", path.join directory, "publicDirectory"
-
     supply.on "configured", ->
         app = supply.get "app"
-        publicDirectory = supply.get "publicDirectory"
+        publicDirectory = supply.get "public directory"
 
         app.configure ->
             app.use stylus.middleware
