@@ -1,0 +1,22 @@
+{
+    "name": "supplier",
+    "version": "0.0.0",
+    "description": "Glue for Node.js modules",
+    "homepage": "https://github.com/rithis/supplier",
+    "bugs": {
+        "url": "https://github.com/rithis/supplier/issues",
+        "email": "webmaster@rithis.com"
+    },
+    "author": {
+        "name": "Vyacheslav Slinko",
+        "email": "vyacheslav.slinko@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/rithis/supplier.git"
+    },
+    "engines": {
+        "node": "~0.8",
+        "npm": ">=1.1"
+    }
+}
