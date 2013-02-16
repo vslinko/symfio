@@ -37,9 +37,16 @@ class Supplier extends events.EventEmitter
 
     set: (name, value) ->
         @configuration[name] = value
+        @emit "changed #{name}", value
 
     get: (name) ->
         @configuration[name]
+
+    wait: (name, listener) ->
+        if @configuration[name]
+            listener @configuration[name]
+        else
+            @once "changed #{name}", listener
 
     use: (plugin) ->
         @plugins.push plugin

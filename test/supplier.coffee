@@ -37,65 +37,82 @@ describe "Supplier", ->
         supply.emit "event"
         assert.equal true, catched
 
-    describe "run", ->
-        it "should emit 'configured' after all plugins configured", (callback) ->
-            configured = false
+    it "should emit 'configured' after all plugins configured", (callback) ->
+        configured = false
 
-            supply.on "configured", ->
-                configured = true
+        supply.on "configured", ->
+            configured = true
 
-            plugin0 = new FakePlugin
-            plugin1 = new FakePlugin
+        plugin0 = new FakePlugin
+        plugin1 = new FakePlugin
 
-            supply.use plugin0.factory()
-            supply.use plugin1.factory()
+        supply.use plugin0.factory()
+        supply.use plugin1.factory()
 
+        assert.equal false, configured
+
+        process.nextTick ->
+            plugin0.configured()
             assert.equal false, configured
+            plugin1.configured()
 
-            process.nextTick ->
-                plugin0.configured()
-                assert.equal false, configured
-                plugin1.configured()
+            assert.equal true, configured
+            callback()
 
-                assert.equal true, configured
-                callback()
+    it "should emit 'loaded' after all plugins loaded", (callback) ->
+        loaded = false
 
-        it "should emit 'loaded' after all plugins loaded", (callback) ->
-            loaded = false
+        supply.on "loaded", ->
+            loaded = true
 
-            supply.on "loaded", ->
-                loaded = true
+        plugin0 = new FakePlugin
+        plugin1 = new FakePlugin
 
-            plugin0 = new FakePlugin
-            plugin1 = new FakePlugin
+        supply.use plugin0.factory()
+        supply.use plugin1.factory()
 
-            supply.use plugin0.factory()
-            supply.use plugin1.factory()
+        assert.equal false, loaded
 
+        process.nextTick ->
+            plugin0.loaded()
             assert.equal false, loaded
+            plugin1.loaded()
+
+            assert.equal true, loaded
+            callback()
+
+    it "should allow include one plugin in another", (callback) ->
+        loaded = false
+
+        supply.on "loaded", ->
+            loaded = true
+
+        plugin0 = new FakePlugin
+
+        supply.use (supply, pluginCallback) ->
+            supply.use plugin0.factory()
+            pluginCallback()
 
             process.nextTick ->
-                plugin0.loaded()
                 assert.equal false, loaded
-                plugin1.loaded()
-
+                plugin0.loaded()
                 assert.equal true, loaded
                 callback()
 
-        it "should allow include one plugin in another", (callback) ->
-            loaded = false
+    describe "wait", ->
+        it "should run all listeners after value setted", (callback) ->
+            length = 3
+            listenersRunned = 0
 
-            supply.on "loaded", ->
-                loaded = true
+            for i in [0...length]
+                supply.wait "test", ->
+                    listenersRunned += 1
+                    callback() if listenersRunned == length
 
-            plugin0 = new FakePlugin
+            process.nextTick ->
+                supply.set "test", "mest"
 
-            supply.use (supply, pluginCallback) ->
-                supply.use plugin0.factory()
-                pluginCallback()
-
-                process.nextTick ->
-                    assert.equal false, loaded
-                    plugin0.loaded()
-                    assert.equal true, loaded
-                    callback()
+        it "should run listener immediately if value exists", (callback) ->
+            supply.set "test", "mest"
+            supply.wait "test", ->
+                callback()
