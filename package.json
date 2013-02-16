@@ -1,6 +1,6 @@
 {
     "name": "supplier",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "Glue for Node.js modules",
     "homepage": "https://github.com/rithis/supplier",
     "bugs": {
@@ -11,9 +11,16 @@
         "name": "Vyacheslav Slinko",
         "email": "vyacheslav.slinko@gmail.com"
     },
+    "main": "lib/supplier",
     "repository": {
         "type": "git",
         "url": "git://github.com/rithis/supplier.git"
+    },
+    "scripts": {
+        "test": "mocha --compilers coffee:coffee-script --reporter spec"
+    },
+    "dependencies": {
+        "async": "~0.2"
     },
     "engines": {
         "node": "~0.8",
