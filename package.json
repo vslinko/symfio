@@ -1,6 +1,6 @@
 {
     "name": "supplier",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "Glue for Node.js modules",
     "homepage": "https://github.com/rithis/supplier",
     "bugs": {
@@ -28,6 +28,7 @@
         "jade-static": "git://github.com/vslinko/jade-static.git#patch-1",
         "stylus": "~0.32",
         "nib": "~0.9",
+        "rithis-crud": "~0.0",
         "express": "~3.1"
     },
     "engines": {
