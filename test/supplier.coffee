@@ -117,26 +117,31 @@ describe "Supplier", ->
                 callback()
 
     describe "log", ->
-        catchOutput = ->
+        catchOutput = (action, shizzle, name) ->
             message = ""
 
             write = process.stdout.write
             process.stdout.write = (data) ->
                 message += data.toString()
 
-            supply.log "hello", "world"
+            supply.log action, shizzle, name
             process.stdout.write = write
             message
 
         it "should output message", ->
             supply.set "silent", false
-            assert.equal "supplier #{"hello".cyan} #{"world".grey}\n", catchOutput()
+            assert.equal "supplier #{"hello".cyan} #{"world".grey}\n", catchOutput "hello", "world"
 
         it "should output name", ->
             supply.set "silent", false
             supply.set "name", "test"
-            assert.equal "test #{"hello".cyan} #{"world".grey}\n", catchOutput()
+            assert.equal "test #{"hello".cyan} #{"world".grey}\n", catchOutput "hello", "world"
+            assert.equal "mest #{"hello".cyan} #{"world".grey}\n", catchOutput "hello", "world", "mest"
 
         it "should not output message if silent", ->
             supply.set "silent", true
-            assert.equal "", catchOutput()
+            assert.equal "", catchOutput "hello", "world"
+
+        it "should output numbers", ->
+            supply.set "silent", false
+            assert.equal "3 #{"1".cyan} #{"2".grey}\n", catchOutput 1, 2, 3

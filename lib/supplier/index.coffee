@@ -55,8 +55,8 @@ class Supplier extends events.EventEmitter
 
         message = [name]
         if action
-            message.push action.cyan
-            message.push shizzle.grey if shizzle
+            message.push String(action).cyan
+            message.push String(shizzle).grey if shizzle
 
         console.log message.join " "
 
