@@ -31,3 +31,23 @@ describe "Express plugin", ->
             server = supply.get "server"
             server.on "listening", ->
                 callback()
+
+    hasMiddleware = (name) ->
+        app = supply.get "app"
+        for middleware in app.stack
+            if middleware.handle.name is name
+                return true
+        false
+
+    it "should use bodyParser", (callback) ->
+        supply.on "configured", ->
+            assert.equal true, hasMiddleware "bodyParser"
+            callback()
+
+    it "should use errorHandler in development environment", (callback) ->
+        nodeEnv = process.env.NODE_ENV
+        process.env.NODE_ENV = "development"
+        supply.on "configured", ->
+            assert.equal true, hasMiddleware "errorHandler"
+            process.env.NODE_ENV = nodeEnv
+            callback()

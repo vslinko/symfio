@@ -24,6 +24,7 @@ describe "Fixtures plugin", ->
     afterEach (callback) ->
         connection = supply.get "connection"
         connection.db.dropDatabase ->
+            connection.close ->
             callback()
 
     it "should load fixtures only if collection is empty", (callback) ->
@@ -43,3 +44,16 @@ describe "Fixtures plugin", ->
                 createSupplier()
                 testCount callback
         ], callback
+
+    it "should load fixtures immediately after connected to database", (callback) ->
+        return callback() unless process.env.COVERAGE
+
+        supply = supplier()
+        supply.set "connection string", "mongodb://localhost/test"
+        supply.set "fixtures directory", path.join __dirname, "fixtures"
+        supply.use supplier.plugins.mongoose
+
+        supply.once "loaded", ->
+            supply.use supplier.plugins.fixtures
+            supply.once "configured", ->
+                callback()

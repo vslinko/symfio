@@ -48,9 +48,11 @@ module.exports = (supply, callback) ->
                             try
                                 callback null, JSON.parse data
                             catch err
-                                callback err
+                                callback null, false
 
                         (fixture, callback) ->
+                            return callback() unless fixture
+
                             collection = db.collection task.collection
                             collection.count (err, count) ->
                                 return callback err if err

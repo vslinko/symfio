@@ -13,10 +13,9 @@ describe "Mongoose plugin", ->
         supply.set "connection string", "mongodb://localhost/test"
         supply.use supplier.plugins.mongoose
 
-    afterEach (callback) ->
+    afterEach ->
         connection = supply.get "connection"
         connection.close ->
-            callback()
 
     it "should inject connection, mongoose, and mongodb", (callback) ->
         supply.on "configured", ->
@@ -29,4 +28,12 @@ describe "Mongoose plugin", ->
         supply.on "loaded", ->
             connection = supply.get "connection"
             assert.equal 1, connection.readyState
+            callback()
+
+    it "should inject connection string from process.env.MONGOHQ_URL", (callback) ->
+        process.env.MONGOHQ_URL = "hello world"
+        supply = supplier()
+        supply.use supplier.plugins.mongoose
+        supply.on "configured", ->
+            assert process.env.MONGOHQ_URL, supply.get "connection string"
             callback()

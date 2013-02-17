@@ -1,5 +1,6 @@
 docs
 lib-cov
 node_modules
+test/public/style.css
 coverage.html
 npm-debug.log
