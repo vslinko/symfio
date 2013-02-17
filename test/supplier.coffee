@@ -1,4 +1,6 @@
 assert = require "assert"
+stream = require "stream"
+colors = require "colors"
 
 fakePlugin = require "./mocks/fake_plugin"
 supplier = require if process.env.COVERAGE \
@@ -113,3 +115,28 @@ describe "Supplier", ->
             supply.set "test", "mest"
             supply.wait "test", ->
                 callback()
+
+    describe "log", ->
+        catchOutput = ->
+            message = ""
+
+            write = process.stdout.write
+            process.stdout.write = (data) ->
+                message += data.toString()
+
+            supply.log "hello", "world"
+            process.stdout.write = write
+            message
+
+        it "should output message", ->
+            supply.set "silent", false
+            assert.equal "supplier #{"hello".cyan} #{"world".grey}\n", catchOutput()
+
+        it "should output name", ->
+            supply.set "silent", false
+            supply.set "name", "test"
+            assert.equal "test #{"hello".cyan} #{"world".grey}\n", catchOutput()
+
+        it "should not output message if silent", ->
+            supply.set "silent", true
+            assert.equal "", catchOutput()

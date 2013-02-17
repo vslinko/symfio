@@ -21,7 +21,11 @@ compilerFactory = (str, path) ->
 
 
 module.exports = (supply, callback) ->
+    supply.log "configuring", "assets"
+
     supply.on "configured", ->
+        supply.log "loading", "assets"
+
         app = supply.get "app"
         publicDirectory = supply.get "public directory"
 

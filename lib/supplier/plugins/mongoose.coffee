@@ -2,6 +2,8 @@ mongoose = require "mongoose"
 
 
 module.exports = (supply, callback) ->
+    supply.log "configuring", "mongoose"
+
     connection = mongoose.createConnection()
 
     supply.set "connection", connection
@@ -12,6 +14,8 @@ module.exports = (supply, callback) ->
         supply.set "connection string", process.env.MONGOHQ_URL
 
     supply.on "configured", ->
+        supply.log "loading", "mongoose"
+
         connectionString = supply.get "connection string"
 
         connection.open connectionString, ->

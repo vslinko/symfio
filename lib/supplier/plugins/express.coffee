@@ -3,6 +3,8 @@ http = require "http"
 
 
 module.exports = (supply, callback) ->
+    supply.log "configuring", "express"
+
     app = express()
     server = http.createServer app
 
@@ -17,6 +19,9 @@ module.exports = (supply, callback) ->
     supply.set "server", server
 
     supply.on "loaded", ->
-        server.listen supply.get "port"
+        port = supply.get "port"
+
+        server.listen port, ->
+            supply.log "listening", port
 
     callback()

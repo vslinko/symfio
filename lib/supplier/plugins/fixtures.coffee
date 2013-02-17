@@ -4,6 +4,8 @@ fs = require "fs"
 
 
 module.exports = (supply, callback) ->
+    supply.log "configuring", "fixtures"
+
     supply.on "configured", ->
         fixturesDirectory = supply.get "fixtures directory"
         connection = supply.get "connection"
@@ -39,6 +41,7 @@ module.exports = (supply, callback) ->
                                 return callback err if err
                                 return callback null if count > 0
 
+                                supply.log "loading fixture", task.collection
                                 collection.insert fixture, safe: true, callback
                     ], callback
 

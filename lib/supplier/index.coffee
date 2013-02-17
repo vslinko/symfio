@@ -1,4 +1,5 @@
 plugins = require "./plugins"
+colors = require "colors"
 events = require "events"
 async = require "async"
 
@@ -7,7 +8,9 @@ class Supplier extends events.EventEmitter
     constructor: (pluginsConcurrency = 10) ->
         super
 
-        @configuration = {}
+        @configuration =
+            name: "supplier"
+            silent: process.env.NODE_ENV is "test"
 
         @configured = 0
         @loaded = 0
@@ -46,6 +49,16 @@ class Supplier extends events.EventEmitter
     use: (plugin) ->
         @plugins.push plugin
         @length += 1
+
+    log: (action, shizzle, name = @configuration["name"]) ->
+        return if @get "silent"
+
+        message = [name]
+        if action
+            message.push action.cyan
+            message.push shizzle.grey if shizzle
+
+        console.log message.join " "
 
 
 createSupplier = (directory, name) ->
