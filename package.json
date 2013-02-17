@@ -2,7 +2,7 @@
     "name": "supplier",
     "version": "0.0.7",
     "description": "Glue for Node.js modules",
-    "homepage": "https://github.com/rithis/supplier",
+    "homepage": "http://rithis.github.com/supplier/",
     "bugs": {
         "url": "https://github.com/rithis/supplier/issues",
         "email": "webmaster@rithis.com"
