@@ -51,7 +51,7 @@ supply.use (supply, callback) ->
 
 Start new project:
 
-```
+```sh
 $ mkdir my_project
 $ cd my_project
 $ git init
@@ -69,13 +69,13 @@ END
 
 Install Supplier:
 
-```
+```sh
 $ npm install supplier --save
 ```
 
 Create sample application:
 
-```
+```sh
 $ cat << END > my_project.coffee
 supplier = require "supplier"
 
@@ -99,7 +99,7 @@ END
 
 Start server:
 
-```
+```sh
 $ coffee my_project
 ```
 
@@ -107,7 +107,7 @@ $ coffee my_project
 
 Clone Supplier repo, then run example:
 
-```
+```sh
 $ git clone git://github.com/rithis/supplier.git
 $ cd supplier
 $ make example
@@ -127,7 +127,7 @@ Dependency Status: [![Dependency Status](https://gemnasium.com/rithis/supplier.p
 
 Clone Supplier repo, then run tests:
 
-```
+```sh
 $ git clone git://github.com/rithis/supplier.git
 $ cd supplier
 $ make test
