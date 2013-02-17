@@ -115,13 +115,11 @@ $ make example
 
 ## Project Status
 
-Build Status: [![Build Status](https://drone.io/github.com/rithis/supplier/status.png)](https://drone.io/github.com/rithis/supplier/latest)
+[![Build Status](https://drone.io/github.com/rithis/supplier/status.png)](https://drone.io/github.com/rithis/supplier/latest) [![Dependency Status](https://gemnasium.com/rithis/supplier.png)](https://gemnasium.com/rithis/supplier)
 
-Dependency Status: [![Dependency Status](https://gemnasium.com/rithis/supplier.png)](https://gemnasium.com/rithis/supplier)
+[Code Coverage Report](http://rithis.github.com/supplier/coverage.html)
 
-[Code Coverage Report](https://drone.io/github.com/rithis/supplier/files/coverage.html)
-
-[Latest Documentation](https://drone.io/github.com/rithis/supplier/files/docs.tar.gz)
+[Latest Documentation](http://rithis.github.com/supplier/docs/index.html)
 
 ## Running Tests
 
