@@ -105,18 +105,12 @@ $ coffee my_project
 
 ## Viewing Examples
 
-Clone Supplier repo, then install dependencies:
+Clone Supplier repo, then run example:
 
 ```
 $ git clone git://github.com/rithis/supplier.git
 $ cd supplier
-$ npm install
-```
-
-Run example:
-
-```
-$ coffee examples/hello_world
+$ make example
 ```
 
 ## Project Status
@@ -131,16 +125,10 @@ Dependency Status: [![Dependency Status](https://gemnasium.com/rithis/supplier.p
 
 ## Running Tests
 
-Clone Supplier repo, then install dependencies:
+Clone Supplier repo, then run tests:
 
 ```
 $ git clone git://github.com/rithis/supplier.git
 $ cd supplier
-$ npm install
-```
-
-Run tests:
-
-```
 $ make test
 ```

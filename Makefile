@@ -1,29 +1,38 @@
 MOCHA = ./node_modules/.bin/mocha
 COFFEECOVERAGE = ./node_modules/.bin/coffeeCoverage
 DOCCO = ./node_modules/.bin/docco
+COFFEE = ./node_modules/.bin/coffee
 
 REPORTER = dot
 
 PLUGINS = $(filter-out %index.coffee, $(wildcard lib/supplier/plugins/*.coffee))
 SOURCES = lib/supplier/index.coffee $(PLUGINS)
 
+EXAMPLE = hello_world
+
 all: test coverage.html docs
 
-test:
+test: node_modules
 	@NODE_ENV=test $(MOCHA) \
 		--compilers coffee:coffee-script \
 		--reporter $(REPORTER)
 
-coverage.html: lib-cov
+coverage.html: node_modules lib-cov
 	@NODE_ENV=test COVERAGE=1 $(MOCHA) \
 		--compilers coffee:coffee-script \
 		--reporter html-cov > coverage.html
 
-lib-cov:
+lib-cov: node_modules
 	@$(COFFEECOVERAGE) lib lib-cov > /dev/null
 
-docs:
+docs: node_modules
 	@$(DOCCO) $(SOURCES) > /dev/null
+
+node_modules:
+	@npm install
+
+example: node_modules
+	@$(COFFEE) examples/$(EXAMPLE)
 
 clean:
 	rm -rf docs lib-cov coverage.html
