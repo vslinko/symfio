@@ -119,7 +119,7 @@ $ make example
 
 [Code Coverage Report](http://rithis.github.com/supplier/coverage.html)
 
-[Latest Documentation](http://rithis.github.com/supplier/docs/index.html)
+[Latest Documentation](http://rithis.github.com/supplier/docs/supplier.html)
 
 ## Running Tests
 

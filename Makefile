@@ -5,8 +5,8 @@ COFFEE = ./node_modules/.bin/coffee
 
 REPORTER = dot
 
-PLUGINS = $(filter-out %index.coffee, $(wildcard lib/supplier/plugins/*.coffee))
-SOURCES = lib/supplier/index.coffee $(PLUGINS)
+PLUGINS = $(wildcard lib/supplier/plugins/*.coffee)
+SOURCES = lib/supplier.coffee $(PLUGINS)
 
 EXAMPLE = hello_world
 

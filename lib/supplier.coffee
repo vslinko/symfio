@@ -3,7 +3,7 @@
 # Supplier is a thin layer between Node.JS modules. Supplier allows you to
 # connect Node.JS modules using a plugin system. Plugins are loaded
 # asynchronously, which can reduce the time of application initialization.
-plugins = require "./plugins"
+plugins = require "./supplier/plugins"
 colors = require "colors"
 events = require "events"
 async = require "async"
