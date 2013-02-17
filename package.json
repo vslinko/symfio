@@ -23,6 +23,7 @@
         "mocha": "~1.8",
         "coffee-script": "~1.4",
         "coffee-coverage": "~0.0",
+        "docco": "~0.4",
 
         "async": "~0.2",
         "fs.extra": "~1.2",

@@ -127,6 +127,8 @@ Dependency Status: [![Dependency Status](https://gemnasium.com/rithis/supplier.p
 
 [Code Coverage Report](https://drone.io/github.com/rithis/supplier/files/coverage.html)
 
+[Latest Documentation](https://drone.io/github.com/rithis/supplier/files/docs.tar.gz)
+
 ## Running Tests
 
 Clone Supplier repo, then install dependencies:

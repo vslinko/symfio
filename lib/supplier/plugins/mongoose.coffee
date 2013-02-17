@@ -1,6 +1,22 @@
+# Connect to MongoDB
+#
+#     supplier = require "supplier"
+#     supply = supplier()
+#     supply.use supplier.plugins.mongoose
+#     supply.set "connection string", "mongodb://localhost/test"
 mongoose = require "mongoose"
 
 
+#### Required configuration:
+#
+# * __connection string__ — MongoDB connection string.
+#
+#### Provides:
+#
+# * __connection__ — Mongoose connection instance.
+# * __mongoose__ — `mongoose` module.
+# * __mongodb__ — `mongodb` module.
+#
 module.exports = (supply, callback) ->
     supply.log "configuring", "mongoose"
 

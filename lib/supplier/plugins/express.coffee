@@ -1,7 +1,22 @@
+# Launch express application after all plugins is loaded.
+#
+#     supplier = require "supplier"
+#     supply = supplier()
+#     supply.use supplier.plugins.express
+#     supply.wait "port", ->
+#         supply.set "port", 80
 express = require "express"
 http = require "http"
 
 
+#### Provides:
+#
+# * __app__ — Express application.
+# * __server__ — `http.Server` instance for express application.
+#
+#### Can be configured:
+#
+# * __port__ — Port for listening.
 module.exports = (supply, callback) ->
     supply.log "configuring", "express"
 

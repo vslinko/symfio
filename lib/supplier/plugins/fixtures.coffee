@@ -1,8 +1,23 @@
+# Load fixtures to mongodb collection from fixtures directory.
+#
+#     supplier = require "supplier"
+#     supply = supplier()
+#     supply.use supplier.plugins.mongoose
+#     supply.use supplier.plugins.fixtures
+#     supply.set "connection string", "mongodb://localhost/test"
+#     supply.set "fixtures directory", "#{__dirname}/fixtures"
 async = require "async"
 path = require "path"
 fs = require "fs"
 
 
+#### Required plugins:
+#
+# * [__Mongoose__](mongoose.html).
+#
+#### Required configuration:
+#
+# * __fixtures directory__ — Directory with fixtures.
 module.exports = (supply, callback) ->
     supply.log "configuring", "fixtures"
 
@@ -15,7 +30,8 @@ module.exports = (supply, callback) ->
             fs.readdir fixturesDirectory, (err, files) ->
                 return callback.loaded() unless files
 
-                # prepare tasks
+                # The fixture must be a JSON file named like a mongodb
+                # collection.
                 tasks = []
                 for file in files
                     if path.extname(file) is ".json"
@@ -23,7 +39,6 @@ module.exports = (supply, callback) ->
                             collection: path.basename file, ".json"
                             file: path.join fixturesDirectory, file
 
-                # worker for fixture task
                 worker = (task, callback) ->
                     async.waterfall [
                         (callback) ->
@@ -45,11 +60,9 @@ module.exports = (supply, callback) ->
                                 collection.insert fixture, safe: true, callback
                     ], callback
 
-                # run workers for each fixtures
                 async.forEach tasks, worker, ->
                     callback()
 
-        # one means connected
         if connection.readyState is 1
             loadFixtures()
         else

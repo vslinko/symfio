@@ -1,11 +1,23 @@
+# Install components from the Bower repository in the public directory.
+#
+#     supplier = require "supplier"
+#     supply = supplier()
+#     supply.use supplier.plugins.bower
+#     supply.set "components", ["jquery", "bootstrap"]
+#     supply.set "public directory", "#{__dirname}/public"
 bower = require "bower"
 path = require "path"
 fs = require "fs"
 
 
+# Installs components one time in hour.
 HOUR = 60 * 60 * 1000
 
 
+#### Required configuration:
+#
+# * __components__ — Array with components.
+# * __public directory__ — Directory with assets.
 module.exports = (supply, callback) ->
     supply.log "configuring", "bower"
 

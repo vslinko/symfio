@@ -1,3 +1,9 @@
+# Compile and serve assets from public directory.
+#
+#     supplier = require "supplier"
+#     supply = supplier()
+#     supply.use supplier.plugins.assets
+#     supply.set "public directory", "#{__dirname}/public"
 coffeescript = require "connect-coffee-script"
 responsive = require "stylus-responsive"
 express = require "express"
@@ -7,6 +13,7 @@ path = require "path"
 nib = require "nib"
 
 
+# Using custom compiler for Stylus with imported `nib` and `responsive`.
 compilerFactory = (str, path) ->
     compiler = stylus str
     
@@ -20,6 +27,9 @@ compilerFactory = (str, path) ->
     compiler.import "responsive"
 
 
+#### Required configuration:
+#
+# * __public directory__ — Directory with assets.
 module.exports = (supply, callback) ->
     supply.log "configuring", "assets"
 
