@@ -1,6 +1,8 @@
 assert = require "assert"
 
-supplier = require "../lib/supplier"
+supplier = require if process.env.COVERAGE \
+    then "../lib-cov/supplier"
+    else "../lib/supplier"
 
 
 describe "Assets plugin", ->

@@ -1,7 +1,9 @@
 assert = require "assert"
 
-supplier = require "../lib/supplier"
 fakePlugin = require "./mocks/fake_plugin"
+supplier = require if process.env.COVERAGE \
+    then "../lib-cov/supplier"
+    else "../lib/supplier"
 
 
 describe "Supplier", ->

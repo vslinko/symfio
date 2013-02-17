@@ -2,7 +2,9 @@ assert = require "assert"
 async = require "async"
 path = require "path"
 
-supplier = require "../lib/supplier"
+supplier = require if process.env.COVERAGE \
+    then "../lib-cov/supplier"
+    else "../lib/supplier"
 
 
 describe "Fixtures plugin", ->

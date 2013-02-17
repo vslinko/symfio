@@ -2,7 +2,9 @@ assert = require "assert"
 path = require "path"
 fs = require "fs.extra"
 
-supplier = require "../lib/supplier"
+supplier = require if process.env.COVERAGE \
+    then "../lib-cov/supplier"
+    else "../lib/supplier"
 
 
 describe "Bower plugin", ->
