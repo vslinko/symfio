@@ -1,12 +1,5 @@
-# supply
-
-Glue for Node.js modules
-
-## Example usage:
-
-```coffeescript
 # require supplier module
-supplier = require "supplier"
+supplier = require "../../lib/supplier"
 
 # create instance
 supply = supplier()
@@ -47,4 +40,3 @@ supply.use (supply, callback) ->
 
     # our plugin is configured
     callback.configured()
-```
