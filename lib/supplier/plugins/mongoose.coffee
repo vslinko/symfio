@@ -18,7 +18,7 @@ mongoose = require "mongoose"
 # * __mongodb__ — `mongodb` module.
 #
 module.exports = (supply, callback) ->
-    supply.log "configuring", "mongoose"
+    supply.info "configuring", "mongoose"
 
     connection = mongoose.createConnection()
 
@@ -30,7 +30,7 @@ module.exports = (supply, callback) ->
         supply.set "connection string", process.env.MONGOHQ_URL
 
     supply.on "configured", ->
-        supply.log "loading", "mongoose"
+        supply.info "loading", "mongoose"
 
         connectionString = supply.get "connection string"
 

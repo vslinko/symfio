@@ -18,7 +18,7 @@ http = require "http"
 #
 # * __port__ — Port for listening.
 module.exports = (supply, callback) ->
-    supply.log "configuring", "express"
+    supply.info "configuring", "express"
 
     app = express()
     server = http.createServer app
@@ -37,6 +37,6 @@ module.exports = (supply, callback) ->
         port = supply.get "port"
 
         server.listen port, ->
-            supply.log "listening", port
+            supply.info "listening", port
 
     callback()

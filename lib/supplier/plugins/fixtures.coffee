@@ -19,7 +19,7 @@ fs = require "fs"
 #
 # * __fixtures directory__ — Directory with fixtures.
 module.exports = (supply, callback) ->
-    supply.log "configuring", "fixtures"
+    supply.info "configuring", "fixtures"
 
     supply.on "configured", ->
         fixturesDirectory = supply.get "fixtures directory"
@@ -58,7 +58,7 @@ module.exports = (supply, callback) ->
                                 return callback err if err
                                 return callback null if count > 0
 
-                                supply.log "loading fixture", task.collection
+                                supply.info "loading fixture", task.collection
                                 collection.insert fixture, safe: true, callback
                     ], callback
 

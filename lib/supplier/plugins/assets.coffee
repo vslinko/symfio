@@ -31,10 +31,10 @@ compilerFactory = (str, path) ->
 #
 # * __public directory__ — Directory with assets.
 module.exports = (supply, callback) ->
-    supply.log "configuring", "assets"
+    supply.info "configuring", "assets"
 
     supply.on "configured", ->
-        supply.log "loading", "assets"
+        supply.info "loading", "assets"
 
         app = supply.get "app"
         publicDirectory = supply.get "public directory"

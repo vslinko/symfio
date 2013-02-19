@@ -19,10 +19,10 @@ HOUR = 60 * 60 * 1000
 # * __components__ — Array with components.
 # * __public directory__ — Directory with assets.
 module.exports = (supply, callback) ->
-    supply.log "configuring", "bower"
+    supply.info "configuring", "bower"
 
     supply.on "configured", ->
-        supply.log "loading", "bower"
+        supply.info "loading", "bower"
 
         components = supply.get "components"
         publicDirectory = supply.get "public directory"

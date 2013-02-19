@@ -116,32 +116,72 @@ describe "Supplier", ->
             supply.wait "test", ->
                 callback()
 
-    describe "log", ->
-        catchOutput = (action, shizzle, name) ->
-            message = ""
+    catchOutput = (wrappedFunction) ->
+        message = ""
 
-            write = process.stdout.write
-            process.stdout.write = (data) ->
-                message += data.toString()
+        write = process.stdout.write
+        process.stdout.write = (data) ->
+            message += data.toString()
 
-            supply.log action, shizzle, name
-            process.stdout.write = write
-            message
+        wrappedFunction()
 
+        process.stdout.write = write
+        message
+
+    describe "info", ->
         it "should output message", ->
             supply.set "silent", false
-            assert.equal "supplier #{"hello".cyan} #{"world".grey}\n", catchOutput "hello", "world"
+            
+            output = catchOutput ->
+                supply.info "hello", "world"
+            assert.equal "supplier #{"hello".cyan} #{"world".grey}\n", output
 
         it "should output name", ->
             supply.set "silent", false
             supply.set "name", "test"
-            assert.equal "test #{"hello".cyan} #{"world".grey}\n", catchOutput "hello", "world"
-            assert.equal "mest #{"hello".cyan} #{"world".grey}\n", catchOutput "hello", "world", "mest"
+
+            output = catchOutput ->
+                supply.info "hello", "world"
+            assert.equal "test #{"hello".cyan} #{"world".grey}\n", output
+
+            output = catchOutput ->
+                supply.info "hello", "world", "mest"
+            assert.equal "mest #{"hello".cyan} #{"world".grey}\n", output
 
         it "should not output message if silent", ->
             supply.set "silent", true
-            assert.equal "", catchOutput "hello", "world"
+
+            output = catchOutput ->
+                supply.info "hello", "world"
+            assert.equal "", output
 
         it "should output numbers", ->
             supply.set "silent", false
-            assert.equal "3 #{"1".cyan} #{"2".grey}\n", catchOutput 1, 2, 3
+
+            output = catchOutput ->
+                supply.info 1, 2, 3
+            assert.equal "3 #{"1".cyan} #{"2".grey}\n", output
+
+    describe "warn", ->
+        it "should output message", ->
+            supply.set "silent", false
+
+            output = catchOutput ->
+                supply.warn "hello world"
+            assert.equal "supplier #{"warn".yellow} #{"hello world".grey}\n", output
+
+    describe "error", ->
+        it "should output message and terminate application", ->
+            supply.set "silent", false
+            exitCode = 0
+
+            exit = process.exit
+            process.exit = (code) ->
+                exitCode = code
+
+            output = catchOutput ->
+                supply.error 123, "hello world"
+            assert.equal "supplier #{"error".red} #{"hello world".grey}\n", output
+            assert.equal 123, exitCode
+
+            process.exit = exit

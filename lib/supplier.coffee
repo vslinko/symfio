@@ -74,19 +74,45 @@ class Supplier extends events.EventEmitter
         @plugins.push plugin
         @length += 1
 
-    # To standardize output application instance has method `log`.
-    # The method has following arguments:
+    # To standardize output application instance has methods `info`, `warn`
+    # and `error`. Method `info` has following arguments:
     #
     # * __action__ — Name of the action performed.
     # * __shizzle__ — More information about action (arguments).
     # * ___name___ — Application name, default value taken from the
     #   configuration.
-    log: (action, shizzle, name = @configuration["name"]) ->
+    #
+    # Methods `warn` and `error` has only __shizzle__ and __name__ arguments.
+    # Aslo `error` method terminates the application.
+    info: (action, shizzle, name = @configuration["name"]) ->
+        @_message action, shizzle, name, "cyan"
+
+    # Methods `warn` has only __shizzle__ and __name__ arguments:
+    #
+    # * __shizzle__ — More information about action (arguments).
+    # * ___name___ — Application name, default value taken from the
+    #   configuration.
+    warn: (shizzle, name = @configuration["name"]) ->
+        @_message "warn", shizzle, name, "yellow"
+
+    # Method `error` has following arguments:
+    #
+    # * __code__ — Exit code.
+    # * __shizzle__ — More information about action (arguments).
+    # * ___name___ — Application name, default value taken from the
+    #   configuration.
+    #
+    # Aslo `error` method terminates the application.
+    error: (code, shizzle, name = @configuration["name"]) ->
+        @_message "error", shizzle, name, "red"
+        process.exit code
+
+    _message: (action, shizzle, name, color) ->
         return if @get "silent"
 
         message = [name]
         if action
-            message.push String(action).cyan
+            message.push String(action)[color]
             message.push String(shizzle).grey if shizzle
 
         console.log message.join " "
