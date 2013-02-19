@@ -9,31 +9,48 @@ supplier = require if process.env.COVERAGE \
 
 describe "Fixtures plugin", ->
     supply = null
+    model = null
 
-    createSupplier = ->
+    createSupplier = (callback) ->
         supply = supplier()
         supply.set "connection string", "mongodb://localhost/test"
         supply.set "fixtures directory", path.join __dirname, "fixtures"
         supply.use supplier.plugins.mongoose
         supply.use supplier.plugins.fixtures
 
+        supply.on "configured", ->
+            connection = supply.get "connection"
+            mongoose = supply.get "mongoose"
+
+            TestSchema = new mongoose.Schema {
+                name: type: "string", required: true
+                pre_save: type: Boolean, default: false
+            }, safe: true
+
+            TestSchema.pre "save", (next) ->
+                @pre_save = true
+                next()
+
+            model = connection.model "test", TestSchema
+            callback()
+
     beforeEach (callback) ->
-        createSupplier()
-        callback()
+        createSupplier ->
+            model.remove ->
+                callback()
 
     afterEach (callback) ->
-        connection = supply.get "connection"
-        connection.db.dropDatabase ->
-            connection.close ->
+        model.remove ->
             callback()
 
     it "should load fixtures only if collection is empty", (callback) ->
         testCount = (callback) ->
             supply.on "loaded", ->
-                connection = supply.get "connection"
-                collection = connection.db.collection "test"
-                collection.count (err, count) ->
-                    assert.equal 3, count
+                model.find (err, items) ->
+                    assert.equal 3, items.length
+                    
+                    items.forEach (item) ->
+                        assert.ok item.pre_save
                     callback()
 
         async.waterfall [
@@ -41,8 +58,8 @@ describe "Fixtures plugin", ->
                 testCount callback
 
             (callback) ->
-                createSupplier()
-                testCount callback
+                createSupplier ->
+                    testCount callback
         ], callback
 
     it "should load fixtures immediately after connected to database", (callback) ->

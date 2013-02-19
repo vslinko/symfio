@@ -53,13 +53,34 @@ module.exports = (supply, callback) ->
                         (fixture, callback) ->
                             return callback() unless fixture
 
-                            collection = db.collection task.collection
-                            collection.count (err, count) ->
+                            #   1. Create model for fixture
+                            #     UserSchema = new mongoose.Schema
+                            #       username: type: "string", required: true
+                            #     
+                            #     User = supply.get("connection").model "users"
+                            #       , UserSchema
+                            #
+                            #   2. Create fixtures file with array of user data
+                            #     [{
+                            #       username: 'ExampleOfFixture'
+                            #     }]
+                            try
+                                model = connection.model task.collection
+                            catch err
+                                supply.warn err
+                                return callback null
+                            
+                            model.count (err, count) ->
                                 return callback err if err
                                 return callback null if count > 0
 
                                 supply.info "loading fixture", task.collection
-                                collection.insert fixture, safe: true, callback
+
+                                itemWorker = (data, callback) ->
+                                    item = new model data
+                                    item.save callback
+
+                                async.forEach fixture, itemWorker, callback
                     ], callback
 
                 async.forEach tasks, worker, ->
