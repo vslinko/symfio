@@ -4,6 +4,9 @@ class FakePlugin
             @stack = stack
             @callback = callback
 
+    injected: ->
+        @callback.injected()
+
     configured: ->
         @callback.configured()
 

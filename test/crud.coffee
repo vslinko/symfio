@@ -13,6 +13,6 @@ describe "CRUD plugin", ->
         supply.use supplier.plugins.crud
 
     it "should inject crud", (callback) ->
-        supply.once "configured", ->
+        supply.once "injected", ->
             assert.notEqual undefined, supply.get "crud"
             callback()

@@ -36,6 +36,28 @@ describe "Supplier", ->
             supply.use plugin
             assert.equal 1, supply.plugins.length()
 
+        it "should emit 'injected' after all plugins injected", (callback) ->
+            injected = false
+
+            supply.once "injected", ->
+                injected = true
+
+            plugin0 = fakePlugin()
+            plugin1 = fakePlugin()
+
+            supply.use plugin0.factory()
+            supply.use plugin1.factory()
+
+            assert.equal false, injected
+
+            process.nextTick ->
+                plugin0.injected()
+                assert.equal false, injected
+                plugin1.injected()
+
+                assert.equal true, injected
+                callback()
+
         it "should emit 'configured' after all plugins configured", (callback) ->
             configured = false
 

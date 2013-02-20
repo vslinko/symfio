@@ -20,14 +20,14 @@ describe "Express plugin", ->
             callback()
 
     it "should inject app, port, and server", (callback) ->
-        supply.once "configured", ->
+        supply.once "injected", ->
             assert.notEqual undefined, supply.get "app"
             assert.notEqual undefined, supply.get "port"
             assert.notEqual undefined, supply.get "server"
             callback()
 
     it "should start server after all plugins loaded", (callback) ->
-        supply.once "configured", ->
+        supply.once "injected", ->
             server = supply.get "server"
             server.on "listening", ->
                 callback()

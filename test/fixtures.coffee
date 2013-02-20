@@ -18,7 +18,7 @@ describe "Fixtures plugin", ->
         supply.use supplier.plugins.mongoose
         supply.use supplier.plugins.fixtures
 
-        supply.once "configured", ->
+        supply.once "injected", ->
             connection = supply.get "connection"
             mongoose = supply.get "mongoose"
 

@@ -30,7 +30,7 @@ describe "Assets plugin", ->
             app = supply.get "app"
             connectedMiddlewaresLength = app.stack.length
 
-        supply.once "loaded", ->
+        supply.once "configured", ->
             app = supply.get "app"
             assert.equal connectedMiddlewaresLength + 4, app.stack.length
             callback()
@@ -55,7 +55,7 @@ describe "Assets plugin", ->
 
         """
 
-        supply.once "configured", ->
+        supply.once "injected", ->
             server = supply.get "server"
             server.on "listening", ->
                 req = http.get "http://localhost:3000/style.css", (res) ->
