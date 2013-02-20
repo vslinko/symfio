@@ -11,17 +11,16 @@ supplier = require if process.env.COVERAGE \
 describe "Bower plugin", ->
     container = null
     loader = null
-    publicDirectory = __dirname
+    publicDirectory = path.join __dirname, "public"
     componentsDirectory = path.join publicDirectory, "components"
 
     this.timeout 0
 
     beforeEach (callback) ->
         fs.rmrf componentsDirectory, ->
-            container = supplier()
+            container = supplier "test", __dirname
             loader = container.get "loader"
 
-            container.set "public directory", publicDirectory
             container.set "components", ["jquery#~1.9"]
             loader.use supplier.plugins.bower
             callback()
@@ -40,10 +39,9 @@ describe "Bower plugin", ->
                         callback()
 
             (callback) ->
-                container = supplier()
+                container = supplier "test", __dirname
                 loader = container.get "loader"
-                
-                container.set "public directory", publicDirectory
+
                 container.set "components", ["jquery#~1.9", "bootstrap"]
                 loader.use supplier.plugins.bower
 

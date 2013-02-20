@@ -1,8 +1,7 @@
 # Install components from the Bower repository to the public directory.
 #
 #     supplier = require "supplier"
-#     container = supplier()
-#     container.set "public directory", "#{__dirname}/public"
+#     container = supplier "example", __dirname
 #     container.set "components", ["jquery", "bootstrap"]
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.bower

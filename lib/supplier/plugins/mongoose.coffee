@@ -1,22 +1,23 @@
 # Connect to MongoDB
 #
 #     supplier = require "supplier"
-#     container = supplier()
-#     container.set "connection string", "mongodb://localhost/test"
+#     container = supplier "example", __dirname
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.mongoose
+#     loader.once "injected", ->
+#         container.set "connection string", "mongodb://localhost/test"
 mongoose = require "mongoose"
 
 
-#### Required configuration:
-#
-# * __connection string__ — MongoDB connection string.
-#
 #### Provides:
 #
 # * __connection__ — Mongoose connection instance.
 # * __mongoose__ — `mongoose` module.
 # * __mongodb__ — `mongodb` module.
+#
+#### Can be configured:
+#
+# * __connection string__ — MongoDB connection string.
 #
 module.exports = (container, callback) ->
     loader = container.get "loader"
@@ -30,8 +31,9 @@ module.exports = (container, callback) ->
     container.set "mongoose", mongoose
     container.set "mongodb", mongoose.mongo
 
-    if not container.get("connection string") and process.env.MONGOHQ_URL
-        container.set "connection string", process.env.MONGOHQ_URL
+    name = container.get "name"
+    connectionString = process.env.MONGOHQ_URL or "mongodb://localhost/#{name}"
+    container.set "connection string", connectionString
 
     loader.once "configured", ->
         logger.info "loading", "mongoose"

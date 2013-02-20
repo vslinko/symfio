@@ -1,7 +1,7 @@
 # Launch express application after all plugins is loaded.
 #
 #     supplier = require "supplier"
-#     container = supplier()
+#     container = supplier "example", __dirname
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.express
 #     loader.once "injected", ->

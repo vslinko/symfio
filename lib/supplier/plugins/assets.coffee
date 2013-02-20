@@ -1,8 +1,7 @@
 # Compile and serve assets from public directory.
 #
 #     supplier = require "supplier"
-#     container = supplier()
-#     container.set "public directory", "#{__dirname}/public"
+#     container = supplier "example", __dirname
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.assets
 coffeescript = require "connect-coffee-script"

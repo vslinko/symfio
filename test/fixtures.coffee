@@ -13,11 +13,9 @@ describe "Fixtures plugin", ->
     model = null
 
     createSupplier = (callback) ->
-        container = supplier()
+        container = supplier "test", __dirname
         loader = container.get "loader"
-        
-        container.set "connection string", "mongodb://localhost/test"
-        container.set "fixtures directory", path.join __dirname, "fixtures"
+
         loader.use supplier.plugins.mongoose
         loader.use supplier.plugins.fixtures
 
@@ -69,11 +67,9 @@ describe "Fixtures plugin", ->
     it "should load fixtures immediately after connected to database", (callback) ->
         return callback() unless process.env.COVERAGE
 
-        container = supplier()
+        container = supplier "test", __dirname
         loader = container.get "loader"
 
-        container.set "connection string", "mongodb://localhost/test"
-        container.set "fixtures directory", path.join __dirname, "fixtures"
         loader.use supplier.plugins.mongoose
 
         loader.once "loaded", ->

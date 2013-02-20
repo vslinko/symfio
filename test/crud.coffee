@@ -10,7 +10,7 @@ describe "CRUD plugin", ->
     loader = null
 
     beforeEach ->
-        container = supplier()
+        container = supplier "test", __dirname
         loader = container.get "loader"
         loader.use supplier.plugins.crud
 

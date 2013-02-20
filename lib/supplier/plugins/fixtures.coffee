@@ -1,9 +1,7 @@
 # Load fixtures to mongodb collection from fixtures directory.
 #
 #     supplier = require "supplier"
-#     container = supplier()
-#     container.set "connection string", "mongodb://localhost/test"
-#     container.set "fixtures directory", "#{__dirname}/fixtures"
+#     container = supplier "example", __dirname
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.mongoose
 #     loader.use supplier.plugins.fixtures
