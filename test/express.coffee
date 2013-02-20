@@ -6,48 +6,51 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Express plugin", ->
-    supply = null
+    container = null
+    loader = null
 
     beforeEach ->
-        supply = supplier()
-        supply.use supplier.plugins.express
+        container = supplier "test", __dirname
+        loader = container.get "loader"
+
+        loader.use supplier.plugins.express
 
     afterEach (callback) ->
-        server = supply.get "server"
+        server = container.get "server"
         try
             server.close callback
         catch err
             callback()
 
     it "should inject app, port, and server", (callback) ->
-        supply.once "injected", ->
-            assert.notEqual undefined, supply.get "app"
-            assert.notEqual undefined, supply.get "port"
-            assert.notEqual undefined, supply.get "server"
+        loader.once "injected", ->
+            assert.ok container.get "app"
+            assert.ok container.get "port"
+            assert.ok container.get "server"
             callback()
 
     it "should start server after all plugins loaded", (callback) ->
-        supply.once "injected", ->
-            server = supply.get "server"
+        loader.once "injected", ->
+            server = container.get "server"
             server.on "listening", ->
                 callback()
 
     hasMiddleware = (name) ->
-        app = supply.get "app"
+        app = container.get "app"
         for middleware in app.stack
             if middleware.handle.name is name
                 return true
         false
 
     it "should use bodyParser", (callback) ->
-        supply.once "configured", ->
-            assert.equal true, hasMiddleware "bodyParser"
+        loader.once "configured", ->
+            assert.ok hasMiddleware "bodyParser"
             callback()
 
     it "should use errorHandler in development environment", (callback) ->
         nodeEnv = process.env.NODE_ENV
         process.env.NODE_ENV = "development"
-        supply.once "configured", ->
-            assert.equal true, hasMiddleware "errorHandler"
+        loader.once "configured", ->
+            assert.ok hasMiddleware "errorHandler"
             process.env.NODE_ENV = nodeEnv
             callback()
