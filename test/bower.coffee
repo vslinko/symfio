@@ -30,7 +30,7 @@ describe "Bower plugin", ->
     it "should run bower one time in hour", (callback) ->
         async.series [
             (callback) ->
-                supply.on "loaded", ->
+                supply.once "loaded", ->
                     jqueryDirectory = path.join componentsDirectory, "jquery"
                     fs.stat jqueryDirectory, (err, stats) ->
                         assert.equal true, stats.isDirectory()
@@ -41,7 +41,7 @@ describe "Bower plugin", ->
                 supply.set "public directory", publicDirectory
                 supply.set "components", ["jquery#~1.9", "bootstrap"]
                 supply.use supplier.plugins.bower
-                supply.on "loaded", ->
+                supply.once "loaded", ->
                     bootstrapDirectory = path.join componentsDirectory, "bootstrap"
                     fs.stat bootstrapDirectory, (err, stats) ->
                         assert.equal 34, err.errno
@@ -56,7 +56,7 @@ describe "Bower plugin", ->
         process.stdout.write = (data) ->
             message += data.toString()
 
-        supply.on "loaded", ->
+        supply.once "loaded", ->
             assert.equal true, message.indexOf("bower") >= 0
             process.stdout.write = write
             callback()

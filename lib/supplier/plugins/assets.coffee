@@ -31,7 +31,7 @@ compilerFactory = (str, path) ->
 #
 # * __public directory__ — Directory with assets.
 module.exports = (supply, callback) ->
-    supply.on "injected", ->
+    supply.once "injected", ->
         supply.info "configuring", "assets"
 
         app = supply.get "app"

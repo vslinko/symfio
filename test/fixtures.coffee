@@ -18,7 +18,7 @@ describe "Fixtures plugin", ->
         supply.use supplier.plugins.mongoose
         supply.use supplier.plugins.fixtures
 
-        supply.on "configured", ->
+        supply.once "configured", ->
             connection = supply.get "connection"
             mongoose = supply.get "mongoose"
 
@@ -45,7 +45,7 @@ describe "Fixtures plugin", ->
 
     it "should load fixtures only if collection is empty", (callback) ->
         testCount = (callback) ->
-            supply.on "loaded", ->
+            supply.once "loaded", ->
                 model.find (err, items) ->
                     assert.equal 3, items.length
                     

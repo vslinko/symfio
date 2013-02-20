@@ -19,7 +19,7 @@ fs = require "fs"
 #
 # * __fixtures directory__ — Directory with fixtures.
 module.exports = (supply, callback) ->
-    supply.on "configured", ->
+    supply.once "configured", ->
         supply.info "loading", "fixtures"
 
         fixturesDirectory = supply.get "fixtures directory"

@@ -17,7 +17,7 @@ describe "Supplier", ->
     it "should extend event emitter", ->
         catched = false
 
-        supply.on "event", ->
+        supply.once "event", ->
             catched = true
 
         supply.emit "event"
@@ -39,7 +39,7 @@ describe "Supplier", ->
         it "should emit 'configured' after all plugins configured", (callback) ->
             configured = false
 
-            supply.on "configured", ->
+            supply.once "configured", ->
                 configured = true
 
             plugin0 = fakePlugin()
@@ -61,7 +61,7 @@ describe "Supplier", ->
         it "should emit 'loaded' after all plugins loaded", (callback) ->
             loaded = false
 
-            supply.on "loaded", ->
+            supply.once "loaded", ->
                 loaded = true
 
             plugin0 = fakePlugin()
@@ -83,7 +83,7 @@ describe "Supplier", ->
         it "should allow include one plugin in another", (callback) ->
             loaded = false
 
-            supply.on "loaded", ->
+            supply.once "loaded", ->
                 loaded = true
 
             plugin0 = fakePlugin()

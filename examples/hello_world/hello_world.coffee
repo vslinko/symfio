@@ -17,7 +17,7 @@ supply.use (supply, callback) ->
     supply.set "fixtures directory", "#{__dirname}/fixtures"
 
     # after all dependent is configured
-    supply.on "configured", ->
+    supply.once "configured", ->
         # get necessary variables
         connection = supply.get "connection"
         mongoose = supply.get "mongoose"

@@ -3,7 +3,7 @@
 #     supplier = require "supplier"
 #     supply = supplier()
 #     supply.use supplier.plugins.express
-#     supply.on "injected", ->
+#     supply.once "injected", ->
 #         supply.set "port", 80
 express = require "express"
 http = require "http"
@@ -33,7 +33,7 @@ module.exports = (supply, callback) ->
     supply.set "port", process.env.PORT or 3000
     supply.set "server", server
 
-    supply.on "loaded", ->
+    supply.once "loaded", ->
         port = supply.get "port"
 
         server.listen port, ->

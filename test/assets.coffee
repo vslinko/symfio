@@ -26,11 +26,11 @@ describe "Assets plugin", ->
     it "should connect four middlewares", (callback) ->
         connectedMiddlewaresLength = -1
 
-        supply.on "injected", (app) ->
+        supply.once "injected", (app) ->
             app = supply.get "app"
             connectedMiddlewaresLength = app.stack.length
 
-        supply.on "loaded", ->
+        supply.once "loaded", ->
             app = supply.get "app"
             assert.equal connectedMiddlewaresLength + 4, app.stack.length
             callback()
@@ -55,7 +55,7 @@ describe "Assets plugin", ->
 
         """
 
-        supply.on "configured", ->
+        supply.once "configured", ->
             server = supply.get "server"
             server.on "listening", ->
                 req = http.get "http://localhost:3000/style.css", (res) ->

@@ -20,14 +20,14 @@ describe "Express plugin", ->
             callback()
 
     it "should inject app, port, and server", (callback) ->
-        supply.on "configured", ->
+        supply.once "configured", ->
             assert.notEqual undefined, supply.get "app"
             assert.notEqual undefined, supply.get "port"
             assert.notEqual undefined, supply.get "server"
             callback()
 
     it "should start server after all plugins loaded", (callback) ->
-        supply.on "configured", ->
+        supply.once "configured", ->
             server = supply.get "server"
             server.on "listening", ->
                 callback()
@@ -40,14 +40,14 @@ describe "Express plugin", ->
         false
 
     it "should use bodyParser", (callback) ->
-        supply.on "configured", ->
+        supply.once "configured", ->
             assert.equal true, hasMiddleware "bodyParser"
             callback()
 
     it "should use errorHandler in development environment", (callback) ->
         nodeEnv = process.env.NODE_ENV
         process.env.NODE_ENV = "development"
-        supply.on "configured", ->
+        supply.once "configured", ->
             assert.equal true, hasMiddleware "errorHandler"
             process.env.NODE_ENV = nodeEnv
             callback()

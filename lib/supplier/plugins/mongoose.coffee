@@ -29,7 +29,7 @@ module.exports = (supply, callback) ->
     if not supply.get("connection string") and process.env.MONGOHQ_URL
         supply.set "connection string", process.env.MONGOHQ_URL
 
-    supply.on "configured", ->
+    supply.once "configured", ->
         supply.info "loading", "mongoose"
 
         connectionString = supply.get "connection string"
