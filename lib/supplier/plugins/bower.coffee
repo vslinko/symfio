@@ -19,8 +19,6 @@ HOUR = 60 * 60 * 1000
 # * __components__ — Array with components.
 # * __public directory__ — Directory with assets.
 module.exports = (supply, callback) ->
-    supply.info "configuring", "bower"
-
     supply.on "configured", ->
         supply.info "loading", "bower"
 
@@ -45,4 +43,5 @@ module.exports = (supply, callback) ->
                 process.chdir cwd
                 callback.loaded()
 
+    callback.injected()
     callback.configured()

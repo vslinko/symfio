@@ -98,24 +98,6 @@ describe "Supplier", ->
                     assert.equal true, loaded
                     callback()
 
-    describe "wait", ->
-        it "should run all listeners after value setted", (callback) ->
-            length = 3
-            listenersRunned = 0
-
-            for i in [0...length]
-                supply.wait "test", ->
-                    listenersRunned += 1
-                    callback() if listenersRunned == length
-
-            process.nextTick ->
-                supply.set "test", "mest"
-
-        it "should run listener immediately if value exists", (callback) ->
-            supply.set "test", "mest"
-            supply.wait "test", ->
-                callback()
-
     catchOutput = (wrappedFunction) ->
         message = ""
 

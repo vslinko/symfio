@@ -31,10 +31,8 @@ compilerFactory = (str, path) ->
 #
 # * __public directory__ — Directory with assets.
 module.exports = (supply, callback) ->
-    supply.info "configuring", "assets"
-
-    supply.on "configured", ->
-        supply.info "loading", "assets"
+    supply.on "injected", ->
+        supply.info "configuring", "assets"
 
         app = supply.get "app"
         publicDirectory = supply.get "public directory"
@@ -48,6 +46,7 @@ module.exports = (supply, callback) ->
             app.use coffeescript publicDirectory
             app.use express.static publicDirectory
 
+        callback.configured()
         callback.loaded()
 
-    callback.configured()
+    callback.injected()

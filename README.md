@@ -44,6 +44,7 @@ supply.use (supply, callback) ->
         callback.loaded()
 
     # our plugin is configured
+    callback.injected()
     callback.configured()
 ```
 

@@ -18,7 +18,7 @@ mongoose = require "mongoose"
 # * __mongodb__ — `mongodb` module.
 #
 module.exports = (supply, callback) ->
-    supply.info "configuring", "mongoose"
+    supply.info "injecting", "mongoose"
 
     connection = mongoose.createConnection()
 
@@ -37,4 +37,5 @@ module.exports = (supply, callback) ->
         connection.open connectionString, ->
             callback.loaded()
 
+    callback.injected()
     callback.configured()

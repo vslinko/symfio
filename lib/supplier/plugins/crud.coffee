@@ -10,6 +10,6 @@ crud = require "rithis-crud"
 #
 # * __crud__ — CRUD module.
 module.exports = (supply, callback) ->
-    supply.info "configuring", "crud"
+    supply.info "injecting", "crud"
     supply.set "crud", crud
     callback()

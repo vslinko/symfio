@@ -17,19 +17,31 @@ class Supplier extends events.EventEmitter
             name: "supplier"
             silent: process.env.NODE_ENV is "test"
 
+        @injected = 0
         @configured = 0
         @loaded = 0
         @length = 0
 
         pluginWorker = (plugin, callback) =>
             pluginCallback = ->
+                pluginCallback.injected()
                 pluginCallback.configured()
                 pluginCallback.loaded()
 
-            # Plugins is loaded in two stages:
+            # Plugins is loaded in three stages:
             #
-            # * __Configuration.__ At this point, the plugin can list dependent
+            # * __Injecting.__ At this point, the plugin can list dependent
             #   plugins or set some values in application configuration. After
+            #   successful configuration plugin should call
+            #   `callback.injected()` to notify the application. When all
+            #   plugins has been injected then application emits event
+            #   `injected` and begin the next stage.
+            pluginCallback.injected = =>
+                @injected += 1
+                @emit "injected" if @injected == @length
+
+            # * __Configuration.__ At this point, the plugin can access to
+            #   injected values by other plugins and manipulate with them. After
             #   successful configuration plugin should call
             #   `callback.configured()` to notify the application. When all
             #   plugins has been configured then application emits event
@@ -58,16 +70,9 @@ class Supplier extends events.EventEmitter
     # Plugins can share settings and variables using application instance.
     set: (name, value) ->
         @configuration[name] = value
-        @emit "changed #{name}", value
 
     get: (name) ->
         @configuration[name]
-
-    wait: (name, listener) ->
-        if @configuration[name]
-            listener @configuration[name]
-        else
-            @once "changed #{name}", listener
 
     # To connect plugin pass it to `use` method of application instance.
     use: (plugin) ->

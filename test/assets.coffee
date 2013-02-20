@@ -26,7 +26,8 @@ describe "Assets plugin", ->
     it "should connect four middlewares", (callback) ->
         connectedMiddlewaresLength = -1
 
-        supply.wait "app", (app) ->
+        supply.on "injected", (app) ->
+            app = supply.get "app"
             connectedMiddlewaresLength = app.stack.length
 
         supply.on "loaded", ->

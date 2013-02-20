@@ -19,9 +19,9 @@ fs = require "fs"
 #
 # * __fixtures directory__ — Directory with fixtures.
 module.exports = (supply, callback) ->
-    supply.info "configuring", "fixtures"
-
     supply.on "configured", ->
+        supply.info "loading", "fixtures"
+
         fixturesDirectory = supply.get "fixtures directory"
         connection = supply.get "connection"
         db = connection.db
@@ -30,8 +30,6 @@ module.exports = (supply, callback) ->
             fs.readdir fixturesDirectory, (err, files) ->
                 return callback.loaded() unless files
 
-                # The fixture must be a JSON file named like a mongodb
-                # collection.
                 tasks = []
                 for file in files
                     if path.extname(file) is ".json"
@@ -53,17 +51,20 @@ module.exports = (supply, callback) ->
                         (fixture, callback) ->
                             return callback() unless fixture
 
-                            #   1. Create model for fixture
-                            #     UserSchema = new mongoose.Schema
-                            #       username: type: "string", required: true
-                            #     
-                            #     User = supply.get("connection").model "users"
-                            #       , UserSchema
+                            # For make fixtures work you need define the model:
                             #
-                            #   2. Create fixtures file with array of user data
-                            #     [{
-                            #       username: 'ExampleOfFixture'
-                            #     }]
+                            #     UserSchema = new mongoose.Schema
+                            #         username: type: "string", required: true
+                            #
+                            #     connection = supply.get "connection"
+                            #     User = connection.model "users", UserSchema
+                            #
+                            # And create fixtures file with array named like
+                            # collection name:
+                            #
+                            #     [
+                            #         {"username": "ExampleOfFixture"}
+                            #     ]
                             try
                                 model = connection.model task.collection
                             catch err
@@ -84,11 +85,12 @@ module.exports = (supply, callback) ->
                     ], callback
 
                 async.forEach tasks, worker, ->
-                    callback()
+                    callback.loaded()
 
         if connection.readyState is 1
             loadFixtures()
         else
             connection.on "connected", loadFixtures
 
+    callback.injected()
     callback.configured()

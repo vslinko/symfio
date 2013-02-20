@@ -3,7 +3,7 @@
 #     supplier = require "supplier"
 #     supply = supplier()
 #     supply.use supplier.plugins.express
-#     supply.wait "port", ->
+#     supply.on "injected", ->
 #         supply.set "port", 80
 express = require "express"
 http = require "http"
@@ -18,7 +18,7 @@ http = require "http"
 #
 # * __port__ — Port for listening.
 module.exports = (supply, callback) ->
-    supply.info "configuring", "express"
+    supply.info "injecting", "express"
 
     app = express()
     server = http.createServer app
