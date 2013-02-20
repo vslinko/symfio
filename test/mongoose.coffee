@@ -10,21 +10,22 @@ describe "Mongoose plugin", ->
     loader = null
 
     beforeEach ->
-        container = supplier()
+        container = supplier "test", __dirname
         loader = container.get "loader"
-        
-        container.set "connection string", "mongodb://localhost/test"
+
         loader.use supplier.plugins.mongoose
 
     afterEach ->
         connection = container.get "connection"
         connection.close ->
 
-    it "should inject connection, mongoose, and mongodb", (callback) ->
+    it "should inject connection, mongoose, mongodb, and connection string", (callback) ->
         loader.once "injected", ->
             assert.ok container.get "connection"
             assert.ok container.get "mongoose"
             assert.ok container.get "mongodb"
+            connectionString = container.get "connection string"
+            assert.equal "mongodb://localhost/test", connectionString
             callback()
 
     it "should connect to database", (callback) ->
@@ -36,7 +37,7 @@ describe "Mongoose plugin", ->
     it "should inject connection string from process.env.MONGOHQ_URL", (callback) ->
         process.env.MONGOHQ_URL = "hello world"
 
-        container = supplier()
+        container = supplier "test", __dirname
         loader = container.get "loader"
 
         loader.use supplier.plugins.mongoose

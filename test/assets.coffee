@@ -12,10 +12,9 @@ describe "Assets plugin", ->
     loader = null
 
     beforeEach ->
-        container = supplier()
+        container = supplier "test", __dirname
         loader = container.get "loader"
 
-        container.set "public directory", path.join __dirname, "public"
         loader.use supplier.plugins.assets
         loader.use supplier.plugins.express
 

@@ -7,14 +7,21 @@ container = require "./supplier/container"
 plugins = require "./supplier/plugins"
 loader = require "./supplier/loader"
 logger = require "./supplier/logger"
+path = require "path"
 
 
-createInstance = (name = "supplier") ->
+createInstance = (name, applicationDirectory) ->
     instance = container()
+
     instance.set "name", name
+    instance.set "application directory", applicationDirectory
+    instance.set "public directory", path.join applicationDirectory, "public"
+    instance.set "fixtures directory", path.join applicationDirectory, "fixtures"
+
     instance.set "silent", process.env.NODE_ENV is "test"
     instance.set "logger", logger instance
     instance.set "loader", loader instance
+
     instance
 
 

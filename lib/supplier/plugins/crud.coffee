@@ -1,7 +1,7 @@
 # Just provide CRUD module.
 #
 #     supplier = require "supplier"
-#     container = supplier()
+#     container = supplier "example", __dirname
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.crud
 crud = require "rithis-crud"

@@ -2,7 +2,7 @@
 supplier = require "../../lib/supplier"
 
 # create container
-container = supplier "hello world"
+container = supplier "hello world", __dirname
 loader = container.get "loader"
 
 # add dependent plugins
@@ -12,12 +12,11 @@ loader.use supplier.plugins.fixtures
 
 # define own plugin
 loader.use (container, callback) ->
-    # configure
-    container.set "connection string", "mongodb://localhost/hello_world"
-    container.set "fixtures directory", "#{__dirname}/fixtures"
-
     # after all dependencies is injected in container
     loader.once "injected", ->
+        # replace default configuration
+        container.set "connection string", "mongodb://localhost/hello_world"
+
         # get dependencies
         connection = container.get "connection"
         mongoose = container.get "mongoose"
