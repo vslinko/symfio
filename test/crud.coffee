@@ -6,13 +6,15 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "CRUD plugin", ->
-    supply = null
+    container = null
+    loader = null
 
     beforeEach ->
-        supply = supplier()
-        supply.use supplier.plugins.crud
+        container = supplier()
+        loader = container.get "loader"
+        loader.use supplier.plugins.crud
 
     it "should inject crud", (callback) ->
-        supply.once "injected", ->
-            assert.notEqual undefined, supply.get "crud"
+        loader.once "injected", ->
+            assert.ok container.get "crud"
             callback()

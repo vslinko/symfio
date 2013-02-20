@@ -1,9 +1,10 @@
 # Compile and serve assets from public directory.
 #
 #     supplier = require "supplier"
-#     supply = supplier()
-#     supply.use supplier.plugins.assets
-#     supply.set "public directory", "#{__dirname}/public"
+#     container = supplier()
+#     container.set "public directory", "#{__dirname}/public"
+#     loader = container.get "loader"
+#     loader.use supplier.plugins.assets
 coffeescript = require "connect-coffee-script"
 responsive = require "stylus-responsive"
 express = require "express"
@@ -30,12 +31,15 @@ compilerFactory = (str, path) ->
 #### Required configuration:
 #
 # * __public directory__ — Directory with assets.
-module.exports = (supply, callback) ->
-    supply.once "injected", ->
-        supply.info "configuring", "assets"
+module.exports = (container, callback) ->
+    loader = container.get "loader"
+    logger = container.get "logger"
 
-        app = supply.get "app"
-        publicDirectory = supply.get "public directory"
+    loader.once "injected", ->
+        logger.info "configuring", "assets"
+
+        app = container.get "app"
+        publicDirectory = container.get "public directory"
 
         app.configure ->
             app.use stylus.middleware

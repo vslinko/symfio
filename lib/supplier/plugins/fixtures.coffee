@@ -1,11 +1,12 @@
 # Load fixtures to mongodb collection from fixtures directory.
 #
 #     supplier = require "supplier"
-#     supply = supplier()
-#     supply.use supplier.plugins.mongoose
-#     supply.use supplier.plugins.fixtures
-#     supply.set "connection string", "mongodb://localhost/test"
-#     supply.set "fixtures directory", "#{__dirname}/fixtures"
+#     container = supplier()
+#     container.set "connection string", "mongodb://localhost/test"
+#     container.set "fixtures directory", "#{__dirname}/fixtures"
+#     loader = container.get "loader"
+#     loader.use supplier.plugins.mongoose
+#     loader.use supplier.plugins.fixtures
 async = require "async"
 path = require "path"
 fs = require "fs"
@@ -18,12 +19,15 @@ fs = require "fs"
 #### Required configuration:
 #
 # * __fixtures directory__ — Directory with fixtures.
-module.exports = (supply, callback) ->
-    supply.once "configured", ->
-        supply.info "loading", "fixtures"
+module.exports = (container, callback) ->
+    loader = container.get "loader"
+    logger = container.get "logger"
 
-        fixturesDirectory = supply.get "fixtures directory"
-        connection = supply.get "connection"
+    loader.once "configured", ->
+        logger.info "loading", "fixtures"
+
+        fixturesDirectory = container.get "fixtures directory"
+        connection = container.get "connection"
         db = connection.db
 
         loadFixtures = ->
@@ -56,8 +60,8 @@ module.exports = (supply, callback) ->
                             #     UserSchema = new mongoose.Schema
                             #         username: type: "string", required: true
                             #
-                            #     connection = supply.get "connection"
-                            #     User = connection.model "users", UserSchema
+                            #     connection = container.get "connection"
+                            #     connection.model "users", UserSchema
                             #
                             # And create fixtures file with array named like
                             # collection name:
@@ -68,14 +72,14 @@ module.exports = (supply, callback) ->
                             try
                                 model = connection.model task.collection
                             catch err
-                                supply.warn err
+                                logger.warn err
                                 return callback null
                             
                             model.count (err, count) ->
                                 return callback err if err
                                 return callback null if count > 0
 
-                                supply.info "loading fixture", task.collection
+                                logger.info "loading fixture", task.collection
 
                                 itemWorker = (data, callback) ->
                                     item = new model data

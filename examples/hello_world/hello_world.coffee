@@ -1,27 +1,27 @@
 # require supplier module
 supplier = require "../../lib/supplier"
 
-# create instance
-supply = supplier()
+# create container
+container = supplier "hello world"
+loader = container.get "loader"
+
+# add dependent plugins
+loader.use supplier.plugins.express
+loader.use supplier.plugins.mongoose
+loader.use supplier.plugins.fixtures
 
 # define own plugin
-supply.use (supply, callback) ->
-    # add dependent plugins
-    supply.use supplier.plugins.express
-    supply.use supplier.plugins.mongoose
-    supply.use supplier.plugins.fixtures
-
+loader.use (container, callback) ->
     # configure
-    supply.set "name", "hello world"
-    supply.set "connection string", "mongodb://localhost/hello_world"
-    supply.set "fixtures directory", "#{__dirname}/fixtures"
+    container.set "connection string", "mongodb://localhost/hello_world"
+    container.set "fixtures directory", "#{__dirname}/fixtures"
 
-    # after all dependent is configured
-    supply.once "configured", ->
-        # get necessary variables
-        connection = supply.get "connection"
-        mongoose = supply.get "mongoose"
-        app = supply.get "app"
+    # after all dependencies is injected in container
+    loader.once "injected", ->
+        # get dependencies
+        connection = container.get "connection"
+        mongoose = container.get "mongoose"
+        app = container.get "app"
 
         # define schemas
         MessageSchema = new mongoose.Schema
@@ -35,9 +35,9 @@ supply.use (supply, callback) ->
             Message.find {}, (err, messages) ->
                 res.send messages
 
-        # our plugin is loaded, allow to start server
+        # our plugin is configured and loaded, allow to start server
+        callback.configured()
         callback.loaded()
 
-    # our plugin is configured
+    # our plugin injected values in container
     callback.injected()
-    callback.configured()

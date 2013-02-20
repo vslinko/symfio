@@ -8,16 +8,19 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Assets plugin", ->
-    supply = null
+    container = null
+    loader = null
 
     beforeEach ->
-        supply = supplier()
-        supply.set "public directory", path.join __dirname, "public"
-        supply.use supplier.plugins.assets
-        supply.use supplier.plugins.express
+        container = supplier()
+        loader = container.get "loader"
+
+        container.set "public directory", path.join __dirname, "public"
+        loader.use supplier.plugins.assets
+        loader.use supplier.plugins.express
 
     afterEach (callback) ->
-        server = supply.get "server"
+        server = container.get "server"
         try
             server.close callback
         catch err
@@ -26,12 +29,12 @@ describe "Assets plugin", ->
     it "should connect four middlewares", (callback) ->
         connectedMiddlewaresLength = -1
 
-        supply.once "injected", (app) ->
-            app = supply.get "app"
+        loader.once "injected", (app) ->
+            app = container.get "app"
             connectedMiddlewaresLength = app.stack.length
 
-        supply.once "configured", ->
-            app = supply.get "app"
+        loader.once "configured", ->
+            app = container.get "app"
             assert.equal connectedMiddlewaresLength + 4, app.stack.length
             callback()
 
@@ -55,8 +58,8 @@ describe "Assets plugin", ->
 
         """
 
-        supply.once "injected", ->
-            server = supply.get "server"
+        loader.once "injected", ->
+            server = container.get "server"
             server.on "listening", ->
                 req = http.get "http://localhost:3000/style.css", (res) ->
                     css = ""

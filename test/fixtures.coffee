@@ -8,28 +8,31 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Fixtures plugin", ->
-    supply = null
+    container = null
+    loader = null
     model = null
 
     createSupplier = (callback) ->
-        supply = supplier()
-        supply.set "connection string", "mongodb://localhost/test"
-        supply.set "fixtures directory", path.join __dirname, "fixtures"
-        supply.use supplier.plugins.mongoose
-        supply.use supplier.plugins.fixtures
+        container = supplier()
+        loader = container.get "loader"
+        
+        container.set "connection string", "mongodb://localhost/test"
+        container.set "fixtures directory", path.join __dirname, "fixtures"
+        loader.use supplier.plugins.mongoose
+        loader.use supplier.plugins.fixtures
 
-        supply.once "injected", ->
-            connection = supply.get "connection"
-            mongoose = supply.get "mongoose"
+        loader.once "injected", ->
+            connection = container.get "connection"
+            mongoose = container.get "mongoose"
 
             TestSchema = new mongoose.Schema {
-                name: type: "string", required: true
-                pre_save: type: Boolean, default: false
+                name: type: String, required: true
+                hooked: type: Boolean, default: false
             }, safe: true
 
-            TestSchema.pre "save", (next) ->
-                @pre_save = true
-                next()
+            TestSchema.pre "save", (callback) ->
+                @hooked = true
+                callback()
 
             model = connection.model "test", TestSchema
             callback()
@@ -45,12 +48,13 @@ describe "Fixtures plugin", ->
 
     it "should load fixtures only if collection is empty", (callback) ->
         testCount = (callback) ->
-            supply.once "loaded", ->
+            loader.once "loaded", ->
                 model.find (err, items) ->
                     assert.equal 3, items.length
                     
                     items.forEach (item) ->
-                        assert.ok item.pre_save
+                        assert.ok item.hooked
+                    
                     callback()
 
         async.waterfall [
@@ -65,12 +69,14 @@ describe "Fixtures plugin", ->
     it "should load fixtures immediately after connected to database", (callback) ->
         return callback() unless process.env.COVERAGE
 
-        supply = supplier()
-        supply.set "connection string", "mongodb://localhost/test"
-        supply.set "fixtures directory", path.join __dirname, "fixtures"
-        supply.use supplier.plugins.mongoose
+        container = supplier()
+        loader = container.get "loader"
 
-        supply.once "loaded", ->
-            supply.use supplier.plugins.fixtures
-            supply.once "configured", ->
+        container.set "connection string", "mongodb://localhost/test"
+        container.set "fixtures directory", path.join __dirname, "fixtures"
+        loader.use supplier.plugins.mongoose
+
+        loader.once "loaded", ->
+            loader.use supplier.plugins.fixtures
+            loader.once "configured", ->
                 callback()

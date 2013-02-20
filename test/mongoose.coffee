@@ -6,34 +6,40 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Mongoose plugin", ->
-    supply = null
+    container = null
+    loader = null
 
     beforeEach ->
-        supply = supplier()
-        supply.set "connection string", "mongodb://localhost/test"
-        supply.use supplier.plugins.mongoose
+        container = supplier()
+        loader = container.get "loader"
+        
+        container.set "connection string", "mongodb://localhost/test"
+        loader.use supplier.plugins.mongoose
 
     afterEach ->
-        connection = supply.get "connection"
+        connection = container.get "connection"
         connection.close ->
 
     it "should inject connection, mongoose, and mongodb", (callback) ->
-        supply.once "injected", ->
-            assert.notEqual undefined, supply.get "connection"
-            assert.notEqual undefined, supply.get "mongoose"
-            assert.notEqual undefined, supply.get "mongodb"
+        loader.once "injected", ->
+            assert.ok container.get "connection"
+            assert.ok container.get "mongoose"
+            assert.ok container.get "mongodb"
             callback()
 
     it "should connect to database", (callback) ->
-        supply.once "loaded", ->
-            connection = supply.get "connection"
+        loader.once "loaded", ->
+            connection = container.get "connection"
             assert.equal 1, connection.readyState
             callback()
 
     it "should inject connection string from process.env.MONGOHQ_URL", (callback) ->
         process.env.MONGOHQ_URL = "hello world"
-        supply = supplier()
-        supply.use supplier.plugins.mongoose
-        supply.once "injected", ->
-            assert process.env.MONGOHQ_URL, supply.get "connection string"
+
+        container = supplier()
+        loader = container.get "loader"
+
+        loader.use supplier.plugins.mongoose
+        loader.once "injected", ->
+            assert.equal process.env.MONGOHQ_URL, container.get "connection string"
             callback()
