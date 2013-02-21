@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "mocha": "~1.8",
+        "supertest": "~0.5",
         "coffee-script": "~1.4",
         "coffee-coverage": "~0.0",
         "docco": "~0.4",
@@ -28,18 +29,18 @@
         "async": "~0.2",
         "fs.extra": "~1.2",
         "colors": "~0.6",
-        "bower": "~0.7",
         "connect-coffee-script": "~0.1",
         "stylus-responsive": "~0.0",
         "jade-static": "git://github.com/vslinko/jade-static.git#patch-1",
         "stylus": "~0.32",
         "nib": "~0.9",
+        "json-output": "~0.0",
+        "expires": "~0.0",
+        "bower": "~0.7",
         "rithis-crud": "~0.0",
         "express": "~3.1",
-        "mongoose": "~3.5",
-        "expires": "~0.0",
-        "json-output": "~0.0",
-        "supertest": "~0.5"
+        "fileupload": "~0.2",
+        "mongoose": "~3.5"
     },
     "engines": {
         "node": "~0.8",
