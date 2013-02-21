@@ -10,7 +10,11 @@ expires = require "expires"
 crypto = require "crypto"
 json = require "json-output"
 
-
+#### Required plugins:
+#
+# * [__Express__](express.html).
+# * [__Mongoose__](mongoose.html).
+#
 #### Can be configured:
 #
 # * __expire__ — Token expiration.
@@ -59,8 +63,7 @@ module.exports = (container, callback) ->
             callback()
     
         User = connection.model "users", UserSchema
-    
-         # Populate user
+
         app.use (req, res, callback) ->
             authHeader = req.get "Authorization"
             return callback() unless authHeader
@@ -73,12 +76,10 @@ module.exports = (container, callback) ->
                 return callback() if err or !user
                 return callback() if expires.expired user.tokenExpire
     
-                req.user =
-                    username = user.username
+                req.user = username: user.username
     
                 callback()
-    
-        # Authenticate
+
         app.post "/auth-token", (req, res) ->
             errorCallback = (err, status) ->
                 res.json json.error(err), status or 500
