@@ -1,7 +1,6 @@
-json     = require "json-output"
-request = require "supertest"
+supertest = require "supertest"
 assert = require "assert"
-crypto = require "crypto"
+async = require "async"
 
 supplier = require if process.env.COVERAGE \
     then "../lib-cov/supplier"
@@ -9,10 +8,11 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Auth plugin", ->
+    connection = null
     container = null
-    loader = null
     User = null
-    
+    test = null
+
     beforeEach (callback) ->
         container = supplier "test", __dirname
         loader = container.get "loader"
@@ -22,90 +22,79 @@ describe "Auth plugin", ->
 
         loader.once "loaded", ->
             app = container.get "app"
+            test = supertest app
             connection = container.get "connection"
 
             app.get "/test", (req, res) ->
-                if req.user
-                    res.json data: "test"
-                else
-                    res.send 401
+                res.send if req.user then data: "test" else 401
 
             User = connection.model "users"
+            User.remove ->
+                user = new User
+                    username: "test"
+                    password: "test"
 
-            user = new User
-                username: "test"
-                password: "test"
-            
-            user.save ->
-                callback()
-        
+                user.save ->
+                    callback()
+
     afterEach (callback) ->
-        User.remove ->
+        connection.db.dropDatabase ->
             server = container.get "server"
-            try
-                server.close callback
-            catch err
-                callback()
+            connection.close ->
+                try
+                    server.close callback
+                catch err
+                    callback()
 
-    it "should create user with salt and secure password", (callback) ->
+    it "should create user with salt, with secure password, and without tokens", (callback) ->
         User.findOne username: "test", (err, user) ->
-            assert.ok user?
-            assert.ok user.salt?
-            assert.equal user.password, crypto.createHash("sha256")
-                .update("test" + user.salt, "utf8")
-                .digest "hex"
-            callback()
-
-    it "should created user not authenticated", (callback) ->
-        User.findOne username: "test", (err, user) ->
+            assert.ok user
+            assert.ok user.salt
+            assert.ok user.password
             assert.equal 0, user.tokens.length
             callback()
 
     it "should create, authenticate and populate user", (callback) ->
-        app = container.get "app"
-        request(app)
-            .post("/auth-token")
-            .send(username: "test", password: "test")
-            .end (err, res) ->
-                User.findOne username: "test", (err, user) ->
-                    assert.equal user.tokens[0].token, res.body.authToken
+        async.waterfall [
+            (callback) ->
+                req = test.post "/sessions"
+                req.send username: "test", password: "test"
+                req.end (err, res) ->
+                    User.findOne username: "test", (err, user) ->
+                        assert.equal user.tokens[0].token, res.body.authToken
+                        callback null, res.body.authToken
 
-                    request(app)
-                        .get("/test")
-                        .set("Authorization", "Token #{res.body.authToken}")
-                        .end (err, res) ->
-                            assert.equal "test", res.body.data
-                            callback()
+            (token, callback) ->
+                req = test.get "/test"
+                req.set "Authorization", "Token #{token}"
+                req.end (err, res) ->
+                    assert.equal "test", res.body.data
+                    callback()
+        ], callback
 
     it "should return 500 http code when mongo failed", (callback) ->
-        app = container.get "app"
         mongoose = container.get "mongoose"
         findOne = mongoose.Query.prototype.findOne
         mongoose.Query.prototype.findOne = (query, callback) ->
-            callback 'error'
-        request(app)
-            .post("/auth-token")
-            .send(username: "test", password: "test")
-            .end (err, res) ->
-                assert.equal 500, res.status
-                mongoose.Query.prototype.findOne = findOne
-                callback()
+            callback "error"
+        
+        req = test.post "/sessions"
+        req.send username: "test", password: "test"
+        req.end (err, res) ->
+            assert.equal 500, res.status
+            mongoose.Query.prototype.findOne = findOne
+            callback()
 
-    it "should return 404 http code when user not found", (callback) ->
-        app = container.get "app"
-        request(app)
-            .post("/auth-token")
-            .send(username: "notfound", password: "test")
-            .end (err, res) ->
-                assert.equal 404, res.status
-                callback()
+    it "should return 401 http code when user not found", (callback) ->
+        req = test.post "/sessions"
+        req.send username: "notfound", password: "test"
+        req.end (err, res) ->
+            assert.equal 401, res.status
+            callback()
 
     it "should return 401 http code when credential is invalid", (callback) ->
-        app = container.get "app"
-        request(app)
-            .post("/auth-token")
-            .send(username: "test", password: "invalid")
-            .end (err, res) ->
-                assert.equal 401, res.status
-                callback()
-
+        req = test.post "/sessions"
+        req.send username: "test", password: "invalid"
+        req.end (err, res) ->
+            assert.equal 401, res.status
+            callback()

@@ -1,4 +1,4 @@
-# User token authentication 
+# Authentication using tokens.
 #
 #     supplier = require "supplier"
 #     container = supplier "example", __dirname
@@ -6,9 +6,8 @@
 #     loader.use supplier.plugins.express
 #     loader.use supplier.plugins.mongoose
 #     loader.use supplier.plugins.auth
-expires = require "expires"
 crypto = require "crypto"
-json = require "json-output"
+
 
 #### Required plugins:
 #
@@ -17,94 +16,85 @@ json = require "json-output"
 #
 #### Can be configured:
 #
-# * __expire__ — Token expiration.
+# * __token expires__ — Token expiration.
 module.exports = (container, callback) ->
     loader = container.get "loader"
     logger = container.get "logger"
 
-    container.set "expire", "1 week"
+    logger.info "injecting", "auth"
+    container.set "token expires", "1 week"
 
     loader.once "configured", ->
-        logger.info "configured", "auth"
+        logger.info "loading", "auth"
 
         app = container.get "app"
-        expire = container.get "expire"
-        connection = container.get "connection"
+        expires = container.get "token expires"
         mongoose = container.get "mongoose"
+        connection = container.get "connection"
 
-        generateSalt = ->
-            generateHash String((Math.random() + 2) * Math.random())
-    
-        hashPassword = (password, salt) ->
-            generateHash password + salt
-        
-        generateHash = (data) ->
-            crypto.createHash("sha256")
-                .update(data, "utf8")
-                .digest "hex"
-    
+        hash = (data) ->
+            h = crypto.createHash "sha256"
+            h.update data, "utf8"
+            h.digest "hex"
+
+        randomHash = ->
+            hash String Math.random()
+
+        password = (password, salt) ->
+            hash "#{password}:#{salt}"
+
         TokenSchema = new mongoose.Schema
-            token: type: "string"
-            expire: type: Date
-    
+            token: type: String, index: unique: true
+            createdAt: type: Date, default: Date.now, index: expires: expires
+
         UserSchema = new mongoose.Schema
-            username: type: "string", required: true
-            password: type: "string", required: true
-            salt: type: "string", required: true
+            username: type: String, required: true
+            password: type: String, required: true
+            salt: type: String, required: true
             tokens: [TokenSchema]
             metadata: type: mongoose.Schema.Types.Mixed
-    
+
         UserSchema.pre "validate", (callback) ->
-            @salt = generateSalt() unless @salt
+            @salt = randomHash() unless @salt
             callback()
-    
+
         UserSchema.pre "save", (callback) ->
-            @password = hashPassword @password, @salt
+            @password = password @password, @salt
             callback()
-    
+
         User = connection.model "users", UserSchema
 
         app.use (req, res, callback) ->
             authHeader = req.get "Authorization"
+
             return callback() unless authHeader
-            return callback() unless authHeader.indexOf "Token" > -1
-                    
+            return callback() unless authHeader.indexOf "Token " is 0
+
             authToken = authHeader.replace "Token ", ""
 
-            query = tokens: $elemMatch: token: authToken
-            User.findOne query, (err, user) ->
-                return callback() if err or !user
-                return callback() if expires.expired user.tokenExpire
-    
+            User.findOne "tokens.token": authToken, (err, user) ->
+                return callback() if err or not user
+
                 req.user = username: user.username
-    
                 callback()
 
-        app.post "/auth-token", (req, res) ->
-            errorCallback = (err, status) ->
-                res.json json.error(err), status or 500
-       
+        app.post "/sessions", (req, res) ->
             User.findOne username: req.body.username, (err, user) ->
-                return errorCallback err if err
-    
-                unless user
-                    return errorCallback "User does not exists", 404
-    
-                if hashPassword(req.body.password, user.salt) != user.password
-                    return errorCallback "Invalid password", 401
-    
-                authToken = generateHash(
-                    "#{user.username}+#{user.password}+#{generateSalt()}"
-                )
-    
+                return res.send 500 if err
+                return res.send 401 unless user
+
+                if password(req.body.password, user.salt) != user.password
+                    return res.send 401
+
+                authToken = randomHash()
+
                 user.tokens.push
                     token: authToken
-                    expire: new Date expires.after expire
-    
+
                 user.save ->
-                    res.json authToken: authToken
-        
+                    res.send authToken: authToken
+
         callback.loaded()
-        
+
     callback.injected()
     callback.configured()
