@@ -39,7 +39,7 @@ module.exports = (container, callback) ->
         upload = fileupload.createFileUpload uploadDirectory
         wrapMiddleware = (req, res, callback) ->
             if uploadDirectory.indexOf(publicDirectory) == -1
-                return res.send 404
+                return res.send 500
 
             files = Object.keys(req.files)
             return res.send 400 if files.length == 0

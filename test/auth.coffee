@@ -77,7 +77,7 @@ describe "Auth plugin", ->
                             assert.equal "test", res.body.data
                             callback()
 
-    it "should bad query and return erorr", (callback) ->
+    it "should return 500 http code when mongo failed", (callback) ->
         app = container.get "app"
         mongoose = container.get "mongoose"
         findOne = mongoose.Query.prototype.findOne
@@ -91,7 +91,7 @@ describe "Auth plugin", ->
                 mongoose.Query.prototype.findOne = findOne
                 callback()
 
-    it "should not find user and return erorr", (callback) ->
+    it "should return 404 http code when user not found", (callback) ->
         app = container.get "app"
         request(app)
             .post("/auth-token")
@@ -100,7 +100,7 @@ describe "Auth plugin", ->
                 assert.equal 404, res.status
                 callback()
 
-    it "should invalid user password and return erorr", (callback) ->
+    it "should return 401 http code when credential is invalid", (callback) ->
         app = container.get "app"
         request(app)
             .post("/auth-token")

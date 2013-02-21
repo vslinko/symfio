@@ -42,7 +42,7 @@ describe "Files plugin", ->
                         assert.equal "image/png", res.type
                         callback()
 
-    it "should send without file with error", (callback) ->
+    it "should return 400 http code when no file sent", (callback) ->
         app = container.get "app"
         request(app)
             .post("/upload")
@@ -65,5 +65,5 @@ describe "Files plugin", ->
             request(app)
                 .post("/upload")
                 .end (err, res) ->
-                    assert.equal 404, res.status
+                    assert.equal 500, res.status
                     callback()
