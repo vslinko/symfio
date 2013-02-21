@@ -33,12 +33,17 @@ module.exports = (container, callback) ->
         publicDirectory = container.get "public directory"
         uploadDirectory = container.get "upload directory"
 
-        unless uploadDirectory.indexOf publicDirectory > -1
+        if uploadDirectory.indexOf(publicDirectory) == -1
             logger.warn "Upload path not public"
                 
         upload = fileupload.createFileUpload uploadDirectory
         wrapMiddleware = (req, res, callback) ->
+            if uploadDirectory.indexOf(publicDirectory) == -1
+                return res.send 404
+
             files = Object.keys(req.files)
+            return res.send 400 if files.length == 0
+
             if files.length > 1
                 req.files = [
                     req.files[files.shift()]    
@@ -47,9 +52,6 @@ module.exports = (container, callback) ->
             upload.middleware req, res, callback
 
         app.post '/upload', wrapMiddleware, (req, res) ->
-            unless uploadDirectory.indexOf publicDirectory > -1
-                return res.send 404
-
             for field of req.body
                 break
 

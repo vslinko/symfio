@@ -81,11 +81,10 @@ module.exports = (container, callback) ->
         # Authenticate
         app.post "/auth-token", (req, res) ->
             errorCallback = (err, status) ->
-                res.json json.error err, status or 405
+                res.json json.error(err), status or 500
        
             User.findOne username: req.body.username, (err, user) ->
-                if err
-                    return errorCallback err
+                return errorCallback err if err
     
                 unless user
                     return errorCallback "User does not exists", 404

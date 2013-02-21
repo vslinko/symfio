@@ -76,3 +76,36 @@ describe "Auth plugin", ->
                         .end (err, res) ->
                             assert.equal "test", res.body.data
                             callback()
+
+    it "should bad query and return erorr", (callback) ->
+        app = container.get "app"
+        mongoose = container.get "mongoose"
+        findOne = mongoose.Query.prototype.findOne
+        mongoose.Query.prototype.findOne = (query, callback) ->
+            callback 'error'
+        request(app)
+            .post("/auth-token")
+            .send(username: "test", password: "test")
+            .end (err, res) ->
+                assert.equal 500, res.status
+                mongoose.Query.prototype.findOne = findOne
+                callback()
+
+    it "should not find user and return erorr", (callback) ->
+        app = container.get "app"
+        request(app)
+            .post("/auth-token")
+            .send(username: "notfound", password: "test")
+            .end (err, res) ->
+                assert.equal 404, res.status
+                callback()
+
+    it "should invalid user password and return erorr", (callback) ->
+        app = container.get "app"
+        request(app)
+            .post("/auth-token")
+            .send(username: "test", password: "invalid")
+            .end (err, res) ->
+                assert.equal 401, res.status
+                callback()
+
