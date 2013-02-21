@@ -128,3 +128,52 @@ $ git clone git://github.com/rithis/supplier.git
 $ cd supplier
 $ make test
 ```
+
+# Release Instructions
+
+Checkout to `master` branch:
+
+```sh
+$ git checkout master
+```
+
+Increment version in `package.json` and commit:
+
+```sh
+$ git add package.json
+$ git commit -m "Bumped 0.0.0"
+```
+
+Add version tag to commit in which `package.json` is changed:
+
+```sh
+$ git tag 0.0.0 HEAD
+```
+
+Push commit and tag to GitHub and wait until CI build is succeed:
+
+```sh
+$ git push origin master
+$ git push origin 0.0.0
+```
+
+Checkout to gh-pages branch:
+
+```sh
+$ git checkout gh-pages
+```
+
+Increment version in `index.html` and `_layouts/rithis.html`, run `_update.sh`,
+commit and push:
+
+```sh
+$ git add .
+$ git commit -m "Updated"
+$ git push
+```
+
+Return to master branch:
+
+```sh
+$ git checkout master
+```
