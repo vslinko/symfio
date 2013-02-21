@@ -34,7 +34,7 @@
         "jade-static": "git://github.com/vslinko/jade-static.git#patch-1",
         "stylus": "~0.32",
         "nib": "~0.9",
-        "json-output": "~0.0",
+        "json-output": "~0.1",
         "expires": "~0.0",
         "bower": "~0.7",
         "rithis-crud": "~0.0",
