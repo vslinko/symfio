@@ -1,10 +1,10 @@
-# Install components from the Bower repository in the public directory.
+# Install components from the Bower repository to the public directory.
 #
 #     supplier = require "supplier"
-#     supply = supplier()
-#     supply.use supplier.plugins.bower
-#     supply.set "components", ["jquery", "bootstrap"]
-#     supply.set "public directory", "#{__dirname}/public"
+#     container = supplier "example", __dirname
+#     container.set "components", ["jquery", "bootstrap"]
+#     loader = container.get "loader"
+#     loader.use supplier.plugins.bower
 bower = require "bower"
 path = require "path"
 fs = require "fs"
@@ -18,12 +18,15 @@ HOUR = 60 * 60 * 1000
 #
 # * __components__ — Array with components.
 # * __public directory__ — Directory with assets.
-module.exports = (supply, callback) ->
-    supply.once "configured", ->
-        supply.info "loading", "bower"
+module.exports = (container, callback) ->
+    loader = container.get "loader"
+    logger = container.get "logger"
 
-        components = supply.get "components"
-        publicDirectory = supply.get "public directory"
+    loader.once "configured", ->
+        logger.info "loading", "bower"
+
+        components = container.get "components"
+        publicDirectory = container.get "public directory"
         componentsDirectory = path.join publicDirectory, "components"
 
         fs.stat componentsDirectory, (err, stats) ->
@@ -35,7 +38,7 @@ module.exports = (supply, callback) ->
 
             installation = bower.commands.install components
 
-            unless supply.get "silent"
+            unless container.get "silent"
                 installation.on "data", (data) ->
                     console.log data
 

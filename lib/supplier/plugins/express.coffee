@@ -1,10 +1,11 @@
 # Launch express application after all plugins is loaded.
 #
 #     supplier = require "supplier"
-#     supply = supplier()
-#     supply.use supplier.plugins.express
-#     supply.once "injected", ->
-#         supply.set "port", 80
+#     container = supplier "example", __dirname
+#     loader = container.get "loader"
+#     loader.use supplier.plugins.express
+#     loader.once "injected", ->
+#         container.set "port", 80
 express = require "express"
 http = require "http"
 
@@ -17,8 +18,11 @@ http = require "http"
 #### Can be configured:
 #
 # * __port__ — Port for listening.
-module.exports = (supply, callback) ->
-    supply.info "injecting", "express"
+module.exports = (container, callback) ->
+    loader = container.get "loader"
+    logger = container.get "logger"
+
+    logger.info "injecting", "express"
 
     app = express()
     server = http.createServer app
@@ -29,14 +33,14 @@ module.exports = (supply, callback) ->
     app.configure "development", ->
         app.use express.errorHandler()
 
-    supply.set "app", app
-    supply.set "port", process.env.PORT or 3000
-    supply.set "server", server
+    container.set "app", app
+    container.set "port", process.env.PORT or 3000
+    container.set "server", server
 
-    supply.once "loaded", ->
-        port = supply.get "port"
+    loader.once "loaded", ->
+        port = container.get "port"
 
         server.listen port, ->
-            supply.info "listening", port
+            logger.info "listening", port
 
     callback()

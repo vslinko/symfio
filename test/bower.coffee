@@ -9,18 +9,20 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Bower plugin", ->
-    supply = null
-    publicDirectory = __dirname
+    container = null
+    loader = null
+    publicDirectory = path.join __dirname, "public"
     componentsDirectory = path.join publicDirectory, "components"
 
     this.timeout 0
 
     beforeEach (callback) ->
         fs.rmrf componentsDirectory, ->
-            supply = supplier()
-            supply.set "public directory", publicDirectory
-            supply.set "components", ["jquery#~1.9"]
-            supply.use supplier.plugins.bower
+            container = supplier "test", __dirname
+            loader = container.get "loader"
+
+            container.set "components", ["jquery#~1.9"]
+            loader.use supplier.plugins.bower
             callback()
 
     afterEach (callback) ->
@@ -30,18 +32,20 @@ describe "Bower plugin", ->
     it "should run bower one time in hour", (callback) ->
         async.series [
             (callback) ->
-                supply.once "loaded", ->
+                loader.once "loaded", ->
                     jqueryDirectory = path.join componentsDirectory, "jquery"
                     fs.stat jqueryDirectory, (err, stats) ->
-                        assert.equal true, stats.isDirectory()
+                        assert.ok stats.isDirectory()
                         callback()
 
             (callback) ->
-                supply = supplier()
-                supply.set "public directory", publicDirectory
-                supply.set "components", ["jquery#~1.9", "bootstrap"]
-                supply.use supplier.plugins.bower
-                supply.once "loaded", ->
+                container = supplier "test", __dirname
+                loader = container.get "loader"
+
+                container.set "components", ["jquery#~1.9", "bootstrap"]
+                loader.use supplier.plugins.bower
+
+                loader.once "loaded", ->
                     bootstrapDirectory = path.join componentsDirectory, "bootstrap"
                     fs.stat bootstrapDirectory, (err, stats) ->
                         assert.equal 34, err.errno
@@ -49,14 +53,14 @@ describe "Bower plugin", ->
         ], callback
 
     it "should output bower output", (callback) ->
-        supply.set "silent", false
+        container.set "silent", false
 
         message = ""
         write = process.stdout.write
         process.stdout.write = (data) ->
             message += data.toString()
 
-        supply.once "loaded", ->
-            assert.equal true, message.indexOf("bower") >= 0
+        loader.once "loaded", ->
+            assert.ok message.indexOf("bower") >= 0
             process.stdout.write = write
             callback()
