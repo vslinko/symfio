@@ -48,5 +48,7 @@ describe "Bower plugin", ->
 
         loader.once "loaded", ->
             assert.ok message.indexOf("bower") >= 0
-            process.stdout.write = write
-            callback()
+
+            process.nextTick ->
+                process.stdout.write = write
+                callback()

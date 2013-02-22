@@ -16,10 +16,15 @@ assets = (container, callback) ->
         callback()
 
 bower = (container, callback) ->
+    applicationDirectory = container.get "application directory"
     publicDirectory = container.get "public directory"
+
     componentsDirectory = path.join publicDirectory, "components"
     fs.rmrf componentsDirectory, ->
-        callback()
+
+        hashFile = path.join applicationDirectory, ".components"
+        fs.unlink hashFile, ->
+            callback()
 
 express = (container, callback) ->
     try
