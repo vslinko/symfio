@@ -12,11 +12,12 @@ loader.use supplier.plugins.fixtures
 
 # define own plugin
 loader.use (container, callback) ->
-    # after all dependencies is configured in container
-    loader.once "configured", ->
-        # replace default configuration
+    # replace connection string
+    loader.once "injected", ->
         container.set "connection string", "mongodb://localhost/hello_world"
 
+    # after all dependencies is configured in container
+    loader.once "configured", ->
         # get dependencies
         connection = container.get "connection"
         mongoose = container.get "mongoose"
