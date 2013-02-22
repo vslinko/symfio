@@ -3,6 +3,7 @@ COFFEECOVERAGE = ./node_modules/.bin/coffeeCoverage
 DOCCO = ./node_modules/.bin/docco
 COFFEE = ./node_modules/.bin/coffee
 
+TIMEOUT = 2000
 REPORTER = dot
 
 SOURCES = lib/supplier.coffee lib/supplier/container.coffee \
@@ -16,11 +17,13 @@ all: test coverage.html docs
 test: node_modules
 	@NODE_ENV=test $(MOCHA) \
 		--compilers coffee:coffee-script \
+		--timeout $(TIMEOUT) \
 		--reporter $(REPORTER)
 
 coverage.html: node_modules lib-cov
 	@NODE_ENV=test COVERAGE=1 $(MOCHA) \
 		--compilers coffee:coffee-script \
+		--timeout $(TIMEOUT) \
 		--reporter html-cov > coverage.html
 
 lib-cov: node_modules
