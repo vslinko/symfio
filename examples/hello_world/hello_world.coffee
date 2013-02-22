@@ -12,8 +12,8 @@ loader.use supplier.plugins.fixtures
 
 # define own plugin
 loader.use (container, callback) ->
-    # after all dependencies is injected in container
-    loader.once "injected", ->
+    # after all dependencies is configured in container
+    loader.once "configured", ->
         # replace default configuration
         container.set "connection string", "mongodb://localhost/hello_world"
 
@@ -35,8 +35,8 @@ loader.use (container, callback) ->
                 res.send messages
 
         # our plugin is configured and loaded, allow to start server
-        callback.configured()
         callback.loaded()
 
     # our plugin injected values in container
     callback.injected()
+    callback.configured()
