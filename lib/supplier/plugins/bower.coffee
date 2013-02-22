@@ -5,18 +5,20 @@
 #     container.set "components", ["jquery", "bootstrap"]
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.bower
+crypto = require "crypto"
 bower = require "bower"
+async = require "async"
 path = require "path"
 fs = require "fs"
-
-
-# Installs components one time in hour.
-HOUR = 60 * 60 * 1000
 
 
 #### Required configuration:
 #
 # * __components__ — Array with components.
+#
+#### Can be configured:
+#
+# * __application directory__ — Directory with application sources.
 # * __public directory__ — Directory with assets.
 module.exports = (container, callback) ->
     loader = container.get "loader"
@@ -25,26 +27,43 @@ module.exports = (container, callback) ->
     loader.once "configured", ->
         logger.info "loading", "bower"
 
-        components = container.get "components"
+        applicationDirectory = container.get "application directory"
         publicDirectory = container.get "public directory"
-        componentsDirectory = path.join publicDirectory, "components"
+        components = container.get "components"
+        hashFile = path.join applicationDirectory, ".components"
+        hash = crypto.createHash "sha256"
 
-        fs.stat componentsDirectory, (err, stats) ->
-            if not err and Date.now() - stats.ctime < HOUR
-                return callback.loaded()
+        for component in components
+            hash.update component, "utf8"
+            hash.update ":", "utf8"
 
-            cwd = process.cwd()
-            process.chdir publicDirectory
+        hashString = hash.digest "hex"
 
-            installation = bower.commands.install components
+        async.series [
+            (callback) ->
+                fs.readFile hashFile, (err, previousHash) ->
+                    return callback previousHash if hashString == previousHash
+                    callback()
 
-            unless container.get "silent"
-                installation.on "data", (data) ->
-                    console.log data
+            (callback) ->
+                cwd = process.cwd()
+                process.chdir publicDirectory
 
-            installation.on "end", ->
-                process.chdir cwd
-                callback.loaded()
+                installation = bower.commands.install components
+
+                unless container.get "silent"
+                    installation.on "data", (data) ->
+                        console.log data
+
+                installation.on "end", ->
+                    process.chdir cwd
+                    callback()
+
+            (callback) ->
+                fs.writeFile hashFile, hashString, ->
+                    callback()
+
+        ], -> callback.loaded()
 
     callback.injected()
     callback.configured()

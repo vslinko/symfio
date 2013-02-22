@@ -1,6 +1,6 @@
+fakePlugin = require "./utils/fake_plugin"
 assert = require "assert"
 
-fakePlugin = require "./mocks/fake_plugin"
 supplier = require if process.env.COVERAGE \
     then "../lib-cov/supplier"
     else "../lib/supplier"
@@ -14,22 +14,14 @@ describe "Loader", ->
         container = supplier.container()
         loader = supplier.loader container
 
-    it "should extend event emitter", ->
-        catched = false
-
-        loader.once "event", ->
-            catched = true
-
+    it "should extend event emitter", (callback) ->
+        loader.once "event", callback
         loader.emit "event"
-        assert.equal true, catched
 
     describe "use", ->
-        it "should push plugin into array", (callback) ->
-            plugin = ->
-                callback()
-
+        it "should push plugin into array", ->
             assert.equal 0, loader.plugins.length()
-            loader.use plugin
+            loader.use ->
             assert.equal 1, loader.plugins.length()
 
         it "should emit 'injected' after all plugins injected", (callback) ->
@@ -43,15 +35,15 @@ describe "Loader", ->
 
             loader.use plugin0.factory()
             loader.use plugin1.factory()
-
             assert.equal false, injected
 
             process.nextTick ->
                 plugin0.injected()
                 assert.equal false, injected
+                
                 plugin1.injected()
-
                 assert.equal true, injected
+                
                 callback()
 
         it "should emit 'configured' after all plugins configured", (callback) ->
@@ -65,15 +57,15 @@ describe "Loader", ->
 
             loader.use plugin0.factory()
             loader.use plugin1.factory()
-
             assert.equal false, configured
 
             process.nextTick ->
                 plugin0.configured()
                 assert.equal false, configured
+                
                 plugin1.configured()
-
                 assert.equal true, configured
+
                 callback()
 
         it "should emit 'loaded' after all plugins loaded", (callback) ->
@@ -87,19 +79,19 @@ describe "Loader", ->
 
             loader.use plugin0.factory()
             loader.use plugin1.factory()
-
             assert.equal false, loaded
 
             process.nextTick ->
                 plugin0.loaded()
                 assert.equal false, loaded
-                plugin1.loaded()
 
+                plugin1.loaded()
                 assert.equal true, loaded
+
                 callback()
 
         it "should inject container into plugin", (callback) ->
-            loader.use (injectedContainer, pluginCallback) ->
+            loader.use (injectedContainer) ->
                 assert.equal container, injectedContainer
                 callback()
 

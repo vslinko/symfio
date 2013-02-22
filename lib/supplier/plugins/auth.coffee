@@ -3,10 +3,11 @@
 #     supplier = require "supplier"
 #     container = supplier "example", __dirname
 #     loader = container.get "loader"
+#     loader.use supplier.plugins.auth
 #     loader.use supplier.plugins.express
 #     loader.use supplier.plugins.mongoose
-#     loader.use supplier.plugins.auth
 crypto = require "crypto"
+ms = require "ms"
 
 
 #### Required plugins:
@@ -22,15 +23,15 @@ module.exports = (container, callback) ->
     logger = container.get "logger"
 
     logger.info "injecting", "auth"
-    container.set "token expires", "1 week"
+    container.set "token expires", "7d"
 
     loader.once "configured", ->
         logger.info "loading", "auth"
 
-        app = container.get "app"
-        expires = container.get "token expires"
-        mongoose = container.get "mongoose"
         connection = container.get "connection"
+        mongoose = container.get "mongoose"
+        expires = ms container.get "token expires"
+        app = container.get "app"
 
         hash = (data) ->
             h = crypto.createHash "sha256"
@@ -44,8 +45,8 @@ module.exports = (container, callback) ->
             hash "#{password}:#{salt}"
 
         TokenSchema = new mongoose.Schema
-            token: type: String, index: unique: true
-            createdAt: type: Date, default: Date.now, index: expires: expires
+            hash: type: String, required: true, index: unique: true
+            expires: type: Date, required: true
 
         UserSchema = new mongoose.Schema
             username: type: String, required: true
@@ -70,12 +71,20 @@ module.exports = (container, callback) ->
             return callback() unless authHeader
             return callback() unless authHeader.indexOf "Token " is 0
 
-            authToken = authHeader.replace "Token ", ""
+            tokenHash = authHeader.replace "Token ", ""
 
-            User.findOne "tokens.token": authToken, (err, user) ->
+            User.findOne "tokens.hash": tokenHash, (err, user) ->
                 return callback() if err or not user
 
-                req.user = username: user.username
+                currentToken = null
+                for token in user.tokens
+                    if token.hash is tokenHash
+                        currentToken = token
+
+                if not currentToken or new Date > currentToken.expires
+                    return callback()
+
+                req.user = username: user.username, token: currentToken
                 callback()
 
         app.post "/sessions", (req, res) ->
@@ -86,13 +95,16 @@ module.exports = (container, callback) ->
                 if password(req.body.password, user.salt) != user.password
                     return res.send 401
 
-                authToken = randomHash()
+                tokenHash = randomHash()
 
                 user.tokens.push
-                    token: authToken
+                    hash: tokenHash
+                    expires: new Date Date.now() + expires
 
-                user.save ->
-                    res.send authToken: authToken
+                user.save (err) ->
+                    return res.send 500 if err
+
+                    res.send 201, token: tokenHash
 
         callback.loaded()
 

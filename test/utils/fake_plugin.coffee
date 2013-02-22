@@ -1,7 +1,6 @@
 class FakePlugin
     factory: ->
-        (stack, callback) =>
-            @stack = stack
+        (container, callback) =>
             @callback = callback
 
     injected: ->

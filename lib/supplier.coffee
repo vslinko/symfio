@@ -11,19 +11,20 @@ path = require "path"
 
 
 createInstance = (name, applicationDirectory) ->
-    instance = container()
+    fixturesDirectory = path.join applicationDirectory, "fixtures"
     publicDirectory = path.join applicationDirectory, "public"
+    
+    uploadsDirectory = path.join publicDirectory, "uploads"
+    instance = container()
 
     instance.set "name", name
     instance.set "application directory", applicationDirectory
+    instance.set "fixtures directory", fixturesDirectory
+    instance.set "uploads directory", uploadsDirectory
     instance.set "public directory", publicDirectory
-    instance.set "fixtures directory", path.join applicationDirectory, "fixtures"
-    instance.set "uploads directory", path.join publicDirectory, "uploads"
-
     instance.set "silent", process.env.NODE_ENV is "test"
     instance.set "logger", logger instance
     instance.set "loader", loader instance
-
     instance
 
 

@@ -1,3 +1,4 @@
+cleaner = require "./utils/cleaner"
 assert = require "assert"
 
 supplier = require if process.env.COVERAGE \
@@ -12,12 +13,12 @@ describe "Mongoose plugin", ->
     beforeEach ->
         container = supplier "test", __dirname
         loader = container.get "loader"
-
         loader.use supplier.plugins.mongoose
 
-    afterEach ->
-        connection = container.get "connection"
-        connection.close ->
+    afterEach (callback) ->
+        cleaner container, [
+            cleaner.mongoose
+        ], callback
 
     it "should inject connection, mongoose, mongodb, and connection string", (callback) ->
         loader.once "injected", ->
@@ -41,6 +42,8 @@ describe "Mongoose plugin", ->
         loader = container.get "loader"
 
         loader.use supplier.plugins.mongoose
+        
         loader.once "injected", ->
-            assert.equal process.env.MONGOHQ_URL, container.get "connection string"
+            connectionString = container.get "connection string"
+            assert.equal process.env.MONGOHQ_URL, connectionString
             callback()

@@ -39,7 +39,6 @@ module.exports = (container, callback) ->
         logger.info "loading", "mongoose"
 
         connectionString = container.get "connection string"
-
         connection.open connectionString, ->
             callback.loaded()
 

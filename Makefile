@@ -5,11 +5,9 @@ COFFEE = ./node_modules/.bin/coffee
 
 REPORTER = dot
 
-PLUGINS_SOURCES = $(wildcard lib/supplier/plugins/*.coffee)
-LIBRARIES_SOURCES = lib/supplier/container.coffee lib/supplier/loader.coffee \
-				    lib/supplier/logger.coffee
-SUPPLIER_SOURCE = lib/supplier.coffee
-SOURCES = $(SUPPLIER_SOURCE) $(LIBRARIES_SOURCES) $(PLUGINS_SOURCES)
+SOURCES = lib/supplier.coffee lib/supplier/container.coffee \
+	lib/supplier/loader.coffee lib/supplier/logger.coffee \
+	lib/supplier/errors.coffee $(wildcard lib/supplier/plugins/*.coffee)
 
 EXAMPLE = hello_world
 

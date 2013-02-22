@@ -3,8 +3,8 @@
 #     supplier = require "supplier"
 #     container = supplier "example", __dirname
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.mongoose
 #     loader.use supplier.plugins.fixtures
+#     loader.use supplier.plugins.mongoose
 async = require "async"
 path = require "path"
 fs = require "fs"
@@ -14,7 +14,7 @@ fs = require "fs"
 #
 # * [__Mongoose__](mongoose.html).
 #
-#### Required configuration:
+#### Can be configured:
 #
 # * __fixtures directory__ — Directory with fixtures.
 module.exports = (container, callback) ->

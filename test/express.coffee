@@ -1,3 +1,4 @@
+cleaner = require "./utils/cleaner"
 assert = require "assert"
 
 supplier = require if process.env.COVERAGE \
@@ -12,15 +13,12 @@ describe "Express plugin", ->
     beforeEach ->
         container = supplier "test", __dirname
         loader = container.get "loader"
-
         loader.use supplier.plugins.express
 
     afterEach (callback) ->
-        server = container.get "server"
-        try
-            server.close callback
-        catch err
-            callback()
+        cleaner container, [
+            cleaner.express
+        ], callback
 
     it "should inject app, port, and server", (callback) ->
         loader.once "injected", ->
@@ -32,11 +30,13 @@ describe "Express plugin", ->
     it "should start server after all plugins loaded", (callback) ->
         loader.once "injected", ->
             server = container.get "server"
+
             server.on "listening", ->
                 callback()
 
     hasMiddleware = (name) ->
         app = container.get "app"
+
         for middleware in app.stack
             if middleware.handle.name is name
                 return true
@@ -50,6 +50,7 @@ describe "Express plugin", ->
     it "should use errorHandler in development environment", (callback) ->
         nodeEnv = process.env.NODE_ENV
         process.env.NODE_ENV = "development"
+
         loader.once "configured", ->
             assert.ok hasMiddleware "errorHandler"
             process.env.NODE_ENV = nodeEnv

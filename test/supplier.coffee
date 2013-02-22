@@ -12,10 +12,11 @@ describe "Supplier", ->
         container = supplier "test", __dirname
 
         assert.equal "test", container.get "name"
-        assert.equal false, container.get "silent"
         assert.equal __dirname, container.get "application directory"
-        assert.equal "#{__dirname}/public", container.get "public directory"
         assert.equal "#{__dirname}/fixtures", container.get "fixtures directory"
+        assert.equal "#{__dirname}/public/uploads", container.get "uploads directory"
+        assert.equal "#{__dirname}/public", container.get "public directory"
+        assert.equal false, container.get "silent"
         assert.ok container.get "logger"
         assert.ok container.get "loader"
 

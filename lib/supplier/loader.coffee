@@ -3,7 +3,7 @@ async = require "async"
 
 
 class Loader extends events.EventEmitter
-    constructor: (container, pluginsConcurrency = 10) ->
+    constructor: (container, concurrency = 10) ->
         super
 
         @injected = 0
@@ -53,7 +53,7 @@ class Loader extends events.EventEmitter
             # * __callback__ — Callback to notify the loader.
             plugin container, pluginCallback
 
-        @plugins = async.queue pluginWorker, pluginsConcurrency
+        @plugins = async.queue pluginWorker, concurrency
 
     # To connect plugin pass it to `use` method of loader instance.
     use: (plugin) ->
@@ -62,7 +62,7 @@ class Loader extends events.EventEmitter
 
 
 createInstance = (container) ->
-    new Loader container, container.get "plugins concurrency"
+    new Loader container, container.get "plugins loading concurrency"
 
 
 module.exports = createInstance

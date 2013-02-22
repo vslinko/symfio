@@ -25,13 +25,14 @@ module.exports = (container, callback) ->
     logger.info "injecting", "express"
 
     app = express()
-    server = http.createServer app
-
+    
     app.configure ->
         app.use express.bodyParser()
 
     app.configure "development", ->
         app.use express.errorHandler()
+    
+    server = http.createServer app
 
     container.set "app", app
     container.set "port", process.env.PORT or 3000

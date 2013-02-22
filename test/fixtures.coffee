@@ -1,3 +1,4 @@
+cleaner = require "./utils/cleaner"
 assert = require "assert"
 async = require "async"
 path = require "path"
@@ -10,7 +11,7 @@ supplier = require if process.env.COVERAGE \
 describe "Fixtures plugin", ->
     container = null
     loader = null
-    model = null
+    Test = null
 
     createSupplier = (callback) ->
         container = supplier "test", __dirname
@@ -32,27 +33,27 @@ describe "Fixtures plugin", ->
                 @hooked = true
                 callback()
 
-            model = connection.model "test", TestSchema
+            Test = connection.model "test", TestSchema
             callback()
 
     beforeEach (callback) ->
         createSupplier ->
-            model.remove ->
-                callback()
+            callback()
 
     afterEach (callback) ->
-        model.remove ->
-            callback()
+        cleaner container, [
+            cleaner.mongoose
+        ], callback
 
     it "should load fixtures only if collection is empty", (callback) ->
         testCount = (callback) ->
             loader.once "loaded", ->
-                model.find (err, items) ->
+                Test.find (err, items) ->
                     assert.equal 3, items.length
-                    
+
                     items.forEach (item) ->
                         assert.ok item.hooked
-                    
+
                     callback()
 
         async.waterfall [

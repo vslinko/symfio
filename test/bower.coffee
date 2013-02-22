@@ -1,7 +1,7 @@
+cleaner = require "./utils/cleaner"
 assert = require "assert"
-async = require "async"
 path = require "path"
-fs = require "fs.extra"
+fs = require "fs"
 
 supplier = require if process.env.COVERAGE \
     then "../lib-cov/supplier"
@@ -9,50 +9,36 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Bower plugin", ->
+    publicDirectory = null
     container = null
     loader = null
-    publicDirectory = path.join __dirname, "public"
-    componentsDirectory = path.join publicDirectory, "components"
 
     this.timeout 0
 
     beforeEach (callback) ->
-        fs.rmrf componentsDirectory, ->
-            container = supplier "test", __dirname
-            loader = container.get "loader"
+        container = supplier "test", __dirname
+        loader = container.get "loader"
 
-            container.set "components", ["jquery#~1.9"]
-            loader.use supplier.plugins.bower
-            callback()
+        container.set "components", ["jquery#~1.9"]
+        loader.use supplier.plugins.bower
+
+        publicDirectory = container.get "public directory"
+        callback()
 
     afterEach (callback) ->
-        fs.rmrf componentsDirectory, ->
-            callback()
-
-    it "should run bower one time in hour", (callback) ->
-        async.series [
-            (callback) ->
-                loader.once "loaded", ->
-                    jqueryDirectory = path.join componentsDirectory, "jquery"
-                    fs.stat jqueryDirectory, (err, stats) ->
-                        assert.ok stats.isDirectory()
-                        callback()
-
-            (callback) ->
-                container = supplier "test", __dirname
-                loader = container.get "loader"
-
-                container.set "components", ["jquery#~1.9", "bootstrap"]
-                loader.use supplier.plugins.bower
-
-                loader.once "loaded", ->
-                    bootstrapDirectory = path.join componentsDirectory, "bootstrap"
-                    fs.stat bootstrapDirectory, (err, stats) ->
-                        assert.equal 34, err.errno
-                        callback()
+        cleaner container, [
+            cleaner.bower
         ], callback
 
-    it "should output bower output", (callback) ->
+    it "should run bower", (callback) ->
+        loader.once "loaded", ->
+            componentsDirectory = path.join publicDirectory, "components"
+            jqueryDirectory = path.join componentsDirectory, "jquery"
+            fs.stat jqueryDirectory, (err, stats) ->
+                assert.ok stats.isDirectory()
+                callback()
+
+    it "should pipe bower output", (callback) ->
         container.set "silent", false
 
         message = ""

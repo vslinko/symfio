@@ -1,6 +1,6 @@
+supertest = require "supertest"
+cleaner = require "./utils/cleaner"
 assert = require "assert"
-path = require "path"
-http = require "http"
 
 supplier = require if process.env.COVERAGE \
     then "../lib-cov/supplier"
@@ -8,37 +8,40 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Assets plugin", ->
+    connectedMiddlewaresLength = null
     container = null
     loader = null
+    server = null
+    test = null
+    app = null
 
-    beforeEach ->
+    beforeEach (callback) ->
         container = supplier "test", __dirname
         loader = container.get "loader"
-
         loader.use supplier.plugins.assets
         loader.use supplier.plugins.express
 
-    afterEach (callback) ->
-        server = container.get "server"
-        try
-            server.close callback
-        catch err
+        loader.once "injected", ->
+            server = container.get "server"
+            app = container.get "app"
+
+            connectedMiddlewaresLength = app.stack.length
+            test = supertest app
             callback()
 
+    afterEach (callback) ->
+        cleaner container, [
+            cleaner.assets
+            cleaner.express
+        ], callback
+
     it "should connect four middlewares", (callback) ->
-        connectedMiddlewaresLength = -1
-
-        loader.once "injected", (app) ->
-            app = container.get "app"
-            connectedMiddlewaresLength = app.stack.length
-
         loader.once "configured", ->
-            app = container.get "app"
             assert.equal connectedMiddlewaresLength + 4, app.stack.length
             callback()
 
     it "should import nib and responsive for stylus", (callback) ->
-        expectedCSS = """
+        css = """
         .test {
           -webkit-border-radius: 5px;
           border-radius: 5px;
@@ -57,17 +60,8 @@ describe "Assets plugin", ->
 
         """
 
-        loader.once "injected", ->
-            server = container.get "server"
-            server.on "listening", ->
-                req = http.get "http://localhost:3000/style.css", (res) ->
-                    css = ""
-
-                    res.on "data", (data) ->
-                        css += data.toString()
-
-                    res.on "end", ->
-                        assert.equal expectedCSS, css
-                        callback()
-
-                req.end()
+        req = test.get "/style.css"
+        req.end (err, res) ->
+            assert.equal 200, res.status
+            assert.equal css, res.text
+            callback()

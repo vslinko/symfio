@@ -1,4 +1,5 @@
 supertest = require "supertest"
+cleaner = require "./utils/cleaner"
 assert = require "assert"
 async = require "async"
 
@@ -10,41 +11,39 @@ supplier = require if process.env.COVERAGE \
 describe "Auth plugin", ->
     connection = null
     container = null
-    User = null
+    mongoose = null
     test = null
+    User = null
 
     beforeEach (callback) ->
         container = supplier "test", __dirname
         loader = container.get "loader"
+        loader.use supplier.plugins.auth
         loader.use supplier.plugins.express
         loader.use supplier.plugins.mongoose
-        loader.use supplier.plugins.auth
 
         loader.once "loaded", ->
-            app = container.get "app"
-            test = supertest app
             connection = container.get "connection"
+            mongoose = container.get "mongoose"
+            app = container.get "app"
 
             app.get "/test", (req, res) ->
                 res.send if req.user then data: "test" else 401
 
+            test = supertest app            
             User = connection.model "users"
-            User.remove ->
-                user = new User
-                    username: "test"
-                    password: "test"
+            user = new User
+                username: "test"
+                password: "test"
 
-                user.save ->
-                    callback()
+            user.save ->
+                callback()
 
     afterEach (callback) ->
-        connection.db.dropDatabase ->
-            server = container.get "server"
-            connection.close ->
-                try
-                    server.close callback
-                catch err
-                    callback()
+        cleaner container, [
+            cleaner.express
+            cleaner.mongoose
+        ], callback
 
     it "should create user with salt, with secure password, and without tokens", (callback) ->
         User.findOne username: "test", (err, user) ->
@@ -61,8 +60,8 @@ describe "Auth plugin", ->
                 req.send username: "test", password: "test"
                 req.end (err, res) ->
                     User.findOne username: "test", (err, user) ->
-                        assert.equal user.tokens[0].token, res.body.authToken
-                        callback null, res.body.authToken
+                        assert.equal user.tokens[0].hash, res.body.token
+                        callback null, res.body.token
 
             (token, callback) ->
                 req = test.get "/test"
@@ -72,12 +71,31 @@ describe "Auth plugin", ->
                     callback()
         ], callback
 
+    it "should expire tokens", (callback) ->
+        async.waterfall [
+            (callback) ->
+                req = test.post "/sessions"
+                req.send username: "test", password: "test"
+                req.end (err, res) ->
+                    User.findOne username: "test", (err, user) ->
+                        assert.equal user.tokens[0].hash, res.body.token
+                        user.tokens[0].expires = new Date Date.now() - 1
+                        user.save ->
+                            callback null, res.body.token
+
+            (token, callback) ->
+                req = test.get "/test"
+                req.set "Authorization", "Token #{token}"
+                req.end (err, res) ->
+                    assert.equal 401, res.status
+                    callback()
+        ], callback
+
     it "should return 500 http code when mongo failed", (callback) ->
-        mongoose = container.get "mongoose"
         findOne = mongoose.Query.prototype.findOne
         mongoose.Query.prototype.findOne = (query, callback) ->
-            callback "error"
-        
+            callback new Error
+
         req = test.post "/sessions"
         req.send username: "test", password: "test"
         req.end (err, res) ->

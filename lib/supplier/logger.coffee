@@ -22,14 +22,13 @@ class Logger
 
     # Method `error` has following arguments:
     #
-    # * __code__ — Exit code.
-    # * __shizzle__ — More information about action (arguments).
+    # * __error__ — Error object from [errors.coffee](errors.html).
     # * ___name___ — Application name, default value taken from the container.
     #
     # Aslo `error` method terminates the application.
-    error: (code, shizzle, name = @name) ->
-        @_message "error", shizzle, name, "red"
-        process.exit code
+    error: (error, name = @name) ->
+        @_message "error", error.message, name, "red"
+        process.exit error.code
 
     _message: (action, shizzle, name, color) ->
         return if @silent

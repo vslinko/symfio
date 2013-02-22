@@ -1,7 +1,7 @@
 supertest = require "supertest"
+cleaner = require "./utils/cleaner"
 assert = require "assert"
 async = require "async"
-path = require "path"
 
 supplier = require if process.env.COVERAGE \
     then "../lib-cov/supplier"
@@ -10,49 +10,50 @@ supplier = require if process.env.COVERAGE \
 
 describe "Uploads plugin", ->
     container = null
-    test = null
+    loader = null
 
-    beforeEach (callback) ->
+    beforeEach ->
         container = supplier "example", __dirname
         loader = container.get "loader"
         loader.use supplier.plugins.assets
         loader.use supplier.plugins.express
         loader.use supplier.plugins.uploads
 
-        loader.once "configured", ->
-            app = container.get "app"
-            test = supertest app
-            callback()
-
     afterEach (callback) ->
-        server = container.get "server"
-        try
-            server.close callback
-        catch err
-            callback()
-
-    it "should send files and save it in filesystem", (callback) ->
-        async.waterfall [
-            (callback) ->
-                req = test.post "/uploads"
-                req.attach "file", "test/public/upload.png", "upload.png"
-                req.end (err, res) ->
-                    assert.equal 201, res.status
-                    assert.ok res.header.location
-                    callback null, res.header.location
-
-            (location, callback) ->
-                req = test.get location
-                req.end (err, res) ->
-                    assert.equal "image/png", res.type
-                    callback()
+        cleaner container, [
+            cleaner.assets
+            cleaner.express
+            cleaner.uploads
         ], callback
 
+    it "should send files and save it in filesystem", (callback) ->
+        loader.once "injected", ->
+            test = supertest container.get "app"
+
+            async.waterfall [
+                (callback) ->
+                    req = test.post "/uploads"
+                    req.attach "file", "test/public/upload.png", "upload.png"
+                    req.end (err, res) ->
+                        assert.equal 201, res.status
+                        assert.ok res.header.location
+                        callback null, res.header.location
+
+                (location, callback) ->
+                    req = test.get location
+                    req.end (err, res) ->
+                        assert.equal "image/png", res.type
+                        callback()
+            ], callback
+
     it "should return 400 http code when no file sent", (callback) ->
-        req = test.post "/uploads"
-        req.end (err, res) ->
-            assert.equal 400, res.status
-            callback()
+        loader.once "injected", ->
+            test = supertest container.get "app"
+
+            req = test.post "/uploads"
+            req.end (err, res) ->
+                assert.equal 400, res.status
+                callback()
 
     it "should show not found error", (callback) ->
         exit = process.exit
@@ -60,12 +61,6 @@ describe "Uploads plugin", ->
             assert.equal 1, code
             process.exit = exit
             callback()
-
-        container = supplier "example", __dirname
-        loader = container.get "loader"
-        loader.use supplier.plugins.assets
-        loader.use supplier.plugins.express
-        loader.use supplier.plugins.uploads
 
         loader.once "injected", ->
             container.set "public directory", "/a"

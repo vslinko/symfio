@@ -13,7 +13,7 @@ path = require "path"
 nib = require "nib"
 
 
-# Using custom compiler for Stylus with imported `nib` and `responsive`.
+# Used custom compiler for Stylus with imported `nib` and `responsive`.
 compilerFactory = (str, path) ->
     compiler = stylus str
     
@@ -27,7 +27,7 @@ compilerFactory = (str, path) ->
     compiler.import "responsive"
 
 
-#### Required configuration:
+#### Can be configured:
 #
 # * __public directory__ — Directory with assets.
 module.exports = (container, callback) ->
@@ -37,8 +37,8 @@ module.exports = (container, callback) ->
     loader.once "injected", ->
         logger.info "configuring", "assets"
 
-        app = container.get "app"
         publicDirectory = container.get "public directory"
+        app = container.get "app"
 
         app.configure ->
             app.use stylus.middleware
