@@ -158,6 +158,12 @@ $ git push origin master
 $ git push origin 0.0.0
 ```
 
+Upload package to NPM repository:
+
+```sh
+$ npm publish
+```
+
 Checkout to gh-pages branch:
 
 ```sh
