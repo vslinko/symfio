@@ -7,15 +7,20 @@ supplier = require if process.env.COVERAGE \
 
 describe "Supplier", ->
     it "should configure container", ->
+        applicationDirectory = __dirname
+        fixturesDirectory = "#{__dirname}/fixtures"
+        uploadsDirectory = "#{__dirname}/public/uploads"
+        publicDirectory = "#{__dirname}/public"
+
         nodeEnv = process.env.NODE_ENV
         process.env.NODE_ENV = "production"
-        container = supplier "test", __dirname
+        container = supplier "test", applicationDirectory
 
         assert.equal "test", container.get "name"
-        assert.equal __dirname, container.get "application directory"
-        assert.equal "#{__dirname}/fixtures", container.get "fixtures directory"
-        assert.equal "#{__dirname}/public/uploads", container.get "uploads directory"
-        assert.equal "#{__dirname}/public", container.get "public directory"
+        assert.equal applicationDirectory, container.get "application directory"
+        assert.equal fixturesDirectory, container.get "fixtures directory"
+        assert.equal uploadsDirectory, container.get "uploads directory"
+        assert.equal publicDirectory, container.get "public directory"
         assert.equal false, container.get "silent"
         assert.ok container.get "logger"
         assert.ok container.get "loader"

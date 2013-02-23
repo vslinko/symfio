@@ -6,7 +6,7 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "CRUD plugin", ->
-    it "should inject crud", (callback) ->
+    it "should inject some values", (callback) ->
         container = supplier "test", __dirname
         loader = container.get "loader"
 

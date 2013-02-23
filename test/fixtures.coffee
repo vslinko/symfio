@@ -65,7 +65,7 @@ describe "Fixtures plugin", ->
                     testCount callback
         ], callback
 
-    it "should load fixtures immediately after connected to database", (callback) ->
+    it "should load fixtures immediately if already connected", (callback) ->
         return callback() unless process.env.COVERAGE
 
         container = supplier "test", __dirname

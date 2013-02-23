@@ -1,4 +1,5 @@
 MOCHA = ./node_modules/.bin/mocha
+COFFEELINT = ./node_modules/.bin/coffeelint
 COFFEECOVERAGE = ./node_modules/.bin/coffeeCoverage
 DOCCO = ./node_modules/.bin/docco
 COFFEE = ./node_modules/.bin/coffee
@@ -12,13 +13,16 @@ SOURCES = lib/supplier.coffee lib/supplier/container.coffee \
 
 EXAMPLE = hello_world
 
-all: test coverage.html docs
+all: test lint coverage.html docs
 
 test: node_modules
 	@NODE_ENV=test $(MOCHA) \
 		--compilers coffee:coffee-script \
 		--timeout $(TIMEOUT) \
 		--reporter $(REPORTER)
+
+lint: node_modules
+	@$(COFFEELINT) -f coffeelint.json -r examples -r lib -r test
 
 coverage.html: node_modules lib-cov
 	@NODE_ENV=test COVERAGE=1 $(MOCHA) \

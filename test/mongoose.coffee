@@ -20,7 +20,7 @@ describe "Mongoose plugin", ->
             cleaner.mongoose
         ], callback
 
-    it "should inject connection, mongoose, mongodb, and connection string", (callback) ->
+    it "should inject some values", (callback) ->
         loader.once "injected", ->
             assert.ok container.get "connection"
             assert.ok container.get "mongoose"
@@ -35,7 +35,7 @@ describe "Mongoose plugin", ->
             assert.equal 1, connection.readyState
             callback()
 
-    it "should inject connection string from process.env.MONGOHQ_URL", (callback) ->
+    it "should inject MONGOHQ_URL to connection string", (callback) ->
         process.env.MONGOHQ_URL = "hello world"
 
         container = supplier "test", __dirname

@@ -20,7 +20,7 @@ describe "Express plugin", ->
             cleaner.express
         ], callback
 
-    it "should inject app, port, and server", (callback) ->
+    it "should inject some values", (callback) ->
         loader.once "injected", ->
             assert.ok container.get "app"
             assert.ok container.get "port"

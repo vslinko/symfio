@@ -24,7 +24,7 @@ describe "Loader", ->
             loader.use ->
             assert.equal 1, loader.plugins.length()
 
-        it "should emit 'injected' after all plugins injected", (callback) ->
+        it "should emit 'injected' when all plugins injected", (callback) ->
             injected = false
 
             loader.once "injected", ->
@@ -46,7 +46,7 @@ describe "Loader", ->
                 
                 callback()
 
-        it "should emit 'configured' after all plugins configured", (callback) ->
+        it "should emit 'configured' when all plugins configured", (callback) ->
             configured = false
 
             loader.once "configured", ->
@@ -68,7 +68,7 @@ describe "Loader", ->
 
                 callback()
 
-        it "should emit 'loaded' after all plugins loaded", (callback) ->
+        it "should emit 'loaded' when all plugins loaded", (callback) ->
             loaded = false
 
             loader.once "loaded", ->

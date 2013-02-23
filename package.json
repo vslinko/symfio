@@ -24,6 +24,7 @@
         "supertest": "~0.5",
         "coffee-script": "~1.4",
         "coffee-coverage": "~0.0",
+        "coffeelint": "~0.5",
         "docco": "~0.4",
 
         "async": "~0.2",

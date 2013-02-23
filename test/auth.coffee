@@ -30,7 +30,7 @@ describe "Auth plugin", ->
             app.get "/test", (req, res) ->
                 res.send if req.user then data: "test" else 401
 
-            test = supertest app            
+            test = supertest app
             User = connection.model "users"
             user = new User
                 username: "test"
@@ -45,7 +45,7 @@ describe "Auth plugin", ->
             cleaner.mongoose
         ], callback
 
-    it "should create user with salt, with secure password, and without tokens", (callback) ->
+    it "should create user", (callback) ->
         User.findOne username: "test", (err, user) ->
             assert.ok user
             assert.ok user.salt
