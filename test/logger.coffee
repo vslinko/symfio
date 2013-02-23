@@ -10,10 +10,7 @@ describe "Logger", ->
     logger = null
 
     beforeEach ->
-        container = supplier.container()
-        container.set "name", "supplier"
-        container.set "silent", false
-        logger = supplier.logger container
+        logger = new supplier.logger.Logger "supplier"
 
     equalOutput = (expected, wrappedFunction) ->
         message = ""

@@ -11,8 +11,8 @@ describe "Loader", ->
     loader = null
 
     beforeEach ->
-        container = supplier.container()
-        loader = supplier.loader container
+        container = new supplier.container.Container
+        loader = new supplier.loader.Loader container
 
     it "should extend event emitter", (callback) ->
         loader.once "event", callback

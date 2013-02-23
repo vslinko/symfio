@@ -34,8 +34,8 @@ module.exports = (container, callback) ->
     loader = container.get "loader"
     logger = container.get "logger"
 
-    loader.once "injected", ->
-        logger.info "configuring", "assets"
+    loader.once "configured", ->
+        logger.info "loading", "assets"
 
         publicDirectory = container.get "public directory"
         app = container.get "app"
@@ -49,7 +49,7 @@ module.exports = (container, callback) ->
             app.use coffeescript publicDirectory
             app.use express.static publicDirectory
 
-        callback.configured()
         callback.loaded()
 
     callback.injected()
+    callback.configured()

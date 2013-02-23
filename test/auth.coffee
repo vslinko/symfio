@@ -31,11 +31,11 @@ describe "Auth plugin", ->
                 res.send if req.user then data: "test" else 401
 
             test = supertest app
+
             User = connection.model "users"
             user = new User
                 username: "test"
                 password: "test"
-
             user.save ->
                 callback()
 

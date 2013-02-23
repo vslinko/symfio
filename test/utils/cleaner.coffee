@@ -12,17 +12,17 @@ cleaner = (container, cleaners, callback) ->
 assets = (container, callback) ->
     publicDirectory = container.get "public directory"
     cssFilePath = path.join publicDirectory, "style.css"
+
     fs.unlink cssFilePath, ->
         callback()
 
 bower = (container, callback) ->
     applicationDirectory = container.get "application directory"
     publicDirectory = container.get "public directory"
-
     componentsDirectory = path.join publicDirectory, "components"
-    fs.rmrf componentsDirectory, ->
+    hashFile = path.join applicationDirectory, ".components"
 
-        hashFile = path.join applicationDirectory, ".components"
+    fs.rmrf componentsDirectory, ->
         fs.unlink hashFile, ->
             callback()
 
@@ -44,6 +44,7 @@ mongoose = (container, callback) ->
 
 uploads = (container, callback) ->
     uploadsDirectory = container.get "uploads directory"
+
     fs.rmrf uploadsDirectory, ->
         callback()
 

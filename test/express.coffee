@@ -30,7 +30,6 @@ describe "Express plugin", ->
     it "should start server after all plugins loaded", (callback) ->
         loader.once "injected", ->
             server = container.get "server"
-
             server.on "listening", ->
                 callback()
 

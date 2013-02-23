@@ -9,7 +9,6 @@ supplier = require if process.env.COVERAGE \
 
 
 describe "Bower plugin", ->
-    publicDirectory = null
     container = null
     loader = null
 
@@ -21,8 +20,6 @@ describe "Bower plugin", ->
 
         container.set "components", ["jquery#~1.9"]
         loader.use supplier.plugins.bower
-
-        publicDirectory = container.get "public directory"
         callback()
 
     afterEach (callback) ->
@@ -32,8 +29,9 @@ describe "Bower plugin", ->
 
     it "should run bower", (callback) ->
         loader.once "loaded", ->
-            componentsDirectory = path.join publicDirectory, "components"
-            jqueryDirectory = path.join componentsDirectory, "jquery"
+            publicDirectory = container.get "public directory"
+            jqueryDirectory = path.join publicDirectory, "components", "jquery"
+
             fs.stat jqueryDirectory, (err, stats) ->
                 assert.ok stats.isDirectory()
                 callback()

@@ -7,6 +7,6 @@ supplier = require if process.env.COVERAGE \
 
 describe "Container", ->
     it "should contain configuration", ->
-        container = supplier.container()
+        container = new supplier.container.Container
         container.set "foo", "bar"
         assert.equal "bar", container.get "foo"
