@@ -114,11 +114,11 @@ $ make example
 
 ## Project Status
 
-[![Build Status](https://drone.io/github.com/rithis/supplier/status.png)](https://drone.io/github.com/rithis/supplier/latest) [![Dependency Status](https://gemnasium.com/rithis/supplier.png)](https://gemnasium.com/rithis/supplier)
+[![Build Status](http://teamcity.rithis.com/httpAuth/app/rest/builds/buildType:id:bt4,branch:master/statusIcon?guest=1)](http://teamcity.rithis.com/viewType.html?buildTypeId=bt4&guest=1) [![Dependency Status](https://gemnasium.com/rithis/supplier.png)](https://gemnasium.com/rithis/supplier)
 
-[Code Coverage Report](http://rithis.github.com/supplier/coverage.html)
+[Code Coverage Report](http://teamcity.rithis.com/repository/download/bt4/.lastFinished/coverage.html)
 
-[Latest Documentation](http://rithis.github.com/supplier/docs/supplier.html)
+[Latest Documentation](http://teamcity.rithis.com/repository/download/bt4/.lastFinished/docs.tar.gz!docs/supplier.html)
 
 ## Running Tests
 
