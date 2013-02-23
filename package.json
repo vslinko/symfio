@@ -1,6 +1,6 @@
 {
     "name": "supplier",
-    "version": "0.2.0rc0",
+    "version": "0.2.0",
     "description": "Glue for Node.js modules",
     "homepage": "http://rithis.github.com/supplier/",
     "bugs": {
