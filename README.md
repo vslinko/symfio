@@ -164,10 +164,10 @@ Checkout to gh-pages branch:
 $ git checkout gh-pages
 ```
 
-Increment version in `index.html` and `_layouts/rithis.html`, run `_update.sh`,
-commit and push:
+Increment version in `_includes/footer.html` and update website:
 
 ```sh
+$ ./_update.sh
 $ git add .
 $ git commit -m "Updated"
 $ git push
