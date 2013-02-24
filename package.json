@@ -29,7 +29,7 @@
         "stylus": "~0.32",
         "nib": "~0.9",
         "ms": "~0.5",
-        "bower": "~0.7",
+        "bower": "~0.8",
         "rithis-crud": "~0.0",
         "express": "~3.1",
         "fileupload": "~0.2",
