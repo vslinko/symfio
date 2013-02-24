@@ -1,10 +1,15 @@
 # Plugins can share settings and variables using container.
-class Container
+events = require "events"
+
+
+class Container extends events.EventEmitter
     constructor: ->
         @container = {}
 
     set: (name, value) ->
+        previousValue = @container[name]
         @container[name] = value
+        @emit "changed #{name}", value, previousValue
 
     get: (name) ->
         @container[name]

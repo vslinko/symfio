@@ -44,7 +44,12 @@ class Logger
 createInstance = (container) ->
     name = container.get "name"
     silent = container.get "silent"
-    new Logger name, silent
+    logger = new Logger name, silent
+
+    container.on "changed silent", (value) ->
+        logger.silent = value
+
+    logger
 
 
 module.exports = createInstance

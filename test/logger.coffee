@@ -24,6 +24,15 @@ describe "Logger", ->
         process.stdout.write = write
         assert.equal expected, message
 
+    it "should subscribe on silent changes", ->
+        container = new supplier.container.Container
+        container.set "name", "supplier"
+        container.set "silent", true
+        logger = supplier.logger container
+        assert.equal true, logger.silent
+        container.set "silent", false
+        assert.equal false, logger.silent
+
     describe "info", ->
         it "should output message", ->
             equalOutput "supplier #{"hello".cyan} #{"world".grey}\n", ->

@@ -10,3 +10,14 @@ describe "Container", ->
         container = new supplier.container.Container
         container.set "foo", "bar"
         assert.equal "bar", container.get "foo"
+
+    it "should emit event when value is changed", (callback) ->
+        container = new supplier.container.Container
+        container.set "test value", "previous"
+        
+        container.once "changed test value", (value, previousValue) ->
+            assert.equal "new", value
+            assert.equal "previous", previousValue
+            callback()
+
+        container.set "test value", "new"
