@@ -12,6 +12,7 @@ describe "Mongoose plugin", ->
 
     beforeEach ->
         container = supplier "test", __dirname
+        container.set "silent", true
         loader = container.get "loader"
         loader.use supplier.plugins.mongoose
 
@@ -39,10 +40,11 @@ describe "Mongoose plugin", ->
         process.env.MONGOHQ_URL = "hello world"
 
         container = supplier "test", __dirname
+        container.set "silent", true
         loader = container.get "loader"
 
         loader.use supplier.plugins.mongoose
-        
+
         loader.once "injected", ->
             connectionString = container.get "connection string"
             assert.equal process.env.MONGOHQ_URL, connectionString

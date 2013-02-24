@@ -109,7 +109,8 @@ Clone Supplier repo, then run example:
 ```sh
 $ git clone git://github.com/rithis/supplier.git
 $ cd supplier
-$ make example
+$ npm install
+$ ./node_modules/.bin/coffee examples/hello_world
 ```
 
 ## Project Status
@@ -127,7 +128,8 @@ Clone Supplier repo, then run tests:
 ```sh
 $ git clone git://github.com/rithis/supplier.git
 $ cd supplier
-$ make test
+$ npm install
+$ ./node_modules/.bin/grunt test
 ```
 
 # Release Instructions

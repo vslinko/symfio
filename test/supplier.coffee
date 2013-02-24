@@ -12,8 +12,6 @@ describe "Supplier", ->
         uploadsDirectory = "#{__dirname}/public/uploads"
         publicDirectory = "#{__dirname}/public"
 
-        nodeEnv = process.env.NODE_ENV
-        process.env.NODE_ENV = "production"
         container = supplier "test", applicationDirectory
 
         assert.equal "test", container.get "name"
@@ -24,10 +22,3 @@ describe "Supplier", ->
         assert.equal false, container.get "silent"
         assert.ok container.get "logger"
         assert.ok container.get "loader"
-
-        process.env.NODE_ENV = "test"
-        container = supplier "test", __dirname
-
-        assert.equal true, container.get "silent"
-
-        process.env.NODE_ENV = nodeEnv

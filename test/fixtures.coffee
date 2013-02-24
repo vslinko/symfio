@@ -15,6 +15,7 @@ describe "Fixtures plugin", ->
 
     createSupplier = (callback) ->
         container = supplier "test", __dirname
+        container.set "silent", true
         loader = container.get "loader"
 
         loader.use supplier.plugins.mongoose
@@ -66,9 +67,8 @@ describe "Fixtures plugin", ->
         ], callback
 
     it "should load fixtures immediately if already connected", (callback) ->
-        return callback() unless process.env.COVERAGE
-
         container = supplier "test", __dirname
+        container.set "silent", true
         loader = container.get "loader"
 
         loader.use supplier.plugins.mongoose

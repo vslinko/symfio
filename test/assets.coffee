@@ -17,6 +17,7 @@ describe "Assets plugin", ->
 
     beforeEach (callback) ->
         container = supplier "test", __dirname
+        container.set "silent", true
         loader = container.get "loader"
         loader.use supplier.plugins.assets
         loader.use supplier.plugins.express

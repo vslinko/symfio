@@ -17,6 +17,7 @@ describe "Auth plugin", ->
 
     beforeEach (callback) ->
         container = supplier "test", __dirname
+        container.set "silent", true
         loader = container.get "loader"
         loader.use supplier.plugins.auth
         loader.use supplier.plugins.express
@@ -93,8 +94,10 @@ describe "Auth plugin", ->
 
     it "should return 500 http code when mongo failed", (callback) ->
         findOne = mongoose.Query.prototype.findOne
-        mongoose.Query.prototype.findOne = (query, callback) ->
-            callback new Error
+        mongoose.Query.prototype.findOne = ->
+            for i, argument of arguments
+                if typeof argument is "function"
+                    return argument new Error
 
         req = test.post "/sessions"
         req.send username: "test", password: "test"

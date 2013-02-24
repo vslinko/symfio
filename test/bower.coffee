@@ -16,6 +16,7 @@ describe "Bower plugin", ->
 
     beforeEach (callback) ->
         container = supplier "test", __dirname
+        container.set "silent", true
         loader = container.get "loader"
 
         container.set "components", ["jquery#~1.9"]

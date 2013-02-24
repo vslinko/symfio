@@ -12,6 +12,7 @@ describe "Express plugin", ->
 
     beforeEach ->
         container = supplier "test", __dirname
+        container.set "silent", true
         loader = container.get "loader"
         loader.use supplier.plugins.express
 

@@ -21,7 +21,7 @@ createInstance = (name, applicationDirectory) ->
     instance.set "fixtures directory", fixturesDirectory
     instance.set "uploads directory", uploadsDirectory
     instance.set "public directory", publicDirectory
-    instance.set "silent", process.env.NODE_ENV is "test"
+    instance.set "silent", false
     instance.set "logger", logger instance
     instance.set "loader", loader instance
 
