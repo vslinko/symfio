@@ -21,3 +21,9 @@ describe "Container", ->
             callback()
 
         container.set "test value", "new"
+
+    it "should return default value if value is undefined", ->
+        container = new supplier.container.Container
+        assert.equal "default", container.get "undefined", "default"
+        container.set "undefined", false
+        assert.equal false, container.get "undefined", "default"

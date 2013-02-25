@@ -4,6 +4,7 @@
 #     container = supplier "example", __dirname
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.assets
+#     loader.load()
 coffeescript = require "connect-coffee-script"
 responsive = require "stylus-responsive"
 express = require "express"
@@ -27,30 +28,28 @@ compilerFactory = (str, path) ->
     compiler.import "responsive"
 
 
+#### Required plugins:
+#
+# * [__Express__](express.html).
+#
 #### Can be configured:
 #
 # * __public directory__ — Directory with assets.
 module.exports = (container, callback) ->
+    publicDirectory = container.get "public directory"
     loader = container.get "loader"
     logger = container.get "logger"
+    app = container.get "app"
 
-    loader.once "configured", ->
-        logger.info "loading", "assets"
+    logger.info "loading plugin", "assets"
 
-        publicDirectory = container.get "public directory"
-        app = container.get "app"
+    app.use stylus.middleware (
+        src: publicDirectory
+        compile: compilerFactory
+    )
 
-        app.configure ->
-            app.use stylus.middleware (
-                src: publicDirectory
-                compile: compilerFactory
-            )
+    app.use jade publicDirectory
+    app.use coffeescript publicDirectory
+    app.use express.static publicDirectory
 
-            app.use jade publicDirectory
-            app.use coffeescript publicDirectory
-            app.use express.static publicDirectory
-
-        callback.loaded()
-
-    callback.injected()
-    callback.configured()
+    callback()

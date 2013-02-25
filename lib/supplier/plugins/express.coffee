@@ -2,10 +2,10 @@
 #
 #     supplier = require "supplier"
 #     container = supplier "example", __dirname
+#     container.set "port", 80
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.express
-#     loader.once "injected", ->
-#         container.set "port", 80
+#     loader.load()
 express = require "express"
 http = require "http"
 
@@ -22,13 +22,13 @@ module.exports = (container, callback) ->
     unloader = container.get "unloader"
     loader = container.get "loader"
     logger = container.get "logger"
+    port = container.get "port", process.env.PORT or 3000
 
-    logger.info "injecting", "express"
-
-    app = express()
+    logger.info "loading plugin", "express"
     
-    app.configure ->
-        app.use express.bodyParser()
+    app = express()
+
+    app.use express.bodyParser()
 
     app.configure "development", ->
         app.use express.errorHandler()
@@ -36,12 +36,9 @@ module.exports = (container, callback) ->
     server = http.createServer app
 
     container.set "app", app
-    container.set "port", process.env.PORT or 3000
     container.set "server", server
 
     loader.once "loaded", ->
-        port = container.get "port"
-
         server.listen port, ->
             logger.info "listening", port
 

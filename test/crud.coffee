@@ -13,6 +13,6 @@ describe "CRUD plugin", ->
 
         loader.use supplier.plugins.crud
 
-        loader.once "injected", ->
+        loader.load ->
             assert.ok container.get "crud"
             callback()

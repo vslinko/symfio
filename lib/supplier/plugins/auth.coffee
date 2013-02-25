@@ -6,6 +6,7 @@
 #     loader.use supplier.plugins.auth
 #     loader.use supplier.plugins.express
 #     loader.use supplier.plugins.mongoose
+#     loader.load()
 crypto = require "crypto"
 ms = require "ms"
 
@@ -19,94 +20,86 @@ ms = require "ms"
 #
 # * __token expires__ — Token expiration.
 module.exports = (container, callback) ->
+    connection = container.get "connection"
+    mongoose = container.get "mongoose"
+    expires = ms container.get "token expires", "7d"
     loader = container.get "loader"
     logger = container.get "logger"
+    app = container.get "app"
 
-    logger.info "injecting", "auth"
-    container.set "token expires", "7d"
+    logger.info "loading plugin", "auth"
 
-    loader.once "configured", ->
-        logger.info "loading", "auth"
+    hash = (data) ->
+        h = crypto.createHash "sha256"
+        h.update data, "utf8"
+        h.digest "hex"
 
-        connection = container.get "connection"
-        mongoose = container.get "mongoose"
-        expires = ms container.get "token expires"
-        app = container.get "app"
+    randomHash = ->
+        hash String Math.random()
 
-        hash = (data) ->
-            h = crypto.createHash "sha256"
-            h.update data, "utf8"
-            h.digest "hex"
+    password = (password, salt) ->
+        hash "#{password}:#{salt}"
 
-        randomHash = ->
-            hash String Math.random()
+    TokenSchema = new mongoose.Schema
+        hash: type: String, required: true, index: unique: true
+        expires: type: Date, required: true
 
-        password = (password, salt) ->
-            hash "#{password}:#{salt}"
+    UserSchema = new mongoose.Schema
+        username: type: String, required: true
+        password: type: String, required: true
+        salt: type: String, required: true
+        tokens: [TokenSchema]
+        metadata: type: mongoose.Schema.Types.Mixed
 
-        TokenSchema = new mongoose.Schema
-            hash: type: String, required: true, index: unique: true
-            expires: type: Date, required: true
+    UserSchema.pre "validate", (callback) ->
+        @salt = randomHash() unless @salt
+        callback()
 
-        UserSchema = new mongoose.Schema
-            username: type: String, required: true
-            password: type: String, required: true
-            salt: type: String, required: true
-            tokens: [TokenSchema]
-            metadata: type: mongoose.Schema.Types.Mixed
+    UserSchema.pre "save", (callback) ->
+        @password = password @password, @salt
+        callback()
 
-        UserSchema.pre "validate", (callback) ->
-            @salt = randomHash() unless @salt
+    User = connection.model "users", UserSchema
+
+    app.use (req, res, callback) ->
+        authHeader = req.get "Authorization"
+
+        return callback() unless authHeader
+        return callback() unless authHeader.indexOf "Token " is 0
+
+        tokenHash = authHeader.replace "Token ", ""
+
+        User.findOne "tokens.hash": tokenHash, (err, user) ->
+            return callback() if err or not user
+
+            currentToken = null
+            for token in user.tokens
+                if token.hash is tokenHash
+                    currentToken = token
+
+            if not currentToken or new Date > currentToken.expires
+                return callback()
+
+            req.user = username: user.username, token: currentToken
             callback()
 
-        UserSchema.pre "save", (callback) ->
-            @password = password @password, @salt
-            callback()
+    app.post "/sessions", (req, res) ->
+        User.findOne username: req.body.username, (err, user) ->
+            return res.send 500 if err
+            return res.send 401 unless user
 
-        User = connection.model "users", UserSchema
+            if password(req.body.password, user.salt) != user.password
+                return res.send 401
 
-        app.use (req, res, callback) ->
-            authHeader = req.get "Authorization"
+            tokenHash = randomHash()
 
-            return callback() unless authHeader
-            return callback() unless authHeader.indexOf "Token " is 0
+            user.tokens.push
+                hash: tokenHash
+                expires: new Date Date.now() + expires
 
-            tokenHash = authHeader.replace "Token ", ""
-
-            User.findOne "tokens.hash": tokenHash, (err, user) ->
-                return callback() if err or not user
-
-                currentToken = null
-                for token in user.tokens
-                    if token.hash is tokenHash
-                        currentToken = token
-
-                if not currentToken or new Date > currentToken.expires
-                    return callback()
-
-                req.user = username: user.username, token: currentToken
-                callback()
-
-        app.post "/sessions", (req, res) ->
-            User.findOne username: req.body.username, (err, user) ->
+            user.save (err) ->
                 return res.send 500 if err
-                return res.send 401 unless user
 
-                if password(req.body.password, user.salt) != user.password
-                    return res.send 401
+                res.send 201, token: tokenHash
 
-                tokenHash = randomHash()
-
-                user.tokens.push
-                    hash: tokenHash
-                    expires: new Date Date.now() + expires
-
-                user.save (err) ->
-                    return res.send 500 if err
-
-                    res.send 201, token: tokenHash
-
-        callback.loaded()
-
-    callback.injected()
-    callback.configured()
+    callback()

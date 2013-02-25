@@ -20,14 +20,13 @@ describe "Express plugin", ->
         cleaner container, [], callback
 
     it "should inject some values", (callback) ->
-        loader.once "injected", ->
+        loader.load ->
             assert.ok container.get "app"
-            assert.ok container.get "port"
             assert.ok container.get "server"
             callback()
 
     it "should start server after all plugins loaded", (callback) ->
-        loader.once "injected", ->
+        loader.load ->
             server = container.get "server"
             server.on "listening", ->
                 callback()
@@ -41,7 +40,7 @@ describe "Express plugin", ->
         false
 
     it "should use bodyParser", (callback) ->
-        loader.once "configured", ->
+        loader.load ->
             assert.ok hasMiddleware "bodyParser"
             callback()
 
@@ -49,7 +48,7 @@ describe "Express plugin", ->
         nodeEnv = process.env.NODE_ENV
         process.env.NODE_ENV = "development"
 
-        loader.once "configured", ->
+        loader.load ->
             assert.ok hasMiddleware "errorHandler"
             process.env.NODE_ENV = nodeEnv
             callback()

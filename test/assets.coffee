@@ -19,10 +19,10 @@ describe "Assets plugin", ->
         container = supplier "test", __dirname
         container.set "silent", true
         loader = container.get "loader"
-        loader.use supplier.plugins.assets
         loader.use supplier.plugins.express
+        loader.use supplier.plugins.assets
 
-        loader.once "injected", ->
+        loader.load ->
             server = container.get "server"
             app = container.get "app"
 
@@ -34,11 +34,6 @@ describe "Assets plugin", ->
         cleaner container, [
             cleaner.assets
         ], callback
-
-    it "should connect four middlewares", (callback) ->
-        loader.once "configured", ->
-            assert.equal connectedMiddlewaresLength + 4, app.stack.length
-            callback()
 
     it "should import nib and responsive for stylus", (callback) ->
         css = """

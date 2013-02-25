@@ -16,8 +16,8 @@ describe "Uploads plugin", ->
         container = supplier "example", __dirname
         container.set "silent", true
         loader = container.get "loader"
-        loader.use supplier.plugins.assets
         loader.use supplier.plugins.express
+        loader.use supplier.plugins.assets
         loader.use supplier.plugins.uploads
 
     afterEach (callback) ->
@@ -27,7 +27,7 @@ describe "Uploads plugin", ->
         ], callback
 
     it "should send files and save it in filesystem", (callback) ->
-        loader.once "injected", ->
+        loader.load ->
             test = supertest container.get "app"
 
             async.waterfall [
@@ -47,7 +47,7 @@ describe "Uploads plugin", ->
             ], callback
 
     it "should return 400 http code when no file sent", (callback) ->
-        loader.once "injected", ->
+        loader.load ->
             test = supertest container.get "app"
 
             req = test.post "/uploads"
@@ -62,6 +62,6 @@ describe "Uploads plugin", ->
             process.exit = exit
             callback()
 
-        loader.once "injected", ->
-            container.set "public directory", "/a"
-            container.set "uploads directory", "/b"
+        container.set "public directory", "/a"
+        container.set "uploads directory", "/b"
+        loader.load()

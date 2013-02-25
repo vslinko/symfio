@@ -5,6 +5,7 @@
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.fixtures
 #     loader.use supplier.plugins.mongoose
+#     loader.load()
 async = require "async"
 path = require "path"
 fs = require "fs"
@@ -18,81 +19,69 @@ fs = require "fs"
 #
 # * __fixtures directory__ — Directory with fixtures.
 module.exports = (container, callback) ->
+    fixturesDirectory = container.get "fixtures directory"
+    connection = container.get "connection"
     loader = container.get "loader"
     logger = container.get "logger"
 
-    loader.once "configured", ->
-        logger.info "loading", "fixtures"
+    logger.info "loading plugin", "fixtures"
 
-        fixturesDirectory = container.get "fixtures directory"
-        connection = container.get "connection"
-        db = connection.db
+    fs.readdir fixturesDirectory, (err, files) ->
+        return callback() unless files
 
-        loadFixtures = ->
-            fs.readdir fixturesDirectory, (err, files) ->
-                return callback.loaded() unless files
+        tasks = []
+        for file in files
+            if path.extname(file) is ".json"
+                tasks.push
+                    collection: path.basename file, ".json"
+                    file: path.join fixturesDirectory, file
 
-                tasks = []
-                for file in files
-                    if path.extname(file) is ".json"
-                        tasks.push
-                            collection: path.basename file, ".json"
-                            file: path.join fixturesDirectory, file
+        worker = (task, callback) ->
+            async.waterfall [
+                (callback) ->
+                    fs.readFile task.file, callback
 
-                worker = (task, callback) ->
-                    async.waterfall [
-                        (callback) ->
-                            fs.readFile task.file, callback
+                (data, callback) ->
+                    try
+                        callback null, JSON.parse data
+                    catch err
+                        callback null, false
 
-                        (data, callback) ->
-                            try
-                                callback null, JSON.parse data
-                            catch err
-                                callback null, false
+                (fixture, callback) ->
+                    return callback() unless fixture
 
-                        (fixture, callback) ->
-                            return callback() unless fixture
+                    # For make fixtures work you need define the model:
+                    #
+                    #     UserSchema = new mongoose.Schema
+                    #         username: type: "string", required: true
+                    #
+                    #     connection = container.get "connection"
+                    #     connection.model "users", UserSchema
+                    #
+                    # And create fixtures file with array named like
+                    # collection name:
+                    #
+                    #     [
+                    #         {"username": "ExampleOfFixture"}
+                    #     ]
+                    try
+                        model = connection.model task.collection
+                    catch err
+                        logger.warn err
+                        return callback null
 
-                            # For make fixtures work you need define the model:
-                            #
-                            #     UserSchema = new mongoose.Schema
-                            #         username: type: "string", required: true
-                            #
-                            #     connection = container.get "connection"
-                            #     connection.model "users", UserSchema
-                            #
-                            # And create fixtures file with array named like
-                            # collection name:
-                            #
-                            #     [
-                            #         {"username": "ExampleOfFixture"}
-                            #     ]
-                            try
-                                model = connection.model task.collection
-                            catch err
-                                logger.warn err
-                                return callback null
-                            
-                            model.count (err, count) ->
-                                return callback err if err
-                                return callback null if count > 0
+                    model.count (err, count) ->
+                        return callback err if err
+                        return callback null if count > 0
 
-                                logger.info "loading fixture", task.collection
+                        logger.info "loading fixture", task.collection
 
-                                itemWorker = (data, callback) ->
-                                    item = new model data
-                                    item.save callback
+                        itemWorker = (data, callback) ->
+                            item = new model data
+                            item.save callback
 
-                                async.forEach fixture, itemWorker, callback
-                    ], callback
+                        async.forEach fixture, itemWorker, callback
+            ], callback
 
-                async.forEach tasks, worker, ->
-                    callback.loaded()
-
-        if connection.readyState is 1
-            loadFixtures()
-        else
-            connection.on "connected", loadFixtures
-
-    callback.injected()
-    callback.configured()
+        async.forEach tasks, worker, ->
+            callback()

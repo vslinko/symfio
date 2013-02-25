@@ -2,10 +2,10 @@
 #
 #     supplier = require "supplier"
 #     container = supplier "example", __dirname
+#     container.set "connection string", "mongodb://localhost/test"
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.mongoose
-#     loader.once "injected", ->
-#         container.set "connection string", "mongodb://localhost/test"
+#     loader.load()
 mongoose = require "mongoose"
 
 
@@ -23,8 +23,9 @@ module.exports = (container, callback) ->
     unloader = container.get "unloader"
     loader = container.get "loader"
     logger = container.get "logger"
+    name = container.get "name"
 
-    logger.info "injecting", "mongoose"
+    logger.info "loading plugin", "mongoose"
 
     connection = mongoose.createConnection()
 
@@ -32,22 +33,14 @@ module.exports = (container, callback) ->
     container.set "mongoose", mongoose
     container.set "mongodb", mongoose.mongo
 
-    name = container.get "name"
-    connectionString = process.env.MONGOHQ_URL or "mongodb://localhost/#{name}"
-    container.set "connection string", connectionString
+    connectionString = container.get "connection string",
+        process.env.MONGOHQ_URL or "mongodb://localhost/#{name}"
 
-    loader.once "configured", ->
-        logger.info "loading", "mongoose"
-
-        connectionString = container.get "connection string"
-        connection.open connectionString, ->
-            callback.loaded()
+    connection.open connectionString, ->
+        callback()
 
     unloader.register (callback) ->
         return callback() unless connection.readyState is 1
 
         connection.close ->
             callback()
-
-    callback.injected()
-    callback.configured()

@@ -6,6 +6,7 @@
 #     loader.use supplier.plugins.assets
 #     loader.use supplier.plugins.express
 #     loader.use supplier.plugins.uploads
+#     loader.load()
 fileupload = require "fileupload"
 errors = require "../errors"
 path = require "path"
@@ -20,34 +21,31 @@ path = require "path"
 #
 # * __uploads directory__ — Directory for uploading files.
 module.exports = (container, callback) ->
+    uploadsDirectory = container.get "uploads directory"
+    publicDirectory = container.get "public directory"
     loader = container.get "loader"
     logger = container.get "logger"
+    app = container.get "app"
 
-    loader.once "configured", ->
-        logger.info "loading", "uploads"
+    logger.info "loading plugin", "uploads"
 
-        uploadsDirectory = container.get "uploads directory"
-        publicDirectory = container.get "public directory"
-        app = container.get "app"
+    unless uploadsDirectory.indexOf(publicDirectory) == 0
+        return logger.error errors.UPLOAD_DIRECTORY_IS_NOT_PUBLIC
 
-        unless uploadsDirectory.indexOf(publicDirectory) == 0
-            return logger.error errors.UPLOAD_DIRECTORY_IS_NOT_PUBLIC
+    # Handles only one file.
+    upload = fileupload.createFileUpload uploadsDirectory
+    middleware = (req, res, callback) ->
+        return res.send 400 unless Object.keys(req.body).length is 0
+        return res.send 400 unless Object.keys(req.files).length is 1
+        upload.middleware req, res, callback
 
-        # Handles only one file.
-        upload = fileupload.createFileUpload uploadsDirectory
-        middleware = (req, res, callback) ->
-            return res.send 400 unless Object.keys(req.body).length is 0
-            return res.send 400 unless Object.keys(req.files).length is 1
-            upload.middleware req, res, callback
+    prefix = uploadsDirectory.replace publicDirectory, ""
+    app.post "/uploads", middleware, (req, res) ->
+        key = Object.keys(req.body).shift()
+        file = req.body[key].shift()
 
-        prefix = uploadsDirectory.replace publicDirectory, ""
-        app.post "/uploads", middleware, (req, res) ->
-            key = Object.keys(req.body).shift()
-            file = req.body[key].shift()
+        # Location header contains link to uploaded file.
+        res.set "Location", path.join prefix, file.path, file.basename
+        res.send 201
 
-            # Location header contains link to uploaded file.
-            res.set "Location", path.join prefix, file.path, file.basename
-            res.send 201
-
-    callback.injected()
-    callback.configured()
+    callback()

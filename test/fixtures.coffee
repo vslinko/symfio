@@ -19,9 +19,7 @@ describe "Fixtures plugin", ->
         loader = container.get "loader"
 
         loader.use supplier.plugins.mongoose
-        loader.use supplier.plugins.fixtures
-
-        loader.once "injected", ->
+        loader.use (container, callback) ->
             connection = container.get "connection"
             mongoose = container.get "mongoose"
 
@@ -37,6 +35,9 @@ describe "Fixtures plugin", ->
             Test = connection.model "test", TestSchema
             callback()
 
+        loader.use supplier.plugins.fixtures
+        loader.load callback
+
     beforeEach (callback) ->
         createSupplier ->
             callback()
@@ -48,14 +49,13 @@ describe "Fixtures plugin", ->
 
     it "should load fixtures only if collection is empty", (callback) ->
         testCount = (callback) ->
-            loader.once "loaded", ->
-                Test.find (err, items) ->
-                    assert.equal 3, items.length
+            Test.find (err, items) ->
+                assert.equal 3, items.length
 
-                    items.forEach (item) ->
-                        assert.ok item.hooked
+                items.forEach (item) ->
+                    assert.ok item.hooked
 
-                    callback()
+                callback()
 
         async.waterfall [
             (callback) ->
@@ -66,14 +66,15 @@ describe "Fixtures plugin", ->
                     testCount callback
         ], callback
 
-    it "should load fixtures immediately if already connected", (callback) ->
+    it "should warn if module isn't defined", (callback) ->
         container = supplier "test", __dirname
         container.set "silent", true
+
+        logger = container.get "logger"
+        logger.warn = ->
+            callback()
+
         loader = container.get "loader"
-
         loader.use supplier.plugins.mongoose
-
-        loader.once "loaded", ->
-            loader.use supplier.plugins.fixtures
-            loader.once "configured", ->
-                callback()
+        loader.use supplier.plugins.fixtures
+        loader.load()

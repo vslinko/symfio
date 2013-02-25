@@ -19,11 +19,11 @@ describe "Auth plugin", ->
         container = supplier "test", __dirname
         container.set "silent", true
         loader = container.get "loader"
-        loader.use supplier.plugins.auth
         loader.use supplier.plugins.express
         loader.use supplier.plugins.mongoose
+        loader.use supplier.plugins.auth
 
-        loader.once "loaded", ->
+        loader.load ->
             connection = container.get "connection"
             mongoose = container.get "mongoose"
             app = container.get "app"

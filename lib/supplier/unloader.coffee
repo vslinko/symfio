@@ -9,11 +9,12 @@ class Unloader extends events.EventEmitter
     # Some plugins may register the worker which will be called during the
     # unloading process.
     register: (worker) ->
-        @workers.push worker
+        @workers.unshift worker
 
     unload: (callback) ->
         @on "unloaded", callback if typeof callback is "function"
-        async.parallel @workers, =>
+
+        async.series @workers, =>
             @emit "unloaded"
 
 

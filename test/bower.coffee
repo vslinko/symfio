@@ -14,14 +14,13 @@ describe "Bower plugin", ->
 
     this.timeout 0
 
-    beforeEach (callback) ->
+    beforeEach ->
         container = supplier "test", __dirname
         container.set "silent", true
         loader = container.get "loader"
 
         container.set "components", ["jquery#~1.9"]
         loader.use supplier.plugins.bower
-        callback()
 
     afterEach (callback) ->
         cleaner container, [
@@ -29,7 +28,7 @@ describe "Bower plugin", ->
         ], callback
 
     it "should run bower", (callback) ->
-        loader.once "loaded", ->
+        loader.load ->
             publicDirectory = container.get "public directory"
             jqueryDirectory = path.join publicDirectory, "components", "jquery"
 
@@ -45,7 +44,7 @@ describe "Bower plugin", ->
         process.stdout.write = (data) ->
             message += data.toString()
 
-        loader.once "loaded", ->
+        loader.load ->
             assert.ok message.indexOf("bower") >= 0
 
             process.nextTick ->

@@ -11,7 +11,8 @@ class Container extends events.EventEmitter
         @container[name] = value
         @emit "changed #{name}", value, previousValue
 
-    get: (name) ->
+    get: (name, defaultValue) ->
+        return defaultValue if typeof @container[name] is "undefined"
         @container[name]
 
 

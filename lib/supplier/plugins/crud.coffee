@@ -4,6 +4,7 @@
 #     container = supplier "example", __dirname
 #     loader = container.get "loader"
 #     loader.use supplier.plugins.crud
+#     loader.load()
 crud = require "rithis-crud"
 
 
@@ -13,7 +14,7 @@ crud = require "rithis-crud"
 module.exports = (container, callback) ->
     logger = container.get "logger"
 
-    logger.info "injecting", "crud"
+    logger.info "loading plugin", "crud"
     container.set "crud", crud
 
     callback()
