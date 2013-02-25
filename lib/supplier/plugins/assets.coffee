@@ -41,9 +41,10 @@ module.exports = (container, callback) ->
         app = container.get "app"
 
         app.configure ->
-            app.use stylus.middleware
+            app.use stylus.middleware (
                 src: publicDirectory
                 compile: compilerFactory
+            )
 
             app.use jade publicDirectory
             app.use coffeescript publicDirectory
