@@ -22,3 +22,4 @@ describe "Supplier", ->
         assert.equal false, container.get "silent"
         assert.ok container.get "logger"
         assert.ok container.get "loader"
+        assert.ok container.get "unloader"

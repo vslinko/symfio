@@ -33,7 +33,6 @@ describe "Assets plugin", ->
     afterEach (callback) ->
         cleaner container, [
             cleaner.assets
-            cleaner.express
         ], callback
 
     it "should connect four middlewares", (callback) ->

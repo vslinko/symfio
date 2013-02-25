@@ -42,7 +42,6 @@ describe "Auth plugin", ->
 
     afterEach (callback) ->
         cleaner container, [
-            cleaner.express
             cleaner.mongoose
         ], callback
 

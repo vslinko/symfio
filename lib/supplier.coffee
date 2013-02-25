@@ -7,6 +7,7 @@ container = require "./supplier/container"
 plugins = require "./supplier/plugins"
 loader = require "./supplier/loader"
 logger = require "./supplier/logger"
+unloader = require "./supplier/unloader"
 path = require "path"
 
 
@@ -24,6 +25,7 @@ createInstance = (name, applicationDirectory) ->
     instance.set "silent", false
     instance.set "logger", logger instance
     instance.set "loader", loader instance
+    instance.set "unloader", unloader instance
 
     instance
 
@@ -33,3 +35,4 @@ module.exports.container = container
 module.exports.loader = loader
 module.exports.logger = logger
 module.exports.plugins = plugins
+module.exports.unloader = unloader

@@ -17,9 +17,7 @@ describe "Express plugin", ->
         loader.use supplier.plugins.express
 
     afterEach (callback) ->
-        cleaner container, [
-            cleaner.express
-        ], callback
+        cleaner container, [], callback
 
     it "should inject some values", (callback) ->
         loader.once "injected", ->

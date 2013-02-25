@@ -19,6 +19,7 @@ http = require "http"
 #
 # * __port__ — Port for listening.
 module.exports = (container, callback) ->
+    unloader = container.get "unloader"
     loader = container.get "loader"
     logger = container.get "logger"
 
@@ -31,7 +32,7 @@ module.exports = (container, callback) ->
 
     app.configure "development", ->
         app.use express.errorHandler()
-    
+
     server = http.createServer app
 
     container.set "app", app
@@ -43,5 +44,11 @@ module.exports = (container, callback) ->
 
         server.listen port, ->
             logger.info "listening", port
+
+    unloader.register (callback) ->
+        try
+            server.close callback
+        catch err
+            callback()
 
     callback()

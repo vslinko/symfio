@@ -23,7 +23,6 @@ describe "Uploads plugin", ->
     afterEach (callback) ->
         cleaner container, [
             cleaner.assets
-            cleaner.express
             cleaner.uploads
         ], callback
 

@@ -20,6 +20,7 @@ mongoose = require "mongoose"
 # * __connection string__ — MongoDB connection string.
 #
 module.exports = (container, callback) ->
+    unloader = container.get "unloader"
     loader = container.get "loader"
     logger = container.get "logger"
 
@@ -41,6 +42,12 @@ module.exports = (container, callback) ->
         connectionString = container.get "connection string"
         connection.open connectionString, ->
             callback.loaded()
+
+    unloader.register (callback) ->
+        return callback() unless connection.readyState is 1
+
+        connection.close ->
+            callback()
 
     callback.injected()
     callback.configured()

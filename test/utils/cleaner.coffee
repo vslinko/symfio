@@ -7,7 +7,9 @@ cleaner = (container, cleaners, callback) ->
     worker = (cleaner, callback) ->
         cleaner container, callback
 
-    async.forEach cleaners, worker, callback
+    async.forEach cleaners, worker, ->
+        unloader = container.get "unloader"
+        unloader.unload callback
 
 assets = (container, callback) ->
     publicDirectory = container.get "public directory"
@@ -26,21 +28,13 @@ bower = (container, callback) ->
         fs.unlink hashFile, ->
             callback()
 
-express = (container, callback) ->
-    try
-        server = container.get "server"
-        server.close callback
-    catch err
-        callback()
-
 mongoose = (container, callback) ->
     connection = container.get "connection"
 
     return callback() unless connection.readyState is 1
 
     connection.db.dropDatabase ->
-        connection.close ->
-            callback()
+        callback()
 
 uploads = (container, callback) ->
     uploadsDirectory = container.get "uploads directory"
@@ -52,6 +46,5 @@ uploads = (container, callback) ->
 module.exports = cleaner
 module.exports.assets = assets
 module.exports.bower = bower
-module.exports.express = express
 module.exports.mongoose = mongoose
 module.exports.uploads = uploads
