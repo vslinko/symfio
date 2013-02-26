@@ -49,7 +49,7 @@ describe "Auth plugin", ->
         User.findOne username: "test", (err, user) ->
             assert.ok user
             assert.ok user.salt
-            assert.ok user.password
+            assert.ok user.passwordHash
             assert.equal 0, user.tokens.length
             callback()
 
