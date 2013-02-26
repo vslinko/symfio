@@ -25,7 +25,7 @@ module.exports = (container, callback) ->
     port = container.get "port", process.env.PORT or 3000
 
     logger.info "loading plugin", "express"
-    
+
     app = express()
 
     app.use express.bodyParser()
