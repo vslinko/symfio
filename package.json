@@ -33,7 +33,10 @@
         "rithis-crud": "~0.0",
         "express": "~3.1",
         "fileupload": "~0.2",
-        "mongoose": "~3.5"
+        "mongoose": "~3.5",
+        "commander": "~1.1",
+        "mkdirp": "~0.3",
+        "npm": ""
     },
     "devDependencies": {
         "supertest": "~0.5",
