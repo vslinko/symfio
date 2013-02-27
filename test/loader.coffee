@@ -1,47 +1,59 @@
-fakePlugin = require "./support/fake_plugin"
 supplier = require ".."
+sinon = require "sinon"
 require "should"
 
 
-describe "Loader", ->
-    container = null
-    loader = null
+describe "supplier.loader()", ->
+    describe "Loader", ->
+        describe "#use()", ->
+            it "should add plugin to tail of queue", ->
+                plugin0 = ->
+                plugin1 = ->
+                loader = new supplier.loader.Loader
 
-    beforeEach ->
-        container = new supplier.container.Container
-        loader = new supplier.loader.Loader container
+                loader.plugins.length.should.equal 0
+                loader.use plugin0
+                loader.use plugin1
+                loader.plugins.length.should.equal 2
+                loader.plugins[0].should.equal plugin0
+                loader.plugins[1].should.equal plugin1
 
-    it "should push plugin into array", ->
-        loader.plugins.length.should.equal 0
-        loader.use ->
-        loader.plugins.length.should.equal 1
+        describe "#load()", ->
+            it "should load plugins", ->
+                loader = new supplier.loader.Loader
+                plugin = sinon.stub().yields()
 
-    it "should emit 'loaded' when all plugins loaded", (callback) ->
-        loaded = false
+                loader.use plugin
+                plugin.called.should.be.false
+                loader.load()
+                plugin.calledOnce.should.be.true
 
-        loader.once "loaded", ->
-            loaded = true
+            it "should emit 'loaded' after all plugins is loaded", ->
+                listener = sinon.spy()
+                loader = new supplier.loader.Loader
+                plugin = sinon.stub().yields()
 
-        plugin0 = fakePlugin()
-        plugin1 = fakePlugin()
+                loader.use plugin
+                loader.once "loaded", listener
+                loader.load()
+                listener.calledOnce.should.be.true
 
-        loader.use plugin0.factory()
-        loader.use plugin1.factory()
-        loader.load()
-        loaded.should.be.false
+            it "should call callback after all plugins is loaded", ->
+                listener = sinon.spy()
+                loader = new supplier.loader.Loader
+                plugin = sinon.stub().yields()
 
-        process.nextTick ->
-            plugin0.callback()
-            loaded.should.be.false
+                loader.use plugin
+                loader.load listener
+                listener.calledOnce.should.be.true
+                loader.load()
+                listener.calledOnce.should.be.true
 
-            plugin1.callback()
-            loaded.should.be.true
+            it "should provide container to plugin as first argument", ->
+                container = new supplier.container.Container
+                loader = new supplier.loader.Loader container
+                plugin = sinon.stub().yields()
 
-            callback()
-
-    it "should inject container into plugin", (callback) ->
-        loader.use (injectedContainer) ->
-            injectedContainer.should.equal container
-            callback()
-
-        loader.load()
+                loader.use plugin
+                loader.load()
+                plugin.firstCall.args[0].should.equal container
