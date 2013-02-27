@@ -3,44 +3,45 @@
 Glue for Node.js modules
 
 ```coffeescript
-# require supplier module
 supplier = require "supplier"
 
-# create container
-container = supplier "hello world", __dirname
+
+container = supplier "fruits-example", __dirname
 loader = container.get "loader"
 
-# configure connection string
-container.set "connection string", "mongodb://localhost/hello_world"
-
-# add dependent plugins
 loader.use supplier.plugins.express
 loader.use supplier.plugins.mongoose
-loader.use supplier.plugins.fixtures
 
-# define own plugin
 loader.use (container, callback) ->
-    # get dependencies
     connection = container.get "connection"
     mongoose = container.get "mongoose"
-    app = container.get "app"
 
-    # define schemas
-    MessageSchema = new mongoose.Schema
-        message: type: "string"
+    FruitSchema = new mongoose.Schema
+        name: String
 
-    # define models
-    Message = connection.model "messages", MessageSchema
+    connection.model "fruits", FruitSchema
 
-    # define express routes
-    app.get "/", (req, res) ->
-        Message.find {}, (err, messages) ->
-            res.send messages
-
-    # our plugin is configured and loaded, allow to start server
     callback()
 
-# load all plugins
+loader.use supplier.plugins.fixtures
+loader.use supplier.plugins.crud
+
+loader.use (container, callback) ->
+    connection = container.get "connection"
+    unloader = container.get "unloader"
+    crud = container.get "crud"
+    app = container.get "app"
+
+    Fruit = connection.model "fruits"
+
+    app.get "/fruits", crud.list(Fruit).sort(name: -1).make()
+
+    unloader.register (callback) ->
+        connection.db.dropDatabase ->
+            callback()
+
+    callback()
+
 loader.load()
 ```
 
@@ -107,7 +108,7 @@ Clone Supplier repo, then run example:
 $ git clone git://github.com/rithis/supplier.git
 $ cd supplier
 $ npm install
-$ ./node_modules/.bin/coffee examples/hello_world
+$ ./node_modules/.bin/coffee examples/fruits
 ```
 
 ## Project Status

@@ -43,9 +43,6 @@ module.exports = (container, callback) ->
             logger.info "listening", port
 
     unloader.register (callback) ->
-        try
-            server.close callback
-        catch err
-            callback()
+        server.close callback
 
     callback()

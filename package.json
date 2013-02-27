@@ -11,7 +11,7 @@
         "name": "Vyacheslav Slinko",
         "email": "vyacheslav.slinko@gmail.com"
     },
-    "main": "lib/supplier",
+    "main": "index",
     "repository": {
         "type": "git",
         "url": "git://github.com/rithis/supplier.git"
@@ -37,6 +37,8 @@
     },
     "devDependencies": {
         "supertest": "~0.5",
+        "should": "~1.2",
+        "sinon": "~1.6",
         "fs.extra": "~1.2",
         "html-file-cov": "~0.0",
         "grunt": "~0.4",

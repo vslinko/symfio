@@ -1,29 +1,26 @@
-assert = require "assert"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+supplier = require ".."
+require "should"
 
 
 describe "Container", ->
     it "should contain configuration", ->
         container = new supplier.container.Container
         container.set "foo", "bar"
-        assert.equal "bar", container.get "foo"
+        container.get("foo").should.equal "bar"
 
     it "should emit event when value is changed", (callback) ->
         container = new supplier.container.Container
         container.set "test value", "previous"
         
         container.once "changed test value", (value, previousValue) ->
-            assert.equal "new", value
-            assert.equal "previous", previousValue
+            value.should.equal "new"
+            previousValue.should.equal "previous"
             callback()
 
         container.set "test value", "new"
 
     it "should return default value if value is undefined", ->
         container = new supplier.container.Container
-        assert.equal "default", container.get "undefined", "default"
+        container.get("undefined", "default").should.equal "default"
         container.set "undefined", false
-        assert.equal false, container.get "undefined", "default"
+        container.get("undefined", "default").should.be.false

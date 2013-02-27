@@ -1,8 +1,6 @@
-assert = require "assert"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+supplier = require ".."
+sinon = require "sinon"
+require "should"
 
 
 describe "Unloader", ->
@@ -15,36 +13,33 @@ describe "Unloader", ->
         unloader.once "event", callback
         unloader.emit "event"
 
-    describe "register", ->
-        it "should register worker", ->
-            assert.equal 0, unloader.workers.length
-            unloader.register ->
-            assert.equal 1, unloader.workers.length
+    it "should register worker", ->
+        unloader.workers.length.should.equal 0
+        unloader.register ->
+        unloader.workers.length.should.equal 1
 
-    describe "unload", ->
-        it "should run workers", (callback) ->
-            unloader.register (unloaderCallback) ->
-                unloaderCallback()
-                callback()
+    it "should run workers", (callback) ->
+        unloader.register (unloaderCallback) ->
+            unloaderCallback()
+            callback()
 
-            unloader.unload()
+        unloader.unload()
 
-        it "should emit 'unloaded'", (callback) ->
-            unloaded = false
-            
-            unloader.register (unloaderCallback) ->
-                assert.equal false, unloaded
-                unloaderCallback()
-                assert.equal true, unloaded
-                callback()
+    it "should emit 'unloaded'", (callback) ->
+        listener = sinon.spy()
 
-            unloader.on "unloaded", ->
-                unloaded = true
+        unloader.register (unloaderCallback) ->
+            listener.called.should.be.false
+            unloaderCallback()
+            listener.called.should.be.true
+            callback()
 
-            unloader.unload()
+        unloader.on "unloaded", listener
 
-        it "should register callback", (callback) ->
-            unloader.register (callback) ->
-                callback()
-            
-            unloader.unload callback
+        unloader.unload()
+
+    it "should register callback", (callback) ->
+        unloader.register (callback) ->
+            callback()
+
+        unloader.unload callback

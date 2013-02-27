@@ -4,10 +4,10 @@
 # connect Node.JS modules using a plugin system. Plugins are loaded
 # asynchronously, which can reduce the time of application initialization.
 container = require "./supplier/container"
+unloader = require "./supplier/unloader"
 plugins = require "./supplier/plugins"
 loader = require "./supplier/loader"
 logger = require "./supplier/logger"
-unloader = require "./supplier/unloader"
 path = require "path"
 
 

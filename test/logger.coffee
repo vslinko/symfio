@@ -1,9 +1,7 @@
-assert = require "assert"
-colors = require "colors"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+supplier = require ".."
+sinon = require "sinon"
+require "colors"
+require "should"
 
 
 describe "Logger", ->
@@ -12,65 +10,65 @@ describe "Logger", ->
     beforeEach ->
         logger = new supplier.logger.Logger "supplier"
 
-    equalOutput = (expected, wrappedFunction) ->
-        message = ""
-
-        write = process.stdout.write
-        process.stdout.write = (data) ->
-            message += data.toString()
-
-        wrappedFunction()
-
-        process.stdout.write = write
-        assert.equal expected, message
-
     it "should subscribe on silent changes", ->
         container = new supplier.container.Container
         container.set "name", "supplier"
         container.set "silent", true
+
         logger = supplier.logger container
-        assert.equal true, logger.silent
+        logger.silent.should.be.true
+
         container.set "silent", false
-        assert.equal false, logger.silent
+        logger.silent.should.be.false
 
     describe "info", ->
-        it "should output message", ->
-            equalOutput "supplier #{"hello".cyan} #{"world".grey}\n", ->
-                logger.info "hello", "world"
+        it "should output message", sinon.test ->
+            @stub console, "log"
 
-        it "should output name", ->
-            logger.name = "test"
-            equalOutput "test #{"hello".cyan} #{"world".grey}\n", ->
-                logger.info "hello", "world"
+            message = "supplier #{"hello".cyan} #{"world".grey}"
+            logger.info "hello", "world"
+            console.log.calledOnce.should.be.true
+            console.log.lastCall.args[0].should.equal message
 
-            equalOutput "mest #{"hello".cyan} #{"world".grey}\n", ->
-                logger.info "hello", "world", "mest"
+        it "should use name from argument", sinon.test ->
+            @stub console, "log"
 
-        it "should not output message if silent", ->
+            message = "test #{"hello".cyan} #{"world".grey}"
+            logger.info "hello", "world", "test"
+            console.log.calledOnce.should.be.true
+            console.log.lastCall.args[0].should.equal message
+
+        it "should not output message if silent", sinon.test ->
+            @stub console, "log"
+
             logger.silent = true
+            logger.info "hello", "world"
+            console.log.calledOnce.should.be.false
 
-            equalOutput "", ->
-                logger.info "hello", "world"
+        it "should output numbers", sinon.test ->
+            @stub console, "log"
 
-        it "should output numbers", ->
-            equalOutput "3 #{"1".cyan} #{"2".grey}\n", ->
-                logger.info 1, 2, 3
+            message = "3 #{"1".cyan} #{"2".grey}"
+            logger.info 1, 2, 3
+            console.log.calledOnce.should.be.true
+            console.log.lastCall.args[0].should.equal message
 
     describe "warn", ->
-        it "should output message", ->
-            equalOutput "supplier #{"warn".yellow} #{"hello world".grey}\n", ->
-                logger.warn "hello world"
+        it "should output message", sinon.test ->
+            @stub console, "log"
+
+            message = "supplier #{"warn".yellow} #{"hello world".grey}"
+            logger.warn "hello world"
+            console.log.calledOnce.should.be.true
+            console.log.lastCall.args[0].should.equal message
 
     describe "error", ->
-        it "should output message and terminate application", ->
-            errorCode = 0
+        it "should output message and terminate application", sinon.test ->
+            @stub console, "log"
+            @stub process, "exit"
 
-            exit = process.exit
-            process.exit = (code) ->
-                errorCode = code
-                process.exit = exit
-
-            equalOutput "supplier #{"error".red} #{"hello world".grey}\n", ->
-                logger.error code: 123, message: "hello world"
-
-            assert.equal 123, errorCode
+            message = "supplier #{"error".red} #{"hello world".grey}"
+            logger.error code: 123, message: "hello world"
+            console.log.calledOnce.should.be.true
+            console.log.lastCall.args[0].should.equal message
+            process.exit.calledOnce.should.be.true

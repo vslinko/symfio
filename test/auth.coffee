@@ -1,120 +1,71 @@
-supertest = require "supertest"
-cleaner = require "./utils/cleaner"
-assert = require "assert"
-async = require "async"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+fakeContainer = require "./support/fake_container"
+mongoose = require "mongoose"
+supplier = require ".."
+express = require "express"
+sinon = require "sinon"
+require "should"
 
 
-describe "Auth plugin", ->
-    connection = null
+describe "auth", ->
     container = null
-    mongoose = null
-    test = null
-    User = null
+    sandbox = null
+    app = null
+    req = null
 
-    beforeEach (callback) ->
-        container = supplier "test", __dirname
-        container.set "silent", true
-        loader = container.get "loader"
-        loader.use supplier.plugins.express
-        loader.use supplier.plugins.mongoose
-        loader.use supplier.plugins.auth
+    beforeEach ->
+        sandbox = sinon.sandbox.create()
+        container = fakeContainer sandbox
 
-        loader.load ->
-            connection = container.get "connection"
-            mongoose = container.get "mongoose"
-            app = container.get "app"
+        sandbox.stub mongoose.Model, "findOne"
+        sandbox.stub mongoose.Connection.prototype, "model"
+        mongoose.Connection.prototype.model.returns mongoose.Model
+        container.set "connection", new mongoose.Connection
+        container.set "mongoose", mongoose
 
-            app.get "/test", (req, res) ->
-                res.send if req.user then data: "test" else 401
+        app = express()
+        sandbox.spy app, "use"
+        container.set "app", app
 
-            test = supertest app
+        req = get: sandbox.stub().returns "Token shmoken"
 
-            User = connection.model "users"
-            user = new User
-                username: "test"
-                password: "test"
-            user.save ->
-                callback()
+    afterEach ->
+        sandbox.restore()
 
-    afterEach (callback) ->
-        cleaner container, [
-            cleaner.mongoose
-        ], callback
+    it "should populate user in request object", ->
+        user = username: "nameuser", tokens: [
+            hash: "shmoken", expires: new Date Date.now() + 10000
+        ]
+        mongoose.Model.findOne.yields null, user
 
-    it "should create user", (callback) ->
-        User.findOne username: "test", (err, user) ->
-            assert.ok user
-            assert.ok user.salt
-            assert.ok user.passwordHash
-            assert.equal 0, user.tokens.length
-            callback()
+        supplier.plugins.auth container, ->
+            populateMiddleware = app.use.firstCall.args[0]
+            populateMiddleware req, null, ->
+                req.should.have.property "user"
+                req.user.username.should.equal user.username
+                req.user.token.hash.should.equal "shmoken"
 
-    it "should create, authenticate and populate user", (callback) ->
-        async.waterfall [
-            (callback) ->
-                req = test.post "/sessions"
-                req.send username: "test", password: "test"
-                req.end (err, res) ->
-                    User.findOne username: "test", (err, user) ->
-                        assert.equal user.tokens[0].hash, res.body.token
-                        callback null, res.body.token
+    it "should not populate user in request object if token is expired", ->
+        user = username: "nameuser", tokens: [
+            hash: "shmoken", expires: new Date Date.now() - 10000
+        ]
+        mongoose.Model.findOne.yields null, user
 
-            (token, callback) ->
-                req = test.get "/test"
-                req.set "Authorization", "Token #{token}"
-                req.end (err, res) ->
-                    assert.equal "test", res.body.data
-                    callback()
-        ], callback
-
-    it "should expire tokens", (callback) ->
-        async.waterfall [
-            (callback) ->
-                req = test.post "/sessions"
-                req.send username: "test", password: "test"
-                req.end (err, res) ->
-                    User.findOne username: "test", (err, user) ->
-                        assert.equal user.tokens[0].hash, res.body.token
-                        user.tokens[0].expires = new Date Date.now() - 1
-                        user.save ->
-                            callback null, res.body.token
-
-            (token, callback) ->
-                req = test.get "/test"
-                req.set "Authorization", "Token #{token}"
-                req.end (err, res) ->
-                    assert.equal 401, res.status
-                    callback()
-        ], callback
+        supplier.plugins.auth container, ->
+            populateMiddleware = app.use.firstCall.args[0]
+            populateMiddleware req, null, ->
+                req.should.not.have.property "user"
 
     it "should return 500 http code when mongo failed", (callback) ->
-        findOne = mongoose.Query.prototype.findOne
-        mongoose.Query.prototype.findOne = ->
-            for i, argument of arguments
-                if typeof argument is "function"
-                    return argument new Error
+        mongoose.Model.findOne.yields new Error
 
-        req = test.post "/sessions"
-        req.send username: "test", password: "test"
-        req.end (err, res) ->
-            assert.equal 500, res.status
-            mongoose.Query.prototype.findOne = findOne
-            callback()
+        req.url = "/sessions"
+        req.method = "POST"
+        req.body = username: "username"
+        res = send: sinon.mock().once().withExactArgs 500
 
-    it "should return 401 http code when user not found", (callback) ->
-        req = test.post "/sessions"
-        req.send username: "notfound", password: "test"
-        req.end (err, res) ->
-            assert.equal 401, res.status
-            callback()
+        supplier.plugins.auth container, ->
+            authenticateMiddleware = app.use.lastCall.args[0]
+            authenticateMiddleware req, res
 
-    it "should return 401 http code when credential is invalid", (callback) ->
-        req = test.post "/sessions"
-        req.send username: "test", password: "invalid"
-        req.end (err, res) ->
-            assert.equal 401, res.status
+            res.send.verify()
             callback()

@@ -23,7 +23,6 @@ path = require "path"
 module.exports = (container, callback) ->
     uploadsDirectory = container.get "uploads directory"
     publicDirectory = container.get "public directory"
-    loader = container.get "loader"
     logger = container.get "logger"
     app = container.get "app"
 

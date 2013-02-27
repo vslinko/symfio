@@ -1,9 +1,6 @@
-fakePlugin = require "./utils/fake_plugin"
-assert = require "assert"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+fakePlugin = require "./support/fake_plugin"
+supplier = require ".."
+require "should"
 
 
 describe "Loader", ->
@@ -14,42 +11,37 @@ describe "Loader", ->
         container = new supplier.container.Container
         loader = new supplier.loader.Loader container
 
-    it "should extend event emitter", (callback) ->
-        loader.once "event", callback
-        loader.emit "event"
+    it "should push plugin into array", ->
+        loader.plugins.length.should.equal 0
+        loader.use ->
+        loader.plugins.length.should.equal 1
 
-    describe "use", ->
-        it "should push plugin into array", ->
-            assert.equal 0, loader.plugins.length
-            loader.use ->
-            assert.equal 1, loader.plugins.length
+    it "should emit 'loaded' when all plugins loaded", (callback) ->
+        loaded = false
 
-        it "should emit 'loaded' when all plugins loaded", (callback) ->
-            loaded = false
+        loader.once "loaded", ->
+            loaded = true
 
-            loader.once "loaded", ->
-                loaded = true
+        plugin0 = fakePlugin()
+        plugin1 = fakePlugin()
 
-            plugin0 = fakePlugin()
-            plugin1 = fakePlugin()
+        loader.use plugin0.factory()
+        loader.use plugin1.factory()
+        loader.load()
+        loaded.should.be.false
 
-            loader.use plugin0.factory()
-            loader.use plugin1.factory()
-            loader.load()
-            assert.equal false, loaded
+        process.nextTick ->
+            plugin0.callback()
+            loaded.should.be.false
 
-            process.nextTick ->
-                plugin0.callback()
-                assert.equal false, loaded
+            plugin1.callback()
+            loaded.should.be.true
 
-                plugin1.callback()
-                assert.equal true, loaded
+            callback()
 
-                callback()
+    it "should inject container into plugin", (callback) ->
+        loader.use (injectedContainer) ->
+            injectedContainer.should.equal container
+            callback()
 
-        it "should inject container into plugin", (callback) ->
-            loader.use (injectedContainer) ->
-                assert.equal container, injectedContainer
-                callback()
-
-            loader.load()
+        loader.load()

@@ -1,52 +1,44 @@
-cleaner = require "./utils/cleaner"
-assert = require "assert"
-path = require "path"
+fakeContainer = require "./support/fake_container"
+supplier = require ".."
+bower = require "bower"
+sinon = require "sinon"
 fs = require "fs"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+require "should"
 
 
-describe "Bower plugin", ->
+describe "bower", ->
+    installation = null
     container = null
-    loader = null
-
-    this.timeout 0
+    sandbox = null
 
     beforeEach ->
-        container = supplier "test", __dirname
-        container.set "silent", true
-        loader = container.get "loader"
+        sandbox = sinon.sandbox.create()
+        container = fakeContainer sandbox
 
-        container.set "components", ["jquery#~1.9"]
-        loader.use supplier.plugins.bower
+        sandbox.stub process, "chdir"
+        sandbox.stub fs, "writeFile"
+        fs.writeFile.yields null
 
-    afterEach (callback) ->
-        cleaner container, [
-            cleaner.bower
-        ], callback
+        installation = on: sinon.stub()
+        installation.on.withArgs("end").yields()
 
-    it "should run bower", (callback) ->
-        loader.load ->
-            publicDirectory = container.get "public directory"
-            jqueryDirectory = path.join publicDirectory, "components", "jquery"
+        sandbox.stub bower.commands, "install"
+        bower.commands.install.returns installation
 
-            fs.stat jqueryDirectory, (err, stats) ->
-                assert.ok stats.isDirectory()
-                callback()
+    afterEach ->
+        sandbox.restore()
 
     it "should pipe bower output", (callback) ->
         container.set "silent", false
+        container.set "components", ["jquery"]
 
-        message = ""
-        write = process.stdout.write
-        process.stdout.write = (data) ->
-            message += data.toString()
+        supplier.plugins.bower container, ->
+            installation.on.withArgs("data").calledOnce.should.be.true
 
-        loader.load ->
-            assert.ok message.indexOf("bower") >= 0
-
-            process.nextTick ->
-                process.stdout.write = write
-                callback()
+            sinon.stub console, "log"
+            listener = installation.on.withArgs("data").firstCall.args[1]
+            listener "bower"
+            console.log.calledOnce.should.be.true
+            console.log.firstCall.args[0].should.equal "bower"
+            console.log.restore()
+            callback()

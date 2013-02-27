@@ -1,8 +1,5 @@
-assert = require "assert"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+supplier = require ".."
+require "should"
 
 
 describe "Supplier", ->
@@ -12,14 +9,16 @@ describe "Supplier", ->
         uploadsDirectory = "#{__dirname}/public/uploads"
         publicDirectory = "#{__dirname}/public"
 
-        container = supplier "test", applicationDirectory
+        c = supplier "test", applicationDirectory
 
-        assert.equal "test", container.get "name"
-        assert.equal applicationDirectory, container.get "application directory"
-        assert.equal fixturesDirectory, container.get "fixtures directory"
-        assert.equal uploadsDirectory, container.get "uploads directory"
-        assert.equal publicDirectory, container.get "public directory"
-        assert.equal false, container.get "silent"
-        assert.ok container.get "logger"
-        assert.ok container.get "loader"
-        assert.ok container.get "unloader"
+        c.get("name").should.equal "test"
+        c.get("silent").should.be.false
+
+        c.get("application directory").should.equal applicationDirectory
+        c.get("fixtures directory").should.equal fixturesDirectory
+        c.get("uploads directory").should.equal uploadsDirectory
+        c.get("public directory").should.equal publicDirectory
+
+        c.get("logger").should.be.an.instanceOf supplier.logger.Logger
+        c.get("loader").should.be.an.instanceOf supplier.loader.Loader
+        c.get("unloader").should.be.an.instanceOf supplier.unloader.Unloader

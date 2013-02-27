@@ -1,4 +1,4 @@
-colors = require "colors"
+require "colors"
 
 
 class Logger
