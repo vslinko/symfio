@@ -1,34 +1,28 @@
-fakeContainer = require "./support/fake_container"
+containerTest = require "./support/container_test"
 supplier = require ".."
 mongoose = require "mongoose"
-sinon = require "sinon"
 require "should"
 
 
-describe "mongoose", ->
-    container = null
-    sandbox = null
+describe "supplier.plugins.mongoose()", ->
+    wrapper = containerTest ->
+        @stub mongoose.Connection.prototype, "open"
+        @open = mongoose.Connection.prototype.open
 
-    beforeEach ->
-        sandbox = sinon.sandbox.create()
-        container = fakeContainer sandbox
+    beforeEach wrapper.loader()
+    afterEach wrapper.unloader()
 
-        sandbox.stub mongoose.Connection.prototype, "open"
-        mongoose.Connection.prototype.open.yields()
+    it "should generate connection string using name value", wrapper.wrap ->
+        supplier.plugins.mongoose @container, ->
+        @open.calledOnce.should.be.true
+        @open.firstCall.args[0].should.equal "mongodb://localhost/supplier"
 
-    afterEach ->
-        sandbox.restore()
-
-    it "should generate connection string using name value", ->
-        supplier.plugins.mongoose container, ->
-            open = mongoose.Connection.prototype.open
-            open.calledOnce.should.be.true
-            open.args[0][0].should.equal "mongodb://localhost/supplier"
-
-    it "should use MONGOHQ_URL as connection string", ->
+    it "should use MONGOHQ_URL as connection string", wrapper.wrap ->
+        mongohqUrl = process.env.MONGOHQ_URL
         process.env.MONGOHQ_URL = "mongodb://127.0.0.1/abra-kadabra"
 
-        supplier.plugins.mongoose container, ->
-            open = mongoose.Connection.prototype.open
-            open.calledOnce.should.be.true
-            open.args[0][0].should.equal process.env.MONGOHQ_URL
+        supplier.plugins.mongoose @container, ->
+        @open.calledOnce.should.be.true
+        @open.firstCall.args[0].should.equal process.env.MONGOHQ_URL
+
+        process.env.MONGOHQ_URL = mongohqUrl

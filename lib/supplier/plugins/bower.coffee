@@ -62,4 +62,4 @@ module.exports = (container, callback) ->
         (callback) ->
             fs.writeFile hashFile, hashString, ->
                 callback()
-    ], callback
+    ], -> callback()

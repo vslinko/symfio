@@ -1,45 +1,43 @@
-example = require "../support/example"
+exampleTest = require "../support/example_test"
 require "should"
 
 
-describe "Auth example", ->
-    test = unloader = null
-    
-    before (callback) ->
-        example "auth", ->
-            [test, unloader] = arguments
-            callback()
+describe "auth", ->
+    wrapper = exampleTest "auth"
 
-    after (callback) ->
-        unloader.unload callback
+    before wrapper.loader()
+    after wrapper.unloader()
 
-    it "should authenticate and populate user", (callback) ->
-        req = test.post "/sessions"
-        req.send username: "username", password: "password"
-        req.end (err, res) ->
-            res.should.have.status 201
-            res.should.be.json
-            res.body.should.have.property "token"
-            token = res.body.token
-
-            req = test.get "/"
-            req.set "Authorization", "Token #{token}"
-            req.end (err, res) ->
-                res.should.have.status 200
+    describe "POST /sessions", ->
+        it "should authenticate user", wrapper.wrap (callback) ->
+            req = @post "/sessions"
+            req.send username: "username", password: "password"
+            req.end (err, res) =>
+                res.should.have.status 201
                 res.should.be.json
-                res.body.should.have.property "user"
-                callback()
+                res.body.should.have.property "token"
+                token = res.body.token
 
-    it "should return 401 status code when user not found", (callback) ->
-        req = test.post "/sessions"
-        req.send username: "notfound", password: "password"
-        req.end (err, res) ->
-            res.should.have.status 401
-            callback()
+                req = @get "/"
+                req.set "Authorization", "Token #{token}"
+                req.end (err, res) ->
+                    res.should.have.status 200
+                    res.should.be.json
+                    res.body.should.have.property "user"
+                    callback()
 
-    it "should return 401 status code when password is invalid", (callback) ->
-        req = test.post "/sessions"
-        req.send username: "username", password: "invalid"
-        req.end (err, res) ->
-            res.should.have.status 401
-            callback()
+        it "should respond with 401 if user not found",
+            wrapper.wrap (callback) ->
+                req = @post "/sessions"
+                req.send username: "notfound", password: "password"
+                req.end (err, res) ->
+                    res.should.have.status 401
+                    callback()
+
+        it "should respond with 401 if password is invalid",
+            wrapper.wrap (callback) ->
+                req = @post "/sessions"
+                req.send username: "username", password: "invalid"
+                req.end (err, res) ->
+                    res.should.have.status 401
+                    callback()

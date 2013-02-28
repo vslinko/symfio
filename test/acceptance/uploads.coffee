@@ -1,28 +1,24 @@
-example = require "../support/example"
+exampleTest = require "../support/example_test"
 require "should"
 
 
-describe "Uploads example", ->
-    test = unloader = null
+describe "uploads", ->
+    wrapper = exampleTest "uploads"
 
-    before (callback) ->
-        example "uploads", ->
-            [test, unloader] = arguments
-            callback()
+    before wrapper.loader()
+    after wrapper.unloader()
 
-    after (callback) ->
-        unloader.unload callback
+    describe "POST /uploads", ->
+        it "should upload file", wrapper.wrap (callback) ->
+            req = @post "/uploads"
+            req.attach "file", __filename
+            req.end (err, res) =>
+                res.should.have.status 201
+                res.should.have.header "Location"
 
-    it "should receive file", (callback) ->
-        req = test.post "/uploads"
-        req.attach "file", __filename
-        req.end (err, res) ->
-            res.should.have.status 201
-            res.should.have.header "Location"
+                req = @get res.headers.location
+                req.end (err, res) ->
+                    res.should.have.status 200
+                    res.text.should.include "Super Unique Message"
 
-            req = test.get res.headers.location
-            req.end (err, res) ->
-                res.should.have.status 200
-                res.text.should.include "Super Unique Message"
-
-                callback()
+                    callback()
