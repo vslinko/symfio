@@ -24,10 +24,12 @@ fs = require "fs"
 module.exports = (container, callback) ->
     applicationDirectory = container.get "application directory"
     publicDirectory = container.get "public directory"
-    components = container.get "components"
+    components = container.get "components", []
     hashFile = path.join applicationDirectory, ".components"
     loader = container.get "loader"
     logger = container.get "logger"
+
+    return callback() if components.length == 0
 
     logger.info "loading plugin", "bower"
 

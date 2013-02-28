@@ -20,12 +20,12 @@ describe "supplier.plugins.bower()", ->
 
         @container.set "public directory", __dirname
         @container.set "silent", false
-        @container.set "components", ["jquery"]
 
     beforeEach wrapper.loader()
     afterEach wrapper.unloader()
 
     it "should pipe bower output", wrapper.wrap (callback) ->
+        @container.set "components", ["jquery"]
         supplier.plugins.bower @container, =>
             @installation.on.withArgs("data").calledOnce.should.be.true
             listener = @installation.on.withArgs("data").firstCall.args[1]
@@ -34,3 +34,9 @@ describe "supplier.plugins.bower()", ->
             console.log.firstCall.args[0].should.equal "bower"
             console.log.restore()
             callback()
+
+    it "should not install components if no components is provided",
+        wrapper.wrap (callback) ->
+            supplier.plugins.bower @container, =>
+                bower.commands.install.called.should.be.false
+                callback()
