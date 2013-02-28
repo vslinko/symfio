@@ -1,54 +1,49 @@
-fakeContainer = require "./support/fake_container"
+containerTest = require "./support/container_test"
 supplier = require ".."
 express = require "express"
 errors = require "../lib/supplier/errors"
-sinon = require "sinon"
 require "should"
 
 
-describe "uploads", ->
-    container = null
-    sandbox = null
-    logger = null
-    app = null
+describe "supplier.plugins.uploads()", ->
+    wrapper = containerTest ->
+        @app = express()
 
-    beforeEach ->
-        sandbox = sinon.sandbox.create()
-        container = fakeContainer sandbox
+        @stub @app, "use"
 
-        container.set "public directory", __dirname
-        container.set "uploads directory", __dirname
+        @container.set "public directory", __dirname
+        @container.set "uploads directory", __dirname
+        @container.set "app", @app
 
-        app = express()
-        sandbox.spy app, "use"
-        container.set "app", app
+    beforeEach wrapper.loader()
+    afterEach wrapper.unloader()
 
-    afterEach ->
-        sandbox.restore()
+    it "should catch only POST /uploads", wrapper.wrap ->
+        callback = @stub()
+        req = url: "/", method: "GET"
 
-    it "should catch only POST /uploads", (callback) ->
-        supplier.plugins.uploads container, ->
-            middleware = app.use.firstCall.args[0]
+        supplier.plugins.uploads @container, ->
+        middleware = @app.use.firstCall.args[0]
+        middleware req, null, callback
+        callback.calledOnce.should.be.true
 
-            req = url: "/", method: "GET"
-            middleware req, null, callback
+    it "should return 400 http code when no file sent", wrapper.wrap ->
+        req = url: "/uploads", method: "POST", body: [], files: []
+        res = send: @stub()
 
-    it "should return 400 http code when no file sent", ->
-        supplier.plugins.uploads container, ->
-            middleware = app.use.firstCall.args[0]
+        supplier.plugins.uploads @container, ->
+        middleware = @app.use.firstCall.args[0]
+        middleware req, res, ->
+        res.send.calledOnce.should.be.true
+        res.send.firstCall.args[0].should.equal 400
 
-            req = url: "/uploads", method: "POST", body: [], files: []
-            res = send: sinon.spy()
-            middleware req, res, ->
-            res.send.calledOnce.should.be.true
-            res.send.firstCall.args[0].should.equal 400
+    it "should exit if uploads directory not in public directory",
+        wrapper.wrap ->
+            e = @logger.error
 
-    it "should exit if uploads directory not in public directory", ->
-        container.set "public directory", "/a"
-        container.set "uploads directory", "/b"
-        
-        supplier.plugins.uploads container
+            @container.set "public directory", "/a"
+            @container.set "uploads directory", "/b"
 
-        e = container.get("logger").error
-        e.calledOnce.should.be.true
-        e.firstCall.args[0].should.eql errors.UPLOAD_DIRECTORY_IS_NOT_PUBLIC
+            supplier.plugins.uploads @container
+            e.calledOnce.should.be.true
+            e.firstCall.args[0].should.eql errors.UPLOAD_DIRECTORY_IS_NOT_PUBLIC

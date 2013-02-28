@@ -11,7 +11,9 @@ module.exports = (grunt) ->
                 src: "test/acceptance/*.coffee"
                 options: reporter: "spec"
             coverage:
-                src: ["test/*.coffee", "test/acceptance/*.coffee"]
+                # Unit tests must be run after acceptance tests
+                # because sinon stubs breaks mongoose
+                src: ["test/acceptance/*.coffee", "test/*.coffee"]
                 options: reporter: "html-file-cov"
             options: ignoreLeaks: true
         coffeeCoverage:

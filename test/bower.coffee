@@ -1,42 +1,34 @@
-fakeContainer = require "./support/fake_container"
+containerTest = require "./support/container_test"
 supplier = require ".."
 bower = require "bower"
-sinon = require "sinon"
 fs = require "fs"
 require "should"
 
 
-describe "bower", ->
-    installation = null
-    container = null
-    sandbox = null
+describe "supplier.plugins.bower()", ->
+    wrapper = containerTest ->
+        @installation = on: @stub()
 
-    beforeEach ->
-        sandbox = sinon.sandbox.create()
-        container = fakeContainer sandbox
+        @stub process, "chdir"
+        @stub fs, "writeFile"
+        @stub console, "log"
+        @stub bower.commands, "install"
 
-        sandbox.stub process, "chdir"
-        sandbox.stub fs, "writeFile"
         fs.writeFile.yields null
+        @installation.on.withArgs("end").yields()
+        bower.commands.install.returns @installation
 
-        installation = on: sinon.stub()
-        installation.on.withArgs("end").yields()
+        @container.set "public directory", __dirname
+        @container.set "silent", false
+        @container.set "components", ["jquery"]
 
-        sandbox.stub bower.commands, "install"
-        bower.commands.install.returns installation
+    beforeEach wrapper.loader()
+    afterEach wrapper.unloader()
 
-    afterEach ->
-        sandbox.restore()
-
-    it "should pipe bower output", (callback) ->
-        container.set "silent", false
-        container.set "components", ["jquery"]
-
-        supplier.plugins.bower container, ->
-            installation.on.withArgs("data").calledOnce.should.be.true
-
-            sinon.stub console, "log"
-            listener = installation.on.withArgs("data").firstCall.args[1]
+    it "should pipe bower output", wrapper.wrap (callback) ->
+        supplier.plugins.bower @container, =>
+            @installation.on.withArgs("data").calledOnce.should.be.true
+            listener = @installation.on.withArgs("data").firstCall.args[1]
             listener "bower"
             console.log.calledOnce.should.be.true
             console.log.firstCall.args[0].should.equal "bower"
