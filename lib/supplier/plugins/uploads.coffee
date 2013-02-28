@@ -47,7 +47,7 @@ module.exports = (container, callback) ->
             file = req.body[key].shift()
 
             # Location header contains link to uploaded file.
-            res.set "Location", "/#{prefix}/#{file.path}/#{file.basename}"
+            res.set "Location", "#{prefix}/#{file.path}#{file.basename}"
             res.send 201
 
     callback()
