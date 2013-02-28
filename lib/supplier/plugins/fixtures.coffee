@@ -80,7 +80,8 @@ module.exports = (container, callback) ->
                             item = new model data
                             item.save callback
 
-                        async.forEach fixture, itemWorker, callback
+                        async.forEach fixture, itemWorker, ->
+                            callback()
             ], callback
 
         async.forEach tasks, worker, ->

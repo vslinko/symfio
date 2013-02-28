@@ -20,7 +20,7 @@ class Loader extends events.EventEmitter
             # * __callback__ — Callback to notify the loader.
             plugin @container, callback
 
-        async.forEach @plugins, pluginWorker, =>
+        async.forEachSeries @plugins, pluginWorker, =>
             @emit "loaded"
 
 

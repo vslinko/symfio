@@ -6,8 +6,8 @@ loader = container.get "loader"
 
 loader.use supplier.plugins.express
 loader.use supplier.plugins.mongoose
-loader.use supplier.plugins.fixtures
 loader.use supplier.plugins.auth
+loader.use supplier.plugins.fixtures
 
 loader.use (container, callback) ->
     connection = container.get "connection"
