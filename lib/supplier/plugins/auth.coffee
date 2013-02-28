@@ -46,17 +46,19 @@ module.exports = (container, callback) ->
 
     UserSchema = new mongoose.Schema
         username: type: String, required: true
-        password: type: String, required: true
+        password: type: String
+        passwordHash: type: String, required: true
         salt: type: String, required: true
         tokens: [TokenSchema]
         metadata: type: mongoose.Schema.Types.Mixed
 
     UserSchema.pre "validate", (callback) ->
         @salt = randomHash() unless @salt
-        callback()
 
-    UserSchema.pre "save", (callback) ->
-        @password = password @password, @salt
+        if @password
+            @passwordHash = password @password, @salt
+            @password = undefined
+            
         callback()
 
     User = connection.model "users", UserSchema
@@ -83,12 +85,15 @@ module.exports = (container, callback) ->
             req.user = username: user.username, token: currentToken
             callback()
 
-    app.post "/sessions", (req, res) ->
+    app.use (req, res, callback) ->
+        unless req.url is "/sessions" and req.method is "POST"
+            return callback()
+
         User.findOne username: req.body.username, (err, user) ->
             return res.send 500 if err
             return res.send 401 unless user
 
-            if password(req.body.password, user.salt) != user.password
+            if password(req.body.password, user.salt) != user.passwordHash
                 return res.send 401
 
             tokenHash = randomHash()

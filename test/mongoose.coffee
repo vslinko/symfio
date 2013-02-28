@@ -1,60 +1,34 @@
-cleaner = require "./utils/cleaner"
-assert = require "assert"
+fakeContainer = require "./support/fake_container"
+supplier = require ".."
+mongoose = require "mongoose"
+sinon = require "sinon"
+require "should"
 
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
 
-
-describe "Mongoose plugin", ->
+describe "mongoose", ->
     container = null
-    loader = null
+    sandbox = null
 
     beforeEach ->
-        container = supplier "test", __dirname
-        container.set "silent", true
-        loader = container.get "loader"
-        loader.use supplier.plugins.mongoose
+        sandbox = sinon.sandbox.create()
+        container = fakeContainer sandbox
 
-    afterEach (callback) ->
-        cleaner container, [
-            cleaner.mongoose
-        ], callback
+        sandbox.stub mongoose.Connection.prototype, "open"
+        mongoose.Connection.prototype.open.yields()
 
-    it "should inject some values", (callback) ->
-        loader.load ->
-            assert.ok container.get "connection"
-            assert.ok container.get "mongoose"
-            assert.ok container.get "mongodb"
-            callback()
+    afterEach ->
+        sandbox.restore()
 
-    it "should generate connection string using name value", (callback) ->
-        loader.load ->
-            connection = container.get "connection"
-            assert.equal "localhost", connection.host
-            assert.equal 27017, connection.port
-            assert.equal undefined, connection.user
-            assert.equal undefined, connection.pass
-            assert.equal "test", connection.name
-            callback()
+    it "should generate connection string using name value", ->
+        supplier.plugins.mongoose container, ->
+            open = mongoose.Connection.prototype.open
+            open.calledOnce.should.be.true
+            open.args[0][0].should.equal "mongodb://localhost/supplier"
 
-    it "should inject MONGOHQ_URL to connection string", (callback) ->
+    it "should use MONGOHQ_URL as connection string", ->
         process.env.MONGOHQ_URL = "mongodb://127.0.0.1/abra-kadabra"
 
-        container = supplier "test", __dirname
-        container.set "silent", true
-        loader = container.get "loader"
-
-        loader.use supplier.plugins.mongoose
-
-        loader.load ->
-            connection = container.get "connection"
-            assert.equal "127.0.0.1", connection.host
-            assert.equal "abra-kadabra", connection.name
-            callback()
-
-    it "should connect to database", (callback) ->
-        loader.load ->
-            connection = container.get "connection"
-            assert.equal 1, connection.readyState
-            callback()
+        supplier.plugins.mongoose container, ->
+            open = mongoose.Connection.prototype.open
+            open.calledOnce.should.be.true
+            open.args[0][0].should.equal process.env.MONGOHQ_URL

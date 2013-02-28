@@ -1,50 +1,49 @@
-assert = require "assert"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+supplier = require ".."
+sinon = require "sinon"
+require "should"
 
 
-describe "Unloader", ->
-    unloader = null
+describe "supplier.unloader()", ->
+    describe "Unloader", ->
+        describe "#register()", ->
+            it "should add worker to head of queue", ->
+                unloader = new supplier.unloader.Unloader
+                worker0 = ->
+                worker1 = ->
 
-    beforeEach ->
-        unloader = new supplier.unloader.Unloader
+                unloader.workers.length.should.equal 0
+                unloader.register worker0
+                unloader.register worker1
+                unloader.workers.length.should.equal 2
+                unloader.workers[0].should.equal worker1
+                unloader.workers[1].should.equal worker0
 
-    it "should extend event emitter", (callback) ->
-        unloader.once "event", callback
-        unloader.emit "event"
+        describe "#unload()", ->
+            it "should run workers", ->
+                unloader = new supplier.unloader.Unloader
+                worker = sinon.stub().yields()
 
-    describe "register", ->
-        it "should register worker", ->
-            assert.equal 0, unloader.workers.length
-            unloader.register ->
-            assert.equal 1, unloader.workers.length
+                unloader.register worker
+                unloader.unload()
+                worker.called.should.be.true
 
-    describe "unload", ->
-        it "should run workers", (callback) ->
-            unloader.register (unloaderCallback) ->
-                unloaderCallback()
-                callback()
+            it "should emit 'unloaded' after all workers is done", ->
+                unloader = new supplier.unloader.Unloader
+                listener = sinon.spy()
+                worker = sinon.stub().yields()
 
-            unloader.unload()
+                unloader.register worker
+                unloader.on "unloaded", listener
+                unloader.unload()
+                listener.calledOnce.should.be.true
 
-        it "should emit 'unloaded'", (callback) ->
-            unloaded = false
-            
-            unloader.register (unloaderCallback) ->
-                assert.equal false, unloaded
-                unloaderCallback()
-                assert.equal true, unloaded
-                callback()
+            it "should call callback after all workers is done", ->
+                unloader = new supplier.unloader.Unloader
+                listener = sinon.spy()
+                worker = sinon.stub().yields()
 
-            unloader.on "unloaded", ->
-                unloaded = true
-
-            unloader.unload()
-
-        it "should register callback", (callback) ->
-            unloader.register (callback) ->
-                callback()
-            
-            unloader.unload callback
+                unloader.register worker
+                unloader.unload listener
+                listener.calledOnce.should.be.true
+                unloader.unload()
+                listener.calledOnce.should.be.true

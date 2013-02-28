@@ -25,7 +25,7 @@ module.exports = (container, callback) ->
     port = container.get "port", process.env.PORT or 3000
 
     logger.info "loading plugin", "express"
-    
+
     app = express()
 
     app.use express.bodyParser()
@@ -43,9 +43,6 @@ module.exports = (container, callback) ->
             logger.info "listening", port
 
     unloader.register (callback) ->
-        try
-            server.close callback
-        catch err
-            callback()
+        server.close callback
 
     callback()

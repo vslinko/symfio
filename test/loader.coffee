@@ -1,55 +1,59 @@
-fakePlugin = require "./utils/fake_plugin"
-assert = require "assert"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+supplier = require ".."
+sinon = require "sinon"
+require "should"
 
 
-describe "Loader", ->
-    container = null
-    loader = null
+describe "supplier.loader()", ->
+    describe "Loader", ->
+        describe "#use()", ->
+            it "should add plugin to tail of queue", ->
+                plugin0 = ->
+                plugin1 = ->
+                loader = new supplier.loader.Loader
 
-    beforeEach ->
-        container = new supplier.container.Container
-        loader = new supplier.loader.Loader container
+                loader.plugins.length.should.equal 0
+                loader.use plugin0
+                loader.use plugin1
+                loader.plugins.length.should.equal 2
+                loader.plugins[0].should.equal plugin0
+                loader.plugins[1].should.equal plugin1
 
-    it "should extend event emitter", (callback) ->
-        loader.once "event", callback
-        loader.emit "event"
+        describe "#load()", ->
+            it "should load plugins", ->
+                loader = new supplier.loader.Loader
+                plugin = sinon.stub().yields()
 
-    describe "use", ->
-        it "should push plugin into array", ->
-            assert.equal 0, loader.plugins.length
-            loader.use ->
-            assert.equal 1, loader.plugins.length
+                loader.use plugin
+                plugin.called.should.be.false
+                loader.load()
+                plugin.calledOnce.should.be.true
 
-        it "should emit 'loaded' when all plugins loaded", (callback) ->
-            loaded = false
+            it "should emit 'loaded' after all plugins is loaded", ->
+                listener = sinon.spy()
+                loader = new supplier.loader.Loader
+                plugin = sinon.stub().yields()
 
-            loader.once "loaded", ->
-                loaded = true
+                loader.use plugin
+                loader.once "loaded", listener
+                loader.load()
+                listener.calledOnce.should.be.true
 
-            plugin0 = fakePlugin()
-            plugin1 = fakePlugin()
+            it "should call callback after all plugins is loaded", ->
+                listener = sinon.spy()
+                loader = new supplier.loader.Loader
+                plugin = sinon.stub().yields()
 
-            loader.use plugin0.factory()
-            loader.use plugin1.factory()
-            loader.load()
-            assert.equal false, loaded
+                loader.use plugin
+                loader.load listener
+                listener.calledOnce.should.be.true
+                loader.load()
+                listener.calledOnce.should.be.true
 
-            process.nextTick ->
-                plugin0.callback()
-                assert.equal false, loaded
+            it "should provide container to plugin as first argument", ->
+                container = new supplier.container.Container
+                loader = new supplier.loader.Loader container
+                plugin = sinon.stub().yields()
 
-                plugin1.callback()
-                assert.equal true, loaded
-
-                callback()
-
-        it "should inject container into plugin", (callback) ->
-            loader.use (injectedContainer) ->
-                assert.equal container, injectedContainer
-                callback()
-
-            loader.load()
+                loader.use plugin
+                loader.load()
+                plugin.firstCall.args[0].should.equal container

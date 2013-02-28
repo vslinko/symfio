@@ -23,7 +23,6 @@ path = require "path"
 module.exports = (container, callback) ->
     uploadsDirectory = container.get "uploads directory"
     publicDirectory = container.get "public directory"
-    loader = container.get "loader"
     logger = container.get "logger"
     app = container.get "app"
 
@@ -34,18 +33,21 @@ module.exports = (container, callback) ->
 
     # Handles only one file.
     upload = fileupload.createFileUpload uploadsDirectory
-    middleware = (req, res, callback) ->
+    prefix = uploadsDirectory.replace publicDirectory, ""
+
+    app.use (req, res, callback) ->
+        unless req.url is "/uploads" and req.method is "POST"
+            return callback()
+
         return res.send 400 unless Object.keys(req.body).length is 0
         return res.send 400 unless Object.keys(req.files).length is 1
-        upload.middleware req, res, callback
 
-    prefix = uploadsDirectory.replace publicDirectory, ""
-    app.post "/uploads", middleware, (req, res) ->
-        key = Object.keys(req.body).shift()
-        file = req.body[key].shift()
+        upload.middleware req, res, ->
+            key = Object.keys(req.body).shift()
+            file = req.body[key].shift()
 
-        # Location header contains link to uploaded file.
-        res.set "Location", path.join prefix, file.path, file.basename
-        res.send 201
+            # Location header contains link to uploaded file.
+            res.set "Location", "/#{prefix}/#{file.path}/#{file.basename}"
+            res.send 201
 
     callback()

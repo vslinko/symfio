@@ -11,7 +11,7 @@ class Loader extends events.EventEmitter
         @plugins.push plugin
 
     load: (callback) ->
-        @on "loaded", callback if typeof callback is "function"
+        @once "loaded", callback if typeof callback is "function"
 
         pluginWorker = (plugin, callback) =>
             # The plugin is a function that takes two arguments:

@@ -12,7 +12,7 @@ class Unloader extends events.EventEmitter
         @workers.unshift worker
 
     unload: (callback) ->
-        @on "unloaded", callback if typeof callback is "function"
+        @once "unloaded", callback if typeof callback is "function"
 
         async.series @workers, =>
             @emit "unloaded"

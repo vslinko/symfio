@@ -1,67 +1,54 @@
-supertest = require "supertest"
-cleaner = require "./utils/cleaner"
-assert = require "assert"
-async = require "async"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+fakeContainer = require "./support/fake_container"
+supplier = require ".."
+express = require "express"
+errors = require "../lib/supplier/errors"
+sinon = require "sinon"
+require "should"
 
 
-describe "Uploads plugin", ->
+describe "uploads", ->
     container = null
-    loader = null
+    sandbox = null
+    logger = null
+    app = null
 
     beforeEach ->
-        container = supplier "example", __dirname
-        container.set "silent", true
-        loader = container.get "loader"
-        loader.use supplier.plugins.express
-        loader.use supplier.plugins.assets
-        loader.use supplier.plugins.uploads
+        sandbox = sinon.sandbox.create()
+        container = fakeContainer sandbox
 
-    afterEach (callback) ->
-        cleaner container, [
-            cleaner.assets
-            cleaner.uploads
-        ], callback
+        container.set "public directory", __dirname
+        container.set "uploads directory", __dirname
 
-    it "should send files and save it in filesystem", (callback) ->
-        loader.load ->
-            test = supertest container.get "app"
+        app = express()
+        sandbox.spy app, "use"
+        container.set "app", app
 
-            async.waterfall [
-                (callback) ->
-                    req = test.post "/uploads"
-                    req.attach "file", "test/public/upload.png", "upload.png"
-                    req.end (err, res) ->
-                        assert.equal 201, res.status
-                        assert.ok res.header.location
-                        callback null, res.header.location
+    afterEach ->
+        sandbox.restore()
 
-                (location, callback) ->
-                    req = test.get location
-                    req.end (err, res) ->
-                        assert.equal "image/png", res.type
-                        callback()
-            ], callback
+    it "should catch only POST /uploads", (callback) ->
+        supplier.plugins.uploads container, ->
+            middleware = app.use.firstCall.args[0]
 
-    it "should return 400 http code when no file sent", (callback) ->
-        loader.load ->
-            test = supertest container.get "app"
+            req = url: "/", method: "GET"
+            middleware req, null, callback
 
-            req = test.post "/uploads"
-            req.end (err, res) ->
-                assert.equal 400, res.status
-                callback()
+    it "should return 400 http code when no file sent", ->
+        supplier.plugins.uploads container, ->
+            middleware = app.use.firstCall.args[0]
 
-    it "should show not found error", (callback) ->
-        exit = process.exit
-        process.exit = (code) ->
-            assert.equal 1, code
-            process.exit = exit
-            callback()
+            req = url: "/uploads", method: "POST", body: [], files: []
+            res = send: sinon.spy()
+            middleware req, res, ->
+            res.send.calledOnce.should.be.true
+            res.send.firstCall.args[0].should.equal 400
 
+    it "should exit if uploads directory not in public directory", ->
         container.set "public directory", "/a"
         container.set "uploads directory", "/b"
-        loader.load()
+        
+        supplier.plugins.uploads container
+
+        e = container.get("logger").error
+        e.calledOnce.should.be.true
+        e.firstCall.args[0].should.eql errors.UPLOAD_DIRECTORY_IS_NOT_PUBLIC

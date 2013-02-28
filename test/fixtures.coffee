@@ -1,80 +1,71 @@
-cleaner = require "./utils/cleaner"
-assert = require "assert"
-async = require "async"
-path = require "path"
-
-supplier = require if process.env.COVERAGE \
-    then "../lib-cov/supplier"
-    else "../lib/supplier"
+fakeContainer = require "./support/fake_container"
+supplier = require ".."
+mongoose = require "mongoose"
+sinon = require "sinon"
+fs = require "fs"
+require "should"
 
 
-describe "Fixtures plugin", ->
+describe "fixtures", ->
     container = null
-    loader = null
-    Test = null
+    sandbox = null
+    model = null
+    app = null
 
-    createSupplier = (callback) ->
-        container = supplier "test", __dirname
-        container.set "silent", true
-        loader = container.get "loader"
+    users = [
+        {username: "username", password: "password"}
+        {username: "username", password: "password"}
+        {username: "username", password: "password"}
+    ]
 
-        loader.use supplier.plugins.mongoose
-        loader.use (container, callback) ->
-            connection = container.get "connection"
-            mongoose = container.get "mongoose"
+    beforeEach ->
+        sandbox = sinon.sandbox.create()
+        container = fakeContainer sandbox
 
-            TestSchema = new mongoose.Schema {
-                name: type: String, required: true
-                hooked: type: Boolean, default: false
-            }, safe: true
+        sandbox.stub fs, "readdir"
+        fs.readdir.yields null, ["users.json"]
 
-            TestSchema.pre "save", (callback) ->
-                @hooked = true
-                callback()
+        sandbox.stub fs, "readFile"
+        fs.readFile.yields null, JSON.stringify users
 
-            Test = connection.model "test", TestSchema
-            callback()
+        model = ->
+        sandbox.stub mongoose.Connection.prototype, "model"
+        mongoose.Connection.prototype.model.returns model
+        container.set "connection", new mongoose.Connection
 
-        loader.use supplier.plugins.fixtures
-        loader.load callback
-
-    beforeEach (callback) ->
-        createSupplier ->
-            callback()
-
-    afterEach (callback) ->
-        cleaner container, [
-            cleaner.mongoose
-        ], callback
+    afterEach ->
+        sandbox.restore()
 
     it "should load fixtures only if collection is empty", (callback) ->
-        testCount = (callback) ->
-            Test.find (err, items) ->
-                assert.equal 3, items.length
+        model.count = sinon.stub()
+        model.count.yields null, 0
 
-                items.forEach (item) ->
-                    assert.ok item.hooked
+        model.prototype = save: sinon.stub()
+        model.prototype.save.yields()
 
+        supplier.plugins.fixtures container, ->
+            model.prototype.save.called.should.be.true
+            model.prototype.save.callCount.should.equal users.length
+
+            model.prototype.save.reset()
+            model.count.yields null, 3
+
+            supplier.plugins.fixtures container, ->
+                model.prototype.save.called.should.be.false
                 callback()
 
-        async.waterfall [
-            (callback) ->
-                testCount callback
-
-            (callback) ->
-                createSupplier ->
-                    testCount callback
-        ], callback
-
     it "should warn if module isn't defined", (callback) ->
-        container = supplier "test", __dirname
-        container.set "silent", true
-
         logger = container.get "logger"
-        logger.warn = ->
+        mongoose.Connection.prototype.model.throws()
+
+        supplier.plugins.fixtures container, ->
+            logger.warn.calledOnce.should.be.true
             callback()
 
-        loader = container.get "loader"
-        loader.use supplier.plugins.mongoose
-        loader.use supplier.plugins.fixtures
-        loader.load()
+    it "should skip loading if json is invalid", (callback) ->
+        fs.readFile.resetBehavior()
+        fs.readFile.yields null, "invalid json"
+
+        supplier.plugins.fixtures container, ->
+            mongoose.Connection.prototype.model.called.should.be.false
+            callback()

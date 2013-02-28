@@ -4,14 +4,23 @@ module.exports = (grunt) ->
             coverage: ["lib-cov", "coverage.html"]
             docs: "docs"
         simplemocha:
-            all: src: "test/*.coffee", options: reporter: "teamcity"
-            coverage: src: "test/*.coffee", options: reporter: "html-file-cov"
+            all:
+                src: "test/*.coffee"
+                options: reporter: "teamcity"
+            acceptance:
+                src: "test/acceptance/*.coffee"
+                options: reporter: "spec"
+            coverage:
+                src: ["test/*.coffee", "test/acceptance/*.coffee"]
+                options: reporter: "html-file-cov"
+            options: ignoreLeaks: true
         coffeeCoverage:
             all: src: "lib", dest: "lib-cov"
         coffeelint:
             examples: "examples/**/*.coffee"
             lib: "lib/**/*.coffee"
             test: "test/**/*.coffee"
+            grunt: "Gruntfile.coffee"
             options: indentation: value: 4
         docco:
             lib: [
@@ -22,7 +31,7 @@ module.exports = (grunt) ->
             options: output: "docs"
 
     grunt.registerTask "default", ["clean", "coverage", "lint", "docs"]
-    grunt.registerTask "test", "simplemocha:all"
+    grunt.registerTask "test", ["simplemocha:all", "simplemocha:acceptance"]
     grunt.registerTask "lint", "coffeelint"
     grunt.registerTask "docs", "docco"
 
