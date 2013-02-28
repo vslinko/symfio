@@ -1,23 +1,18 @@
-example = require "../support/example"
+exampleTest = require "../support/example_test"
 require "should"
 
 
-describe "Bower example", ->
-    test = unloader = null
+describe "bower", ->
+    wrapper = exampleTest "bower"
 
-    before (callback) ->
-        this.timeout 10000
+    before wrapper.loader()
+    after wrapper.unloader()
 
-        example "bower", ->
-            [test, unloader] = arguments
-            callback()
-
-    after (callback) ->
-        unloader.unload callback
-
-    it "should install components", (callback) ->
-        req = test.get "/components/jquery/jquery.js"
-        req.end (err, res) ->
-            res.should.have.status 200
-            res.text.should.include "jQuery"
-            callback()
+    describe "GET /components/jquery/jquery.js", ->
+        it "should respond with installed components",
+            wrapper.wrap (callback) ->
+                req = @get "/components/jquery/jquery.js"
+                req.end (err, res) ->
+                    res.should.have.status 200
+                    res.text.should.include "jQuery"
+                    callback()
