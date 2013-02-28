@@ -4,18 +4,20 @@ module.exports = (grunt) ->
             coverage: ["lib-cov", "coverage.html"]
             docs: "docs"
         simplemocha:
-            all:
+            unit:
                 src: "test/*.coffee"
                 options: reporter: "teamcity"
             acceptance:
                 src: "test/acceptance/*.coffee"
                 options: reporter: "spec"
             coverage:
-                src: ["test/*.coffee", "test/acceptance/*.coffee"]
+                # Unit tests must be run after acceptance tests
+                # because sinon stubs breaks mongoose
+                src: ["test/acceptance/*.coffee", "test/*.coffee"]
                 options: reporter: "html-file-cov"
             options: ignoreLeaks: true
         coffeeCoverage:
-            all: src: "lib", dest: "lib-cov"
+            lib: src: "lib", dest: "lib-cov"
         coffeelint:
             examples: "examples/**/*.coffee"
             lib: "lib/**/*.coffee"
@@ -31,7 +33,7 @@ module.exports = (grunt) ->
             options: output: "docs"
 
     grunt.registerTask "default", ["clean", "coverage", "lint", "docs"]
-    grunt.registerTask "test", ["simplemocha:all", "simplemocha:acceptance"]
+    grunt.registerTask "test", ["simplemocha:acceptance", "simplemocha:unit"]
     grunt.registerTask "lint", "coffeelint"
     grunt.registerTask "docs", "docco"
 

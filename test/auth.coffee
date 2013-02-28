@@ -1,71 +1,62 @@
-fakeContainer = require "./support/fake_container"
+containerTest = require "./support/container_test"
 mongoose = require "mongoose"
 supplier = require ".."
 express = require "express"
-sinon = require "sinon"
 require "should"
 
 
-describe "auth", ->
-    container = null
-    sandbox = null
-    app = null
-    req = null
+describe "supplier.plugins.auth()", ->
+    wrapper = containerTest ->
+        @tokenHash = "tokenHash"
+        @app = express()
+        @req = get: @stub().returns "Token #{@tokenHash}"
+        @res = send: @stub()
 
-    beforeEach ->
-        sandbox = sinon.sandbox.create()
-        container = fakeContainer sandbox
+        @stub mongoose.Model, "findOne"
+        @stub mongoose.Connection.prototype, "model"
+        @stub @app, "use"
 
-        sandbox.stub mongoose.Model, "findOne"
-        sandbox.stub mongoose.Connection.prototype, "model"
         mongoose.Connection.prototype.model.returns mongoose.Model
-        container.set "connection", new mongoose.Connection
-        container.set "mongoose", mongoose
 
-        app = express()
-        sandbox.spy app, "use"
-        container.set "app", app
+        @container.set "connection", new mongoose.Connection
+        @container.set "mongoose", mongoose
+        @container.set "app", @app
 
-        req = get: sandbox.stub().returns "Token shmoken"
+    beforeEach wrapper.loader()
+    afterEach wrapper.unloader()
 
-    afterEach ->
-        sandbox.restore()
-
-    it "should populate user in request object", ->
-        user = username: "nameuser", tokens: [
-            hash: "shmoken", expires: new Date Date.now() + 10000
+    it "should populate user in request object", wrapper.wrap ->
+        user = username: "username", tokens: [
+            hash: @tokenHash, expires: new Date Date.now() + 10000
         ]
+
         mongoose.Model.findOne.yields null, user
+        supplier.plugins.auth @container, ->
+        populateMiddleware = @app.use.firstCall.args[0]
+        populateMiddleware @req, null, ->
+        @req.should.have.property "user"
+        @req.user.username.should.equal user.username
+        @req.user.token.hash.should.equal @tokenHash
 
-        supplier.plugins.auth container, ->
-            populateMiddleware = app.use.firstCall.args[0]
-            populateMiddleware req, null, ->
-                req.should.have.property "user"
-                req.user.username.should.equal user.username
-                req.user.token.hash.should.equal "shmoken"
-
-    it "should not populate user in request object if token is expired", ->
+    it "shouldn't populate user if token is expired", wrapper.wrap ->
         user = username: "nameuser", tokens: [
-            hash: "shmoken", expires: new Date Date.now() - 10000
+            hash: "tokenHash", expires: new Date Date.now() - 10000
         ]
+
         mongoose.Model.findOne.yields null, user
+        supplier.plugins.auth @container, ->
+        populateMiddleware = @app.use.firstCall.args[0]
+        populateMiddleware @req, null, ->
+        @req.should.not.have.property "user"
 
-        supplier.plugins.auth container, ->
-            populateMiddleware = app.use.firstCall.args[0]
-            populateMiddleware req, null, ->
-                req.should.not.have.property "user"
+    it "should respond with 500 if mongodb request is failed", wrapper.wrap ->
+        @req.url = "/sessions"
+        @req.method = "POST"
+        @req.body = username: "username"
 
-    it "should return 500 http code when mongo failed", (callback) ->
         mongoose.Model.findOne.yields new Error
-
-        req.url = "/sessions"
-        req.method = "POST"
-        req.body = username: "username"
-        res = send: sinon.mock().once().withExactArgs 500
-
-        supplier.plugins.auth container, ->
-            authenticateMiddleware = app.use.lastCall.args[0]
-            authenticateMiddleware req, res
-
-            res.send.verify()
-            callback()
+        supplier.plugins.auth @container, ->
+        authenticateMiddleware = @app.use.lastCall.args[0]
+        authenticateMiddleware @req, @res, ->
+        @res.send.calledOnce.should.be.true
+        @res.send.firstCall.args[0].should.equal 500

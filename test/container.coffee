@@ -23,7 +23,7 @@ describe "suppler.container()", ->
                 listener.firstCall.args[1].should.equal "previous"
 
         describe "#get()", ->
-            it "should return default value if value isn't settled before", ->
+            it "should return default value if value isn't setted before", ->
                 container = new supplier.container.Container
 
                 container.get("undefined", "default").should.equal "default"
