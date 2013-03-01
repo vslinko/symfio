@@ -1,4 +1,5 @@
 containerTest = require "./support/container_test"
+fileupload = require "fileupload"
 supplier = require ".."
 express = require "express"
 errors = require "../lib/supplier/errors"
@@ -47,3 +48,21 @@ describe "supplier.plugins.uploads()", ->
             supplier.plugins.uploads @container
             e.calledOnce.should.be.true
             e.firstCall.args[0].should.eql errors.UPLOAD_DIRECTORY_IS_NOT_PUBLIC
+
+    it "should return filepath with uploads in public", wrapper.wrap ->
+        file = file: [path: "p/", basename: "f.jpg"]
+        req = url: "/uploads", method: "POST", body: [], files: file
+        res = send: @stub(), set: @stub()
+        
+        @stub fileupload, "createFileUpload"
+        fileupload.createFileUpload.returns middleware: (req, res, callback) ->
+            req.body = file
+            callback()
+
+        @container.set "public directory", "/a"
+        @container.set "uploads directory", "/a/b"
+
+        supplier.plugins.uploads @container, ->
+        middleware = @app.use.firstCall.args[0]
+        middleware req, res, ->
+        res.set.withArgs("Location").firstCall.args[1].should.eql "/b/p/f.jpg"
