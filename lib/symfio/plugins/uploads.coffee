@@ -1,11 +1,11 @@
 # Handle file uploading.
 #
-#     supplier = require "supplier"
-#     container = supplier "example", __dirname
+#     symfio = require "symfio"
+#     container = symfio "example", __dirname
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.assets
-#     loader.use supplier.plugins.express
-#     loader.use supplier.plugins.uploads
+#     loader.use symfio.plugins.assets
+#     loader.use symfio.plugins.express
+#     loader.use symfio.plugins.uploads
 #     loader.load()
 fileupload = require "fileupload"
 errors = require "../errors"

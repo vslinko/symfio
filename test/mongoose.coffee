@@ -1,10 +1,10 @@
 containerTest = require "./support/container_test"
-supplier = require ".."
+symfio = require ".."
 mongoose = require "mongoose"
 require "should"
 
 
-describe "supplier.plugins.mongoose()", ->
+describe "symfio.plugins.mongoose()", ->
     wrapper = containerTest ->
         @stub mongoose.Connection.prototype, "open"
         @open = mongoose.Connection.prototype.open
@@ -13,15 +13,15 @@ describe "supplier.plugins.mongoose()", ->
     afterEach wrapper.unloader()
 
     it "should generate connection string using name value", wrapper.wrap ->
-        supplier.plugins.mongoose @container, ->
+        symfio.plugins.mongoose @container, ->
         @open.calledOnce.should.be.true
-        @open.firstCall.args[0].should.equal "mongodb://localhost/supplier"
+        @open.firstCall.args[0].should.equal "mongodb://localhost/symfio"
 
     it "should use MONGOHQ_URL as connection string", wrapper.wrap ->
         mongohqUrl = process.env.MONGOHQ_URL
         process.env.MONGOHQ_URL = "mongodb://127.0.0.1/abra-kadabra"
 
-        supplier.plugins.mongoose @container, ->
+        symfio.plugins.mongoose @container, ->
         @open.calledOnce.should.be.true
         @open.firstCall.args[0].should.equal process.env.MONGOHQ_URL
 

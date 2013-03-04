@@ -1,11 +1,11 @@
 containerTest = require "./support/container_test"
-supplier = require ".."
+symfio = require ".."
 bower = require "bower"
 fs = require "fs"
 require "should"
 
 
-describe "supplier.plugins.bower()", ->
+describe "symfio.plugins.bower()", ->
     wrapper = containerTest ->
         @installation = on: @stub()
 
@@ -26,7 +26,7 @@ describe "supplier.plugins.bower()", ->
 
     it "should pipe bower output", wrapper.wrap (callback) ->
         @container.set "components", ["jquery"]
-        supplier.plugins.bower @container, =>
+        symfio.plugins.bower @container, =>
             @installation.on.withArgs("data").calledOnce.should.be.true
             listener = @installation.on.withArgs("data").firstCall.args[1]
             listener "bower"
@@ -37,6 +37,6 @@ describe "supplier.plugins.bower()", ->
 
     it "should not install components if no components is provided",
         wrapper.wrap (callback) ->
-            supplier.plugins.bower @container, =>
+            symfio.plugins.bower @container, =>
                 bower.commands.install.called.should.be.false
                 callback()

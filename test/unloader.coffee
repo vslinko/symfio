@@ -1,13 +1,13 @@
-supplier = require ".."
+symfio = require ".."
 sinon = require "sinon"
 require "should"
 
 
-describe "supplier.unloader()", ->
+describe "symfio.unloader()", ->
     describe "Unloader", ->
         describe "#register()", ->
             it "should add worker to head of queue", ->
-                unloader = new supplier.unloader.Unloader
+                unloader = new symfio.unloader.Unloader
                 worker0 = ->
                 worker1 = ->
 
@@ -20,7 +20,7 @@ describe "supplier.unloader()", ->
 
         describe "#unload()", ->
             it "should run workers", ->
-                unloader = new supplier.unloader.Unloader
+                unloader = new symfio.unloader.Unloader
                 worker = sinon.stub().yields()
 
                 unloader.register worker
@@ -28,7 +28,7 @@ describe "supplier.unloader()", ->
                 worker.called.should.be.true
 
             it "should emit 'unloaded' after all workers is done", ->
-                unloader = new supplier.unloader.Unloader
+                unloader = new symfio.unloader.Unloader
                 listener = sinon.spy()
                 worker = sinon.stub().yields()
 
@@ -38,7 +38,7 @@ describe "supplier.unloader()", ->
                 listener.calledOnce.should.be.true
 
             it "should call callback after all workers is done", ->
-                unloader = new supplier.unloader.Unloader
+                unloader = new symfio.unloader.Unloader
                 listener = sinon.spy()
                 worker = sinon.stub().yields()
 

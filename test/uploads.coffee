@@ -1,12 +1,12 @@
 containerTest = require "./support/container_test"
 fileupload = require "fileupload"
-supplier = require ".."
+symfio = require ".."
 express = require "express"
-errors = require "../lib/supplier/errors"
+errors = require "../lib/symfio/errors"
 require "should"
 
 
-describe "supplier.plugins.uploads()", ->
+describe "symfio.plugins.uploads()", ->
     wrapper = containerTest ->
         @app = express()
 
@@ -23,7 +23,7 @@ describe "supplier.plugins.uploads()", ->
         callback = @stub()
         req = url: "/", method: "GET"
 
-        supplier.plugins.uploads @container, ->
+        symfio.plugins.uploads @container, ->
         middleware = @app.use.firstCall.args[0]
         middleware req, null, callback
         callback.calledOnce.should.be.true
@@ -32,7 +32,7 @@ describe "supplier.plugins.uploads()", ->
         req = url: "/uploads", method: "POST", body: [], files: []
         res = send: @stub()
 
-        supplier.plugins.uploads @container, ->
+        symfio.plugins.uploads @container, ->
         middleware = @app.use.firstCall.args[0]
         middleware req, res, ->
         res.send.calledOnce.should.be.true
@@ -45,7 +45,7 @@ describe "supplier.plugins.uploads()", ->
             @container.set "public directory", "/a"
             @container.set "uploads directory", "/b"
 
-            supplier.plugins.uploads @container
+            symfio.plugins.uploads @container
             e.calledOnce.should.be.true
             e.firstCall.args[0].should.eql errors.UPLOAD_DIRECTORY_IS_NOT_PUBLIC
 
@@ -62,7 +62,7 @@ describe "supplier.plugins.uploads()", ->
         @container.set "public directory", "/a"
         @container.set "uploads directory", "/a/b"
 
-        supplier.plugins.uploads @container, ->
+        symfio.plugins.uploads @container, ->
         middleware = @app.use.firstCall.args[0]
         middleware req, res, ->
         res.set.withArgs("Location").firstCall.args[1].should.eql "/b/p/f.jpg"

@@ -1,10 +1,10 @@
 {
-    "name": "supplier",
+    "name": "symfio",
     "version": "0.3.2",
     "description": "Glue for Node.js modules",
-    "homepage": "http://rithis.github.com/supplier/",
+    "homepage": "http://symf.io/",
     "bugs": {
-        "url": "https://github.com/rithis/supplier/issues",
+        "url": "https://github.com/symfio/symfio/issues",
         "email": "webmaster@rithis.com"
     },
     "author": {
@@ -14,7 +14,7 @@
     "main": "index",
     "repository": {
         "type": "git",
-        "url": "git://github.com/rithis/supplier.git"
+        "url": "git://github.com/symfio/symfio.git"
     },
     "scripts": {
         "test": "./node_modules/.bin/grunt test"

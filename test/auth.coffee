@@ -1,11 +1,11 @@
 containerTest = require "./support/container_test"
 mongoose = require "mongoose"
-supplier = require ".."
+symfio = require ".."
 express = require "express"
 require "should"
 
 
-describe "supplier.plugins.auth()", ->
+describe "symfio.plugins.auth()", ->
     wrapper = containerTest ->
         @tokenHash = "tokenHash"
         @app = express()
@@ -31,7 +31,7 @@ describe "supplier.plugins.auth()", ->
         ]
 
         mongoose.Model.findOne.yields null, user
-        supplier.plugins.auth @container, ->
+        symfio.plugins.auth @container, ->
         populateMiddleware = @app.use.firstCall.args[0]
         populateMiddleware @req, null, ->
         @req.should.have.property "user"
@@ -44,7 +44,7 @@ describe "supplier.plugins.auth()", ->
         ]
 
         mongoose.Model.findOne.yields null, user
-        supplier.plugins.auth @container, ->
+        symfio.plugins.auth @container, ->
         populateMiddleware = @app.use.firstCall.args[0]
         populateMiddleware @req, null, ->
         @req.should.not.have.property "user"
@@ -55,7 +55,7 @@ describe "supplier.plugins.auth()", ->
         @req.body = username: "username"
 
         mongoose.Model.findOne.yields new Error
-        supplier.plugins.auth @container, ->
+        symfio.plugins.auth @container, ->
         authenticateMiddleware = @app.use.lastCall.args[0]
         authenticateMiddleware @req, @res, ->
         @res.send.calledOnce.should.be.true
@@ -70,7 +70,7 @@ describe "supplier.plugins.auth()", ->
         ]
 
         mongoose.Model.findOne.yields null, user
-        supplier.plugins.auth @container, ->
+        symfio.plugins.auth @container, ->
         sessionCheckerMiddleware = @app.use.secondCall.args[0]
         sessionCheckerMiddleware @req, @res, ->
         @res.send.calledOnce.should.be.true
@@ -85,7 +85,7 @@ describe "supplier.plugins.auth()", ->
         ]
 
         mongoose.Model.findOne.yields null, user
-        supplier.plugins.auth @container, ->
+        symfio.plugins.auth @container, ->
         sessionCheckerMiddleware = @app.use.secondCall.args[0]
         sessionCheckerMiddleware @req, @res, ->
         @res.send.calledOnce.should.be.true

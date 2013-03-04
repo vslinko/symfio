@@ -1,10 +1,10 @@
 # Connect to MongoDB
 #
-#     supplier = require "supplier"
-#     container = supplier "example", __dirname
+#     symfio = require "symfio"
+#     container = symfio "example", __dirname
 #     container.set "connection string", "mongodb://localhost/test"
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.mongoose
+#     loader.use symfio.plugins.mongoose
 #     loader.load()
 mongoose = require "mongoose"
 

@@ -1,11 +1,11 @@
-supplier = require "../.."
+symfio = require "../.."
 
 
-container = supplier "fruits-example", __dirname
+container = symfio "fruits-example", __dirname
 loader = container.get "loader"
 
-loader.use supplier.plugins.express
-loader.use supplier.plugins.mongoose
+loader.use symfio.plugins.express
+loader.use symfio.plugins.mongoose
 
 loader.use (container, callback) ->
     connection = container.get "connection"
@@ -18,8 +18,8 @@ loader.use (container, callback) ->
 
     callback()
 
-loader.use supplier.plugins.fixtures
-loader.use supplier.plugins.crud
+loader.use symfio.plugins.fixtures
+loader.use symfio.plugins.crud
 
 loader.use (container, callback) ->
     connection = container.get "connection"
