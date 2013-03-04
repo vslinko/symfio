@@ -1,10 +1,10 @@
-supplier = require ".."
+symfio = require ".."
 require "should"
 
 
-describe "supplier()", ->
+describe "symfio()", ->
     it "should return configured container", ->
-        c = supplier "test", __dirname
+        c = symfio "test", __dirname
 
         c.get("name").should.equal "test"
         c.get("silent").should.be.false
@@ -14,6 +14,6 @@ describe "supplier()", ->
         c.get("uploads directory").should.equal "#{__dirname}/public/uploads"
         c.get("public directory").should.equal "#{__dirname}/public"
 
-        c.get("logger").should.be.an.instanceOf supplier.logger.Logger
-        c.get("loader").should.be.an.instanceOf supplier.loader.Loader
-        c.get("unloader").should.be.an.instanceOf supplier.unloader.Unloader
+        c.get("logger").should.be.an.instanceOf symfio.logger.Logger
+        c.get("loader").should.be.an.instanceOf symfio.loader.Loader
+        c.get("unloader").should.be.an.instanceOf symfio.unloader.Unloader

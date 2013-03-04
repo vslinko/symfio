@@ -1,23 +1,23 @@
-supplier = require "../.."
+symfio = require "../.."
 sinon = require "sinon"
 
 
 containerConfigurator = ->
-    @container = supplier.container()
+    @container = symfio.container()
 
-    @container.set "name", "supplier"
+    @container.set "name", "symfio"
     @container.set "silent", true
 
-    @stub supplier.logger.Logger.prototype
-    @logger = new supplier.logger.Logger
+    @stub symfio.logger.Logger.prototype
+    @logger = new symfio.logger.Logger
     @container.set "logger", @logger
 
-    @stub supplier.loader.Loader.prototype
-    @loader = new supplier.loader.Loader
+    @stub symfio.loader.Loader.prototype
+    @loader = new symfio.loader.Loader
     @container.set "loader", @loader
 
-    @stub supplier.unloader.Unloader.prototype
-    @unloader = new supplier.unloader.Unloader
+    @stub symfio.unloader.Unloader.prototype
+    @unloader = new symfio.unloader.Unloader
     @container.set "unloader", @unloader
 
 

@@ -1,10 +1,10 @@
 # Launch express application after all plugins is loaded.
 #
-#     supplier = require "supplier"
-#     container = supplier "example", __dirname
+#     symfio = require "symfio"
+#     container = symfio "example", __dirname
 #     container.set "port", 80
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.express
+#     loader.use symfio.plugins.express
 #     loader.load()
 express = require "express"
 http = require "http"

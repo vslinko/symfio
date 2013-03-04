@@ -1,10 +1,10 @@
 # Load fixtures to mongodb collection from fixtures directory.
 #
-#     supplier = require "supplier"
-#     container = supplier "example", __dirname
+#     symfio = require "symfio"
+#     container = symfio "example", __dirname
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.fixtures
-#     loader.use supplier.plugins.mongoose
+#     loader.use symfio.plugins.fixtures
+#     loader.use symfio.plugins.mongoose
 #     loader.load()
 async = require "async"
 path = require "path"

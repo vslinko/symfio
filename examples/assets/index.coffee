@@ -1,15 +1,15 @@
-supplier = require "../.."
+symfio = require "../.."
 async = require "async"
 path = require "path"
 fs = require "fs"
 
 
-container = supplier "assets-example", __dirname
+container = symfio "assets-example", __dirname
 unloader = container.get "unloader"
 loader = container.get "loader"
 
-loader.use supplier.plugins.express
-loader.use supplier.plugins.assets
+loader.use symfio.plugins.express
+loader.use symfio.plugins.assets
 
 unloader.register (callback) ->
     publicDirectory = container.get "public directory"

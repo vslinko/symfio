@@ -1,16 +1,16 @@
-supplier = require ".."
+symfio = require ".."
 sinon = require "sinon"
 require "colors"
 require "should"
 
 
-describe "supplier.logger()", ->
+describe "symfio.logger()", ->
     it "should subscribe to silent changes", ->
-        container = new supplier.container.Container
-        container.set "name", "supplier"
+        container = new symfio.container.Container
+        container.set "name", "symfio"
         container.set "silent", true
 
-        logger = supplier.logger container
+        logger = symfio.logger container
         logger.silent.should.be.true
 
         container.set "silent", false
@@ -19,8 +19,8 @@ describe "supplier.logger()", ->
     describe "Logger", ->
         describe "#info()", ->
             it "should output message", sinon.test ->
-                message = "supplier #{"hello".cyan} #{"world".grey}"
-                logger = new supplier.logger.Logger "supplier"
+                message = "symfio #{"hello".cyan} #{"world".grey}"
+                logger = new symfio.logger.Logger "symfio"
 
                 @stub console, "log"
 
@@ -30,7 +30,7 @@ describe "supplier.logger()", ->
 
             it "should give preference to name from arguments", sinon.test ->
                 message = "test #{"hello".cyan} #{"world".grey}"
-                logger = new supplier.logger.Logger "supplier"
+                logger = new symfio.logger.Logger "symfio"
 
                 @stub console, "log"
 
@@ -39,7 +39,7 @@ describe "supplier.logger()", ->
                 console.log.lastCall.args[0].should.equal message
 
             it "shouldn't output message if silent is true", sinon.test ->
-                logger = new supplier.logger.Logger "supplier", true
+                logger = new symfio.logger.Logger "symfio", true
 
                 @stub console, "log"
 
@@ -48,7 +48,7 @@ describe "supplier.logger()", ->
 
             it "should output message if arguments is numbers", sinon.test ->
                 message = "3 #{"1".cyan} #{"2".grey}"
-                logger = new supplier.logger.Logger "supplier"
+                logger = new symfio.logger.Logger "symfio"
 
                 @stub console, "log"
 
@@ -58,8 +58,8 @@ describe "supplier.logger()", ->
 
         describe "#warn()", ->
             it "should output message", sinon.test ->
-                message = "supplier #{"warn".yellow} #{"hello world".grey}"
-                logger = new supplier.logger.Logger "supplier"
+                message = "symfio #{"warn".yellow} #{"hello world".grey}"
+                logger = new symfio.logger.Logger "symfio"
 
                 @stub console, "log"
 
@@ -69,8 +69,8 @@ describe "supplier.logger()", ->
 
         describe "#error()", ->
             it "should output message and terminate application", sinon.test ->
-                message = "supplier #{"error".red} #{"hello world".grey}"
-                logger = new supplier.logger.Logger "supplier"
+                message = "symfio #{"error".red} #{"hello world".grey}"
+                logger = new symfio.logger.Logger "symfio"
 
                 @stub console, "log"
                 @stub process, "exit"

@@ -1,11 +1,11 @@
 # Authentication using tokens.
 #
-#     supplier = require "supplier"
-#     container = supplier "example", __dirname
+#     symfio = require "symfio"
+#     container = symfio "example", __dirname
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.auth
-#     loader.use supplier.plugins.express
-#     loader.use supplier.plugins.mongoose
+#     loader.use symfio.plugins.auth
+#     loader.use symfio.plugins.express
+#     loader.use symfio.plugins.mongoose
 #     loader.load()
 crypto = require "crypto"
 ms = require "ms"

@@ -1,9 +1,9 @@
 # Compile and serve assets from public directory.
 #
-#     supplier = require "supplier"
-#     container = supplier "example", __dirname
+#     symfio = require "symfio"
+#     container = symfio "example", __dirname
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.assets
+#     loader.use symfio.plugins.assets
 #     loader.load()
 coffeescript = require "connect-coffee-script"
 responsive = require "stylus-responsive"

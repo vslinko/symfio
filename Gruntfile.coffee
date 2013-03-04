@@ -26,9 +26,9 @@ module.exports = (grunt) ->
             options: indentation: value: 4
         docco:
             lib: [
-                "lib/supplier.coffee",
-                "lib/supplier/!(plugins).coffee",
-                "lib/supplier/plugins/*.coffee"
+                "lib/symfio.coffee",
+                "lib/symfio/!(plugins).coffee",
+                "lib/symfio/plugins/*.coffee"
             ]
             options: output: "docs"
 

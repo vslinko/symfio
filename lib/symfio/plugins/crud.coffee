@@ -1,9 +1,9 @@
 # Just provide CRUD module.
 #
-#     supplier = require "supplier"
-#     container = supplier "example", __dirname
+#     symfio = require "symfio"
+#     container = symfio "example", __dirname
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.crud
+#     loader.use symfio.plugins.crud
 #     loader.load()
 crud = require "rithis-crud"
 

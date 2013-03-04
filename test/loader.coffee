@@ -1,15 +1,15 @@
-supplier = require ".."
+symfio = require ".."
 sinon = require "sinon"
 require "should"
 
 
-describe "supplier.loader()", ->
+describe "symfio.loader()", ->
     describe "Loader", ->
         describe "#use()", ->
             it "should add plugin to tail of queue", ->
                 plugin0 = ->
                 plugin1 = ->
-                loader = new supplier.loader.Loader
+                loader = new symfio.loader.Loader
 
                 loader.plugins.length.should.equal 0
                 loader.use plugin0
@@ -20,7 +20,7 @@ describe "supplier.loader()", ->
 
         describe "#load()", ->
             it "should load plugins", ->
-                loader = new supplier.loader.Loader
+                loader = new symfio.loader.Loader
                 plugin = sinon.stub().yields()
 
                 loader.use plugin
@@ -30,7 +30,7 @@ describe "supplier.loader()", ->
 
             it "should emit 'loaded' after all plugins is loaded", ->
                 listener = sinon.spy()
-                loader = new supplier.loader.Loader
+                loader = new symfio.loader.Loader
                 plugin = sinon.stub().yields()
 
                 loader.use plugin
@@ -40,7 +40,7 @@ describe "supplier.loader()", ->
 
             it "should call callback after all plugins is loaded", ->
                 listener = sinon.spy()
-                loader = new supplier.loader.Loader
+                loader = new symfio.loader.Loader
                 plugin = sinon.stub().yields()
 
                 loader.use plugin
@@ -50,8 +50,8 @@ describe "supplier.loader()", ->
                 listener.calledOnce.should.be.true
 
             it "should provide container to plugin as first argument", ->
-                container = new supplier.container.Container
-                loader = new supplier.loader.Loader container
+                container = new symfio.container.Container
+                loader = new symfio.loader.Loader container
                 plugin = sinon.stub().yields()
 
                 loader.use plugin

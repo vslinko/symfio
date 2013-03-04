@@ -1,13 +1,13 @@
-supplier = require "../.."
+symfio = require "../.."
 
 
-container = supplier "auth-example", __dirname
+container = symfio "auth-example", __dirname
 loader = container.get "loader"
 
-loader.use supplier.plugins.express
-loader.use supplier.plugins.mongoose
-loader.use supplier.plugins.auth
-loader.use supplier.plugins.fixtures
+loader.use symfio.plugins.express
+loader.use symfio.plugins.mongoose
+loader.use symfio.plugins.auth
+loader.use symfio.plugins.fixtures
 
 loader.use (container, callback) ->
     connection = container.get "connection"

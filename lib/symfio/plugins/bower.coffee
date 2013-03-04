@@ -1,10 +1,10 @@
 # Install components from the Bower repository to the public directory.
 #
-#     supplier = require "supplier"
-#     container = supplier "example", __dirname
+#     symfio = require "symfio"
+#     container = symfio "example", __dirname
 #     container.set "components", ["jquery", "bootstrap"]
 #     loader = container.get "loader"
-#     loader.use supplier.plugins.bower
+#     loader.use symfio.plugins.bower
 #     loader.load()
 crypto = require "crypto"
 bower = require "bower"

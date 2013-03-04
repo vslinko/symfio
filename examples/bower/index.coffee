@@ -1,15 +1,15 @@
-supplier = require "../.."
+symfio = require "../.."
 fs = require "fs.extra"
 
 
-container = supplier "bower-example", __dirname
+container = symfio "bower-example", __dirname
 container.set "public directory", __dirname
 container.set "components", ["jquery"]
 
 loader = container.get "loader"
-loader.use supplier.plugins.express
-loader.use supplier.plugins.assets
-loader.use supplier.plugins.bower
+loader.use symfio.plugins.express
+loader.use symfio.plugins.assets
+loader.use symfio.plugins.bower
 
 loader.use (container, callback) ->
     unloader = container.get "unloader"

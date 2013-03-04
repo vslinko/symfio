@@ -1,16 +1,16 @@
-# Supplier
+# Symfio
 
 Glue for Node.js modules
 
 ```coffeescript
-supplier = require "supplier"
+symfio = require "symfio"
 
 
-container = supplier "fruits-example", __dirname
+container = symfio "fruits-example", __dirname
 loader = container.get "loader"
 
-loader.use supplier.plugins.express
-loader.use supplier.plugins.mongoose
+loader.use symfio.plugins.express
+loader.use symfio.plugins.mongoose
 
 loader.use (container, callback) ->
     connection = container.get "connection"
@@ -23,8 +23,8 @@ loader.use (container, callback) ->
 
     callback()
 
-loader.use supplier.plugins.fixtures
-loader.use supplier.plugins.crud
+loader.use symfio.plugins.fixtures
+loader.use symfio.plugins.crud
 
 loader.use (container, callback) ->
     connection = container.get "connection"
@@ -65,22 +65,22 @@ $ cat << END > package.json
 END
 ```
 
-Install Supplier:
+Install Symfio:
 
 ```sh
-$ npm install supplier --save
+$ npm install symfio --save
 ```
 
 Create sample application:
 
 ```sh
 $ cat << END > my_project.coffee
-supplier = require "supplier"
+symfio = require "symfio"
 
-container = supplier "my_project", __dirname
+container = symfio "my_project", __dirname
 loader = container.get "loader"
-loader.use supplier.plugins.assets
-loader.use supplier.plugins.express
+loader.use symfio.plugins.assets
+loader.use symfio.plugins.express
 loader.load()
 END
 $ mkdir public
@@ -102,30 +102,30 @@ $ coffee my_project
 
 ## Viewing Examples
 
-Clone Supplier repo, then run example:
+Clone Symfio repo, then run example:
 
 ```sh
-$ git clone git://github.com/rithis/supplier.git
-$ cd supplier
+$ git clone git://github.com/symfio/symfio.git
+$ cd symfio
 $ npm install
 $ ./node_modules/.bin/coffee examples/fruits
 ```
 
 ## Project Status
 
-[![Build Status](http://teamcity.rithis.com/httpAuth/app/rest/builds/buildType:id:bt4,branch:master/statusIcon?guest=1)](http://teamcity.rithis.com/viewType.html?buildTypeId=bt4&guest=1) [![Dependency Status](https://gemnasium.com/rithis/supplier.png)](https://gemnasium.com/rithis/supplier)
+[![Build Status](http://teamcity.rithis.com/httpAuth/app/rest/builds/buildType:id:bt4,branch:master/statusIcon?guest=1)](http://teamcity.rithis.com/viewType.html?buildTypeId=bt4&guest=1) [![Dependency Status](https://gemnasium.com/symfio/symfio.png)](https://gemnasium.com/symfio/symfio)
 
-[Code Coverage Report](http://rithis.github.com/supplier/coverage.html)
+[Code Coverage Report](http://rithis.github.com/symfio/coverage.html)
 
-[Latest Documentation](http://rithis.github.com/supplier/docs/supplier.html)
+[Latest Documentation](http://rithis.github.com/symfio/docs/symfio.html)
 
 ## Running Tests
 
-Clone Supplier repo, then run tests:
+Clone Symfio repo, then run tests:
 
 ```sh
-$ git clone git://github.com/rithis/supplier.git
-$ cd supplier
+$ git clone git://github.com/symfio/symfio.git
+$ cd symfio
 $ npm install
 $ ./node_modules/.bin/grunt test
 ```

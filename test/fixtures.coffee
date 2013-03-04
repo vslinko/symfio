@@ -1,11 +1,11 @@
 containerTest = require "./support/container_test"
-supplier = require ".."
+symfio = require ".."
 mongoose = require "mongoose"
 fs = require "fs"
 require "should"
 
 
-describe "supplier.plugins.fixtures()", ->
+describe "symfio.plugins.fixtures()", ->
     wrapper = containerTest ->
         @model = ->
         @model.count = @stub()
@@ -34,14 +34,14 @@ describe "supplier.plugins.fixtures()", ->
             @model.count.yields null, 0
             @model.prototype.save.yields()
 
-            supplier.plugins.fixtures @container, =>
+            symfio.plugins.fixtures @container, =>
                 @model.prototype.save.called.should.be.true
                 @model.prototype.save.callCount.should.equal @users.length
 
                 @model.prototype.save.reset()
                 @model.count.yields null, 3
 
-                supplier.plugins.fixtures @container, =>
+                symfio.plugins.fixtures @container, =>
                     @model.prototype.save.called.should.be.false
                     callback()
 
@@ -49,7 +49,7 @@ describe "supplier.plugins.fixtures()", ->
         wrapper.wrap (callback) ->
             mongoose.Connection.prototype.model.throws()
 
-            supplier.plugins.fixtures @container, =>
+            symfio.plugins.fixtures @container, =>
                 @logger.warn.calledOnce.should.be.true
                 callback()
 
@@ -57,6 +57,6 @@ describe "supplier.plugins.fixtures()", ->
         fs.readFile.resetBehavior()
         fs.readFile.yields null, "invalid json"
 
-        supplier.plugins.fixtures @container, ->
+        symfio.plugins.fixtures @container, ->
             mongoose.Connection.prototype.model.called.should.be.false
             callback()

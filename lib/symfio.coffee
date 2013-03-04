@@ -1,13 +1,13 @@
-#### Welcome to Supplier documentation
+#### Welcome to Symfio documentation
 #
-# Supplier is a thin layer between Node.JS modules. Supplier allows you to
+# Symfio is a thin layer between Node.JS modules. Symfio allows you to
 # connect Node.JS modules using a plugin system. Plugins are loaded
 # asynchronously, which can reduce the time of application initialization.
-container = require "./supplier/container"
-unloader = require "./supplier/unloader"
-plugins = require "./supplier/plugins"
-loader = require "./supplier/loader"
-logger = require "./supplier/logger"
+container = require "./symfio/container"
+unloader = require "./symfio/unloader"
+plugins = require "./symfio/plugins"
+loader = require "./symfio/loader"
+logger = require "./symfio/logger"
 path = require "path"
 
 
