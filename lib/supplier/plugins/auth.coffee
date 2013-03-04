@@ -63,16 +63,10 @@ module.exports = (container, callback) ->
 
     User = connection.model "users", UserSchema
 
-    app.use (req, res, callback) ->
-        authHeader = req.get "Authorization"
-
-        return callback() unless authHeader
-        return callback() unless authHeader.indexOf "Token " is 0
-
-        tokenHash = authHeader.replace "Token ", ""
-
+    findUser = (tokenHash, callback) ->
         User.findOne "tokens.hash": tokenHash, (err, user) ->
-            return callback() if err or not user
+            return callback err if err
+            return callback() unless user
 
             currentToken = null
             for token in user.tokens
@@ -82,8 +76,28 @@ module.exports = (container, callback) ->
             if not currentToken or new Date > currentToken.expires
                 return callback()
 
-            req.user = username: user.username, token: currentToken
+            callback null, username: user.username, token: currentToken
+
+    app.use (req, res, callback) ->
+        authHeader = req.get "Authorization"
+
+        return callback() unless authHeader
+        return callback() unless authHeader.indexOf "Token " is 0
+
+        tokenHash = authHeader.replace "Token ", ""
+
+        findUser tokenHash, (err, user) ->
+            req.user = user if user
             callback()
+
+    app.use (req, res, callback) ->
+        unless req.url.indexOf("/sessions/") is 0 and req.method is "GET"
+            return callback()
+
+        findUser req._parsedUrl.pathname.replace("/sessions/", ""),
+            (err, user) ->
+                res.send 500 if err
+                res.send if user then 200 else 404
 
     app.use (req, res, callback) ->
         unless req.url is "/sessions" and req.method is "POST"
