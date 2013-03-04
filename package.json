@@ -20,7 +20,7 @@
         "test": "./node_modules/.bin/grunt test"
     },
     "dependencies": {
-        "coffee-script": "~1.5",
+        "coffee-script": "~1.6",
         "async": "~0.2",
         "colors": "~0.6",
         "connect-coffee-script": "~0.1",
