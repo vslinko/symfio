@@ -60,3 +60,33 @@ describe "supplier.plugins.auth()", ->
         authenticateMiddleware @req, @res, ->
         @res.send.calledOnce.should.be.true
         @res.send.firstCall.args[0].should.equal 500
+
+    it "should respond with 200 if session exists", wrapper.wrap ->
+        @req.url = "/sessions/tokenHash"
+        @req.method = "GET"
+        @req._parsedUrl = pathname: @req.url
+        user = username: "nameuser", tokens: [
+            hash: "tokenHash", expires: new Date Date.now() + 10000
+        ]
+
+        mongoose.Model.findOne.yields null, user
+        supplier.plugins.auth @container, ->
+        sessionCheckerMiddleware = @app.use.secondCall.args[0]
+        sessionCheckerMiddleware @req, @res, ->
+        @res.send.calledOnce.should.be.true
+        @res.send.firstCall.args[0].should.equal 200
+
+    it "should respond with 404 if session doesn't exists", wrapper.wrap ->
+        @req.url = "/sessions/tokenHash"
+        @req.method = "GET"
+        @req._parsedUrl = pathname: @req.url
+        user = username: "nameuser", tokens: [
+            hash: "tokenHash", expires: new Date Date.now() - 10000
+        ]
+
+        mongoose.Model.findOne.yields null, user
+        supplier.plugins.auth @container, ->
+        sessionCheckerMiddleware = @app.use.secondCall.args[0]
+        sessionCheckerMiddleware @req, @res, ->
+        @res.send.calledOnce.should.be.true
+        @res.send.firstCall.args[0].should.equal 404
