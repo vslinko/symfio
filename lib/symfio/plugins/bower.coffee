@@ -43,9 +43,12 @@ module.exports = (container, callback) ->
 
     async.series [
         (callback) ->
-            fs.readFile hashFile, (err, previousHash) ->
-                return callback previousHash if hashString == previousHash
-                callback()
+            componentsDirectory = path.join publicDirectory, "components"
+            fs.stat componentsDirectory, (err, stat) ->
+                return callback() if err or not stat.isDirectory()
+                fs.readFile hashFile, "utf8", (err, previousHash) ->
+                    return callback previousHash if hashString == previousHash
+                    callback()
 
         (callback) ->
             cwd = process.cwd()
