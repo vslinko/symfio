@@ -1,46 +1,41 @@
 symfio = require "../.."
-sinon = require "sinon"
-
+sinon  = require "sinon"
 
 containerConfigurator = ->
-    @container = symfio.container()
+  @container = symfio.container()
 
-    @container.set "name", "symfio"
-    @container.set "silent", true
+  @container.set "name", "symfio"
+  @container.set "silent", true
 
-    @stub symfio.logger.Logger.prototype
-    @logger = new symfio.logger.Logger
-    @container.set "logger", @logger
+  @stub symfio.logger.Logger.prototype
+  @logger = new symfio.logger.Logger
+  @container.set "logger", @logger
 
-    @stub symfio.loader.Loader.prototype
-    @loader = new symfio.loader.Loader
-    @container.set "loader", @loader
+  @stub symfio.loader.Loader.prototype
+  @loader = new symfio.loader.Loader
+  @container.set "loader", @loader
 
-    @stub symfio.unloader.Unloader.prototype
-    @unloader = new symfio.unloader.Unloader
-    @container.set "unloader", @unloader
-
+  @stub symfio.unloader.Unloader.prototype
+  @unloader = new symfio.unloader.Unloader
+  @container.set "unloader", @unloader
 
 class ContainerTest
-    constructor: (@configurator) ->
+  constructor: (@configurator) ->
 
-    loader: ->
-        =>
-            @sandbox = sinon.sandbox.create()
-            containerConfigurator.call @sandbox
-            @configurator.call @sandbox
+  loader: ->
+    =>
+      @sandbox = sinon.sandbox.create()
+      containerConfigurator.call @sandbox
+      @configurator.call @sandbox
 
-    unloader: ->
-        =>
-            @sandbox.restore()
+  unloader: ->
+    => @sandbox.restore()
 
-    wrap: (test) ->
-        (callback) =>
-            return test.call @sandbox, callback if test.length > 0
-            test.call @sandbox
-            callback()
-
+  wrap: (test) ->
+    (callback) =>
+      return test.call @sandbox, callback if test.length > 0
+      test.call @sandbox
+      callback()
 
 module.exports = (configurator) ->
-    new ContainerTest configurator
-
+  new ContainerTest configurator

@@ -12,9 +12,9 @@ crud = require "rithis-crud"
 #
 # * __crud__ — CRUD module.
 module.exports = (container, callback) ->
-    logger = container.get "logger"
+  logger = container.get "logger"
 
-    logger.info "loading plugin", "crud"
-    container.set "crud", crud
+  logger.info "loading plugin", "crud"
+  container.set "crud", crud
 
-    callback()
+  callback()
