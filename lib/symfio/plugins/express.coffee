@@ -37,6 +37,7 @@ module.exports = (container, callback) ->
 
   container.set "app", app
   container.set "server", server
+  container.set "express", express
 
   loader.once "loaded", ->
     server.listen port, ->
