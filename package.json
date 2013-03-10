@@ -1,56 +1,56 @@
 {
-    "name": "symfio",
-    "version": "0.4.2",
-    "description": "Glue for Node.js modules",
-    "homepage": "http://symf.io/",
-    "bugs": {
-        "url": "https://github.com/symfio/symfio/issues",
-        "email": "webmaster@rithis.com"
-    },
-    "author": {
-        "name": "Vyacheslav Slinko",
-        "email": "vyacheslav.slinko@gmail.com"
-    },
-    "main": "index",
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/symfio/symfio.git"
-    },
-    "scripts": {
-        "test": "./node_modules/.bin/grunt test"
-    },
-    "dependencies": {
-        "coffee-script": "~1.6",
-        "async": "~0.2",
-        "colors": "~0.6",
-        "connect-coffee-script": "~0.1",
-        "stylus-responsive": "~0.0",
-        "jade-static": "git://github.com/vslinko/jade-static.git#patch-1",
-        "stylus": "~0.32",
-        "nib": "~0.9",
-        "ms": "~0.5",
-        "bower": "~0.8",
-        "rithis-crud": "~0.0",
-        "express": "~3.1",
-        "fileupload": "~0.2",
-        "mongoose": "~3.5"
-    },
-    "devDependencies": {
-        "supertest": "~0.5",
-        "should": "~1.2",
-        "sinon": "~1.6",
-        "fs.extra": "~1.2",
-        "html-file-cov": "~0.0",
-        "grunt": "~0.4",
-        "grunt-cli": "~0.1",
-        "grunt-contrib-clean": "~0.4",
-        "grunt-simple-mocha": "~0.3",
-        "grunt-coffee-coverage": "~0.1",
-        "grunt-coffeelint": "~0.0",
-        "grunt-docco": "~0.2"
-    },
-    "engines": {
-        "node": "~0.8",
-        "npm": ">=1.1"
-    }
+  "name": "symfio",
+  "version": "0.4.2",
+  "description": "Glue for Node.js modules",
+  "homepage": "http://symf.io/",
+  "bugs": {
+    "url": "https://github.com/symfio/symfio/issues",
+    "email": "webmaster@rithis.com"
+  },
+  "author": {
+    "name": "Vyacheslav Slinko",
+    "email": "vyacheslav.slinko@gmail.com"
+  },
+  "main": "index",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/symfio/symfio.git"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/grunt test"
+  },
+  "dependencies": {
+    "coffee-script": "~1.6",
+    "async": "~0.2",
+    "colors": "~0.6",
+    "connect-coffee-script": "~0.1",
+    "stylus-responsive": "~0.0",
+    "jade-static": "git://github.com/vslinko/jade-static.git#patch-1",
+    "stylus": "~0.32",
+    "nib": "~0.9",
+    "ms": "~0.5",
+    "bower": "~0.8",
+    "rithis-crud": "~0.0",
+    "express": "~3.1",
+    "fileupload": "~0.2",
+    "mongoose": "~3.5"
+  },
+  "devDependencies": {
+    "supertest": "~0.5",
+    "should": "~1.2",
+    "sinon": "~1.6",
+    "fs.extra": "~1.2",
+    "html-file-cov": "~0.0",
+    "grunt": "~0.4",
+    "grunt-cli": "~0.1",
+    "grunt-contrib-clean": "~0.4",
+    "grunt-simple-mocha": "~0.3",
+    "grunt-coffee-coverage": "~0.1",
+    "grunt-coffeelint": "~0.0",
+    "grunt-docco": "~0.2"
+  },
+  "engines": {
+    "node": "~0.8",
+    "npm": ">=1.1"
+  }
 }

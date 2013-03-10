@@ -1,26 +1,23 @@
 events = require "events"
-async = require "async"
-
+async  = require "async"
 
 class Unloader extends events.EventEmitter
-    constructor: ->
-        @workers = []
+  constructor: ->
+    @workers = []
 
-    # Some plugins may register the worker which will be called during the
-    # unloading process.
-    register: (worker) ->
-        @workers.unshift worker
+  # Some plugins may register the worker which will be called during the
+  # unloading process.
+  register: (worker) ->
+    @workers.unshift worker
 
-    unload: (callback) ->
-        @once "unloaded", callback if typeof callback is "function"
+  unload: (callback) ->
+    @once "unloaded", callback if typeof callback is "function"
 
-        async.series @workers, =>
-            @emit "unloaded"
-
+    async.series @workers, =>
+      @emit "unloaded"
 
 createInstance = ->
-    new Unloader
+  new Unloader
 
-
-module.exports = createInstance
+module.exports          = createInstance
 module.exports.Unloader = Unloader

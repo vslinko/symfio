@@ -1,19 +1,18 @@
 symfio = require ".."
 require "should"
 
-
 describe "symfio()", ->
-    it "should return configured container", ->
-        c = symfio "test", __dirname
+  it "should return configured container", ->
+    container = symfio "test", __dirname
 
-        c.get("name").should.equal "test"
-        c.get("silent").should.be.false
+    container.get("name").should.eql "test"
+    container.get("silent").should.be.false
 
-        c.get("application directory").should.equal __dirname
-        c.get("fixtures directory").should.equal "#{__dirname}/fixtures"
-        c.get("uploads directory").should.equal "#{__dirname}/public/uploads"
-        c.get("public directory").should.equal "#{__dirname}/public"
+    container.get("application directory").should.eql __dirname
+    container.get("fixtures directory").should.eql "#{__dirname}/fixtures"
+    container.get("uploads directory").should.eql "#{__dirname}/public/uploads"
+    container.get("public directory").should.eql "#{__dirname}/public"
 
-        c.get("logger").should.be.an.instanceOf symfio.logger.Logger
-        c.get("loader").should.be.an.instanceOf symfio.loader.Loader
-        c.get("unloader").should.be.an.instanceOf symfio.unloader.Unloader
+    container.get("logger").should.be.an.instanceOf symfio.logger.Logger
+    container.get("loader").should.be.an.instanceOf symfio.loader.Loader
+    container.get("unloader").should.be.an.instanceOf symfio.unloader.Unloader

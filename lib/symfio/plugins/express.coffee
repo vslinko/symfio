@@ -7,7 +7,7 @@
 #     loader.use symfio.plugins.express
 #     loader.load()
 express = require "express"
-http = require "http"
+http    = require "http"
 
 
 #### Provides:
@@ -19,30 +19,30 @@ http = require "http"
 #
 # * __port__ — Port for listening.
 module.exports = (container, callback) ->
-    unloader = container.get "unloader"
-    loader = container.get "loader"
-    logger = container.get "logger"
-    port = container.get "port", process.env.PORT or 3000
+  unloader = container.get "unloader"
+  loader   = container.get "loader"
+  logger   = container.get "logger"
+  port     = container.get "port", process.env.PORT or 3000
 
-    logger.info "loading plugin", "express"
+  logger.info "loading plugin", "express"
 
-    app = express()
+  app = express()
 
-    app.use express.bodyParser()
+  app.use express.bodyParser()
 
-    app.configure "development", ->
-        app.use express.errorHandler()
+  app.configure "development", ->
+    app.use express.errorHandler()
 
-    server = http.createServer app
+  server = http.createServer app
 
-    container.set "app", app
-    container.set "server", server
+  container.set "app", app
+  container.set "server", server
 
-    loader.once "loaded", ->
-        server.listen port, ->
-            logger.info "listening", port
+  loader.once "loaded", ->
+    server.listen port, ->
+      logger.info "listening", port
 
-    unloader.register (callback) ->
-        server.close callback
+  unloader.register (callback) ->
+    server.close callback
 
-    callback()
+  callback()

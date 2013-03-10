@@ -20,27 +20,25 @@ mongoose = require "mongoose"
 # * __connection string__ — MongoDB connection string.
 #
 module.exports = (container, callback) ->
-    unloader = container.get "unloader"
-    loader = container.get "loader"
-    logger = container.get "logger"
-    name = container.get "name"
+  unloader = container.get "unloader"
+  loader   = container.get "loader"
+  logger   = container.get "logger"
+  name     = container.get "name"
 
-    logger.info "loading plugin", "mongoose"
+  logger.info "loading plugin", "mongoose"
 
-    connection = mongoose.createConnection()
+  connection = mongoose.createConnection()
 
-    container.set "connection", connection
-    container.set "mongoose", mongoose
-    container.set "mongodb", mongoose.mongo
+  container.set "connection", connection
+  container.set "mongoose", mongoose
+  container.set "mongodb", mongoose.mongo
 
-    connectionString = container.get "connection string",
-        process.env.MONGOHQ_URL or "mongodb://localhost/#{name}"
+  connectionString = container.get "connection string",
+    process.env.MONGOHQ_URL or "mongodb://localhost/#{name}"
 
-    connection.open connectionString, ->
-        callback()
+  connection.open connectionString, -> callback()
 
-    unloader.register (callback) ->
-        return callback() unless connection.readyState is 1
+  unloader.register (callback) ->
+    return callback() unless connection.readyState is 1
 
-        connection.close ->
-            callback()
+    connection.close -> callback()
