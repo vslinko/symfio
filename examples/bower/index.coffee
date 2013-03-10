@@ -1,6 +1,5 @@
 symfio = require "../.."
-fs = require "fs.extra"
-
+fs     = require "fs.extra"
 
 container = symfio "bower-example", __dirname
 container.set "public directory", __dirname
@@ -12,17 +11,14 @@ loader.use symfio.plugins.assets
 loader.use symfio.plugins.bower
 
 loader.use (container, callback) ->
-    unloader = container.get "unloader"
+  unloader = container.get "unloader"
 
-    unloader.register (callback) ->
-        fs.remove "#{__dirname}/.components", ->
-            fs.remove "#{__dirname}/components", ->
-                callback()
+  unloader.register (callback) ->
+    fs.remove "#{__dirname}/.components", ->
+      fs.remove "#{__dirname}/components", ->
+        callback()
 
-    callback()
+  callback()
 
-
+loader.load() if require.main is module
 module.exports = container
-
-if require.main is module
-    loader.load()

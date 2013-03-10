@@ -13,34 +13,34 @@ loader.use symfio.plugins.express
 loader.use symfio.plugins.mongoose
 
 loader.use (container, callback) ->
-    connection = container.get "connection"
-    mongoose = container.get "mongoose"
+  connection = container.get "connection"
+  mongoose = container.get "mongoose"
 
-    FruitSchema = new mongoose.Schema
-        name: String
+  FruitSchema = new mongoose.Schema
+    name: String
 
-    connection.model "fruits", FruitSchema
+  connection.model "fruits", FruitSchema
 
-    callback()
+  callback()
 
 loader.use symfio.plugins.fixtures
 loader.use symfio.plugins.crud
 
 loader.use (container, callback) ->
-    connection = container.get "connection"
-    unloader = container.get "unloader"
-    crud = container.get "crud"
-    app = container.get "app"
+  connection = container.get "connection"
+  unloader = container.get "unloader"
+  crud = container.get "crud"
+  app = container.get "app"
 
-    Fruit = connection.model "fruits"
+  Fruit = connection.model "fruits"
 
-    app.get "/fruits", crud.list(Fruit).sort(name: -1).make()
+  app.get "/fruits", crud.list(Fruit).sort(name: -1).make()
 
-    unloader.register (callback) ->
-        connection.db.dropDatabase ->
-            callback()
+  unloader.register (callback) ->
+    connection.db.dropDatabase ->
+      callback()
 
-    callback()
+  callback()
 
 loader.load()
 ```
@@ -58,9 +58,9 @@ node_modules
 END
 $ cat << END > package.json
 {
-    "name": "my_project",
-    "version": "0.0.0",
-    "public": false
+  "name": "my_project",
+  "version": "0.0.0",
+  "public": false
 }
 END
 ```
@@ -87,10 +87,10 @@ $ mkdir public
 $ cat << END > public/index.jade
 doctype 5
 html
-    head
-        title Hello World!
-    body
-        h1 Hello World!
+  head
+    title Hello World!
+  body
+    h1 Hello World!
 END
 ```
 
