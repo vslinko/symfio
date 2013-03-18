@@ -47,7 +47,7 @@ describe "assets", ->
 
   describe "GET /coffeescript-example.js", ->
     it "should respond with compiled coffeescript", wrapper.wrap (callback) ->
-      text = "(function() {\n\n  alert(\"Hello World!\");\n\n}).call(this);\n"
+      text = "(function() {\n  alert(\"Hello World!\");\n\n}).call(this);\n"
 
       req = @get "/coffeescript-example.js"
       req.expect 200, text, callback
