@@ -30,7 +30,7 @@
     "nib": "~0.9",
     "ms": "~0.6",
     "bower": "~0.8",
-    "rithis-crud": "~0.0",
+    "cruder": "~0.1",
     "express": "~3.1",
     "fileupload": "~0.2",
     "mongoose": "~3.5"

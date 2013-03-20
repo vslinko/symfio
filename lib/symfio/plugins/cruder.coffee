@@ -1,20 +1,20 @@
-# Just provide CRUD module.
+# Just provide cruder module.
 #
 #     symfio = require "symfio"
 #     container = symfio "example", __dirname
 #     loader = container.get "loader"
-#     loader.use symfio.plugins.crud
+#     loader.use symfio.plugins.cruder
 #     loader.load()
-crud = require "rithis-crud"
+cruder = require "cruder"
 
 
 #### Provides:
 #
-# * __crud__ — CRUD module.
+# * __cruder__ — cruder module.
 module.exports = (container, callback) ->
   logger = container.get "logger"
 
-  logger.info "loading plugin", "crud"
-  container.set "crud", crud
+  logger.info "loading plugin", "cruder"
+  container.set "cruder", cruder
 
   callback()

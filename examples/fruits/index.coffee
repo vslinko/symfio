@@ -18,17 +18,17 @@ loader.use (container, callback) ->
   callback()
 
 loader.use symfio.plugins.fixtures
-loader.use symfio.plugins.crud
+loader.use symfio.plugins.cruder
 
 loader.use (container, callback) ->
   connection = container.get "connection"
   unloader   = container.get "unloader"
-  crud       = container.get "crud"
+  cruder     = container.get "cruder"
   app        = container.get "app"
   
   Fruit = connection.model "fruits"
 
-  app.get "/fruits", crud.list(Fruit).sort(name: -1).make()
+  app.get "/fruits", cruder.list Fruit.find().sort(name: -1)
 
   unloader.register (callback) ->
     connection.db.dropDatabase ->
