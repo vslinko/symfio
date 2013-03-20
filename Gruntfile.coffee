@@ -6,10 +6,10 @@ module.exports = (grunt) ->
     simplemocha:
       unit:
         src: "test/*.coffee"
-        options: reporter: "teamcity"
+        options: reporter: process.env.REPORTER or "spec"
       acceptance:
         src: "test/acceptance/*.coffee"
-        options: reporter: "spec"
+        options: reporter: process.env.REPORTER or "spec"
       coverage:
         # Unit tests must be run after acceptance tests
         # because sinon stubs breaks mongoose
