@@ -1,4 +1,3 @@
-# Plugins can share settings and variables using container.
 events = require "events"
 
 class Container extends events.EventEmitter
@@ -6,17 +5,15 @@ class Container extends events.EventEmitter
     @container = {}
 
   set: (name, value) ->
-    previousValue    = @container[name]
+    previousValue = @container[name]
     @container[name] = value
-
     @emit "changed #{name}", value, previousValue
 
   get: (name, defaultValue) ->
-    return defaultValue if typeof @container[name] is "undefined"
+    return defaultValue if @container[name] is undefined
     @container[name]
 
-createInstance = ->
+module.exports = ->
   new Container
 
-module.exports           = createInstance
 module.exports.Container = Container

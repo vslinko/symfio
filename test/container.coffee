@@ -1,30 +1,38 @@
 symfio = require ".."
-sinon  = require "sinon"
-require "should"
+sinon = require "sinon"
+chai = require "chai"
 
-describe "suppler.container()", ->
+
+describe "symfio.container()", ->
+  chai.use require "sinon-chai"
+  expect = chai.expect
+
   describe "Container", ->
     describe "#set()", ->
       it "should contain value", ->
         container = new symfio.container.Container
+
         container.set "foo", "bar"
-        container.container.foo.should.equal "bar"
+
+        expect(container.container.foo).to.equal "bar"
 
       it "should emit event when value is setted", ->
         container = new symfio.container.Container
-        listener  = sinon.spy()
+        listener = sinon.spy()
 
         container.set "test value", "previous"
         container.once "changed test value", listener
         container.set "test value", "new"
-        listener.calledOnce.should.be.true
-        listener.firstCall.args[0].should.equal "new"
-        listener.firstCall.args[1].should.equal "previous"
+
+        expect(listener).to.have.been.calledOnce
+        expect(listener).to.have.been.calledWith "new", "previous"
 
     describe "#get()", ->
       it "should return default value if value isn't setted before", ->
         container = new symfio.container.Container
 
-        container.get("undefined", "default").should.equal "default"
+        expect(container.get "undefined", "default").to.equal "default"
+
         container.set "undefined", false
-        container.get("undefined", "default").should.be.false
+
+        expect(container.get "undefined", "default").to.equal false

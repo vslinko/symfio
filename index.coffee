@@ -1,3 +1,4 @@
-module.exports = require if process.env.COVERAGE \
-  then "./lib-cov/symfio"
-  else "./lib/symfio"
+if process.env.SYMFIO_COVERAGE
+  module.exports = require "./lib-cov"
+else
+  module.exports = require "./lib"

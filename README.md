@@ -1,40 +1,34 @@
 # Symfio
 
-Glue for Node.js modules
+Modular framework based on Node.js and AngularJS.
+
+## Example
 
 ```coffeescript
 symfio = require "symfio"
 
-
 container = symfio "fruits-example", __dirname
 loader = container.get "loader"
 
-loader.use symfio.plugins.express
-loader.use symfio.plugins.mongoose
+loader.use require "symfio-contrib-express"
+loader.use require "symfio-contrib-mongoose"
 
 loader.use (container, callback) ->
   connection = container.get "connection"
   mongoose = container.get "mongoose"
+  unloader = container.get "unloader"
+  app = container.get "app"
 
   FruitSchema = new mongoose.Schema
     name: String
 
-  connection.model "fruits", FruitSchema
+  Fruit = connection.model "fruits", FruitSchema
 
-  callback()
-
-loader.use symfio.plugins.fixtures
-loader.use symfio.plugins.crud
-
-loader.use (container, callback) ->
-  connection = container.get "connection"
-  unloader = container.get "unloader"
-  crud = container.get "crud"
-  app = container.get "app"
-
-  Fruit = connection.model "fruits"
-
-  app.get "/fruits", crud.list(Fruit).sort(name: -1).make()
+  app.get "/fruits", (req, res) ->
+    Fruit.findOne (err, fruit) ->
+      return res.send 500 if err
+      return res.send 404 unless fruit
+      res.send fruit
 
   unloader.register (callback) ->
     connection.db.dropDatabase ->
@@ -47,140 +41,25 @@ loader.load()
 
 ## Quick Start
 
-Start new project:
-
-```sh
-$ mkdir my_project
-$ cd my_project
-$ git init
-$ cat << END > .gitignore
-node_modules
-END
-$ cat << END > package.json
-{
-  "name": "my_project",
-  "version": "0.0.0",
-  "public": false
-}
-END
-```
-
-Install Symfio:
-
-```sh
-$ npm install symfio --save
-```
-
-Create sample application:
-
-```sh
-$ cat << END > my_project.coffee
-symfio = require "symfio"
-
-container = symfio "my_project", __dirname
-loader = container.get "loader"
-loader.use symfio.plugins.assets
-loader.use symfio.plugins.express
-loader.load()
-END
-$ mkdir public
-$ cat << END > public/index.jade
-doctype 5
-html
-  head
-    title Hello World!
-  body
-    h1 Hello World!
-END
-```
-
-Start server:
-
-```sh
-$ coffee my_project
-```
-
-## Viewing Examples
-
-Clone Symfio repo, then run example:
-
-```sh
-$ git clone git://github.com/symfio/symfio.git
-$ cd symfio
-$ npm install
-$ ./node_modules/.bin/coffee examples/fruits
-```
+Use [grunt-init-symfio](https://github.com/symfio/grunt-init-symfio) to
+bootstrap your first Symfio project.
 
 ## Project Status
 
-[![Build Status](http://teamcity.rithis.com/httpAuth/app/rest/builds/buildType:id:bt4,branch:master/statusIcon?guest=1)](http://teamcity.rithis.com/viewType.html?buildTypeId=bt4&guest=1) [![Dependency Status](https://gemnasium.com/symfio/symfio.png)](https://gemnasium.com/symfio/symfio)
+[![Build Status](http://teamcity.rithis.com/httpAuth/app/rest/builds/buildType:id:bt4,branch:master/statusIcon?guest=1)](http://teamcity.rithis.com/viewType.html?buildTypeId=bt4&guest=1)
+[![Dependency Status](https://gemnasium.com/symfio/symfio.png)](https://gemnasium.com/symfio/symfio)
 
-[Code Coverage Report](http://rithis.github.com/symfio/coverage.html)
+[Code Coverage Report](http://symf.io/coverage-report)
 
-[Latest Documentation](http://rithis.github.com/symfio/docs/symfio.html)
+## Tests
 
-## Running Tests
+If you haven't already done so, install [grunt](http://gruntjs.com).
 
-Clone Symfio repo, then run tests:
+Once grunt is installed, clone Symfio repository and run tests:
 
-```sh
-$ git clone git://github.com/symfio/symfio.git
-$ cd symfio
-$ npm install
-$ ./node_modules/.bin/grunt test
-```
-
-# Release Instructions
-
-Checkout to `master` branch:
-
-```sh
-$ git checkout master
-```
-
-Increment version in `package.json` and commit:
-
-```sh
-$ git add package.json
-$ git commit -m "Bumped 0.0.0"
-```
-
-Add version tag to commit in which `package.json` is changed:
-
-```sh
-$ git tag 0.0.0 HEAD
-```
-
-Push commit and tag to GitHub and wait until CI build is succeed:
-
-```sh
-$ git push origin master
-$ git push origin 0.0.0
-```
-
-Upload package to NPM repository:
-
-```sh
-$ npm publish
-```
-
-Checkout to gh-pages branch:
-
-```sh
-$ git checkout gh-pages
-```
-
-Increment version in `_includes/footer.html` and update website:
-
-```sh
-$ ./_update.sh
-$ git add .
-$ git commit -m "Updated"
-$ git push
-```
-
-Return to master branch:
-
-```sh
-$ git checkout master
+```shell
+git clone git://github.com/symfio/symfio.git
+cd symfio
+npm install
+grunt test
 ```

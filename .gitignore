@@ -1,13 +1,4 @@
-docs
-examples/assets/public/*.css
-examples/assets/public/*.js
-examples/bower/components
-examples/bower/.components
-examples/uploads/uploads
-lib-cov
-node_modules
-test/public/style.css
-test/public/uploads
-test/.components
-coverage.html
-npm-debug.log
+/lib-cov/
+/node_modules/
+/coverage.html
+/npm-debug.log

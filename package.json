@@ -1,43 +1,43 @@
 {
-  "name": "symfio",
-  "version": "0.6.0",
-  "description": "Glue for Node.js modules",
-  "homepage": "http://symf.io/",
-  "bugs": {
-    "url": "https://github.com/symfio/symfio/issues",
-    "email": "webmaster@rithis.com"
-  },
-  "author": {
-    "name": "Vyacheslav Slinko",
-    "email": "vyacheslav.slinko@gmail.com"
-  },
-  "main": "index",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/symfio/symfio.git"
-  },
-  "scripts": {
-    "test": "./node_modules/.bin/grunt test"
-  },
-  "dependencies": {
-    "coffee-script": "~1.6",
-    "async": "~0.2",
-    "colors": "~0.6"
-  },
-  "devDependencies": {
-    "should": "~1.2",
-    "sinon": "~1.6",
-    "html-file-cov": "~0.0",
-    "grunt": "~0.4",
-    "grunt-cli": "~0.1",
-    "grunt-contrib-clean": "~0.4",
-    "grunt-simple-mocha": "~0.3",
-    "grunt-coffee-coverage": "~0.1",
-    "grunt-coffeelint": "~0.0",
-    "grunt-docco": "~0.2"
-  },
-  "engines": {
-    "node": "~0.8",
-    "npm": ">=1.1"
+  "name": "symfio"
+, "version": "0.6.0"
+, "description": "Modular framework based on Node.js and AngularJS."
+, "homepage": "http://symf.io"
+, "bugs": {
+    "url": "https://github.com/symfio/symfio/issues"
+  , "email": "webmaster@rithis.com"
+  }
+, "author": {
+    "name": "Vyacheslav Slinko"
+  , "email": "vyacheslav.slinko@gmail.com"
+  }
+, "main": "lib"
+, "repository": {
+    "type": "git"
+  , "url": "git://github.com/symfio/symfio.git"
+  }
+, "scripts": {
+    "test": "grunt simplemocha"
+  }
+, "dependencies": {
+    "async": "~0.2"
+  , "colors": "~0.6"
+  }
+, "devDependencies": {
+    "chai": "~1.5"
+  , "sinon": "~1.6"
+  , "sinon-chai": "~2.3"
+  , "html-file-cov": "~0.0"
+  , "grunt": "~0.4"
+  , "grunt-contrib-clean": "~0.4"
+  , "grunt-simple-mocha": "~0.3"
+  , "grunt-coffee-coverage": "~0.1"
+  , "grunt-coffeelint": "~0.0"
+  }
+, "engines": {
+    "node": "~0.8"
+  , "npm": "~1.2"
+  , "coffee-script": "~1.6"
+  , "grunt-cli": "~0.4"
   }
 }

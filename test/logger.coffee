@@ -1,41 +1,49 @@
 symfio = require ".."
-sinon  = require "sinon"
+sinon = require "sinon"
+chai = require "chai"
 require "colors"
-require "should"
+
 
 describe "symfio.logger()", ->
+  chai.use require "sinon-chai"
+  expect = chai.expect
+
   it "should subscribe to silent changes", ->
     container = new symfio.container.Container
     container.set "name", "symfio"
     container.set "silent", true
 
     logger = symfio.logger container
-    logger.silent.should.be.true
+
+    expect(logger.silent).to.be.true
 
     container.set "silent", false
-    logger.silent.should.be.false
+
+    expect(logger.silent).to.be.false
 
   describe "Logger", ->
     describe "#info()", ->
       it "should output message", sinon.test ->
         message = "symfio #{"hello".cyan} #{"world".grey}"
-        logger  = new symfio.logger.Logger "symfio"
+        logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
 
         logger.info "hello", "world"
-        console.log.calledOnce.should.be.true
-        console.log.lastCall.args[0].should.equal message
+
+        expect(console.log).to.have.been.calledOnce
+        expect(console.log).to.have.been.calledWith message
 
       it "should give preference to name from arguments", sinon.test ->
         message = "test #{"hello".cyan} #{"world".grey}"
-        logger  = new symfio.logger.Logger "symfio"
+        logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
 
         logger.info "hello", "world", "test"
-        console.log.calledOnce.should.be.true
-        console.log.lastCall.args[0].should.equal message
+
+        expect(console.log).to.have.been.calledOnce
+        expect(console.log).to.have.been.calledWith message
 
       it "shouldn't output message if silent is true", sinon.test ->
         logger = new symfio.logger.Logger "symfio", true
@@ -43,38 +51,42 @@ describe "symfio.logger()", ->
         @stub console, "log"
 
         logger.info "hello", "world"
-        console.log.calledOnce.should.be.false
+
+        expect(console.log).to.not.been.called
 
       it "should output message if arguments is numbers", sinon.test ->
         message = "3 #{"1".cyan} #{"2".grey}"
-        logger  = new symfio.logger.Logger "symfio"
+        logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
 
         logger.info 1, 2, 3
-        console.log.calledOnce.should.be.true
-        console.log.lastCall.args[0].should.equal message
+
+        expect(console.log).to.have.been.calledOnce
+        expect(console.log).to.have.been.calledWith message
 
     describe "#warn()", ->
       it "should output message", sinon.test ->
         message = "symfio #{"warn".yellow} #{"hello world".grey}"
-        logger  = new symfio.logger.Logger "symfio"
+        logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
 
         logger.warn "hello world"
-        console.log.calledOnce.should.be.true
-        console.log.lastCall.args[0].should.equal message
+
+        expect(console.log).to.have.been.calledOnce
+        expect(console.log).to.have.been.calledWith message
 
     describe "#error()", ->
       it "should output message and terminate application", sinon.test ->
         message = "symfio #{"error".red} #{"hello world".grey}"
-        logger  = new symfio.logger.Logger "symfio"
+        logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
         @stub process, "exit"
 
-        logger.error code: 123, message: "hello world"
-        console.log.calledOnce.should.be.true
-        console.log.lastCall.args[0].should.equal message
-        process.exit.calledOnce.should.be.true
+        logger.error "hello world", 123
+
+        expect(console.log).to.have.been.calledOnce
+        expect(console.log).to.have.been.calledWith message
+        expect(process.exit).to.have.been.calledOnce

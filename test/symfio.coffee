@@ -1,14 +1,16 @@
 symfio = require ".."
-require "should"
+chai = require "chai"
+
 
 describe "symfio()", ->
+  expect = chai.expect
+
   it "should return configured container", ->
     container = symfio "test", __dirname
 
-    container.get("name").should.eql "test"
-    container.get("silent").should.be.false
-    container.get("application directory").should.eql __dirname
-
-    container.get("logger").should.be.an.instanceOf symfio.logger.Logger
-    container.get("loader").should.be.an.instanceOf symfio.loader.Loader
-    container.get("unloader").should.be.an.instanceOf symfio.unloader.Unloader
+    expect(container.get "name").to.equal "test"
+    expect(container.get "application directory").to.equal __dirname
+    expect(container.get "silent").to.be.false
+    expect(container.get "logger").is.an.instanceof symfio.logger.Logger
+    expect(container.get "loader").is.an.instanceof symfio.loader.Loader
+    expect(container.get "unloader").is.an.instanceof symfio.unloader.Unloader
