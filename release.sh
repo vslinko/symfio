@@ -8,7 +8,7 @@ if [ "x$VERSION" == "x" ]; then
 fi
 
 git checkout master
-sed -i '' -E 's/"version": "[\.0-9]+"/"version": '"$VERSION"'/' package.json
+sed -i '' -E 's/"version": "[\.0-9]+"/"version": "'"$VERSION"'"/' package.json
 git add package.json
 git commit -m "Bumped $VERSION"
 git tag "$VERSION" HEAD
