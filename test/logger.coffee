@@ -1,7 +1,7 @@
 symfio = require ".."
 sinon = require "sinon"
 chai = require "chai"
-require "colors"
+clc = require "cli-color"
 
 
 describe "symfio.logger()", ->
@@ -24,7 +24,7 @@ describe "symfio.logger()", ->
   describe "Logger", ->
     describe "#info()", ->
       it "should output message", sinon.test ->
-        message = "symfio #{"hello".cyan} #{"world".grey}"
+        message = "symfio #{clc.cyan "hello"} #{clc.blackBright "world"}"
         logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
@@ -35,7 +35,7 @@ describe "symfio.logger()", ->
         expect(console.log).to.have.been.calledWith message
 
       it "should give preference to name from arguments", sinon.test ->
-        message = "test #{"hello".cyan} #{"world".grey}"
+        message = "test #{clc.cyan "hello"} #{clc.blackBright "world"}"
         logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
@@ -55,7 +55,7 @@ describe "symfio.logger()", ->
         expect(console.log).to.not.been.called
 
       it "should output message if arguments is numbers", sinon.test ->
-        message = "3 #{"1".cyan} #{"2".grey}"
+        message = "3 #{clc.cyan "1"} #{clc.blackBright "2"}"
         logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
@@ -67,7 +67,7 @@ describe "symfio.logger()", ->
 
     describe "#warn()", ->
       it "should output message", sinon.test ->
-        message = "symfio #{"warn".yellow} #{"hello world".grey}"
+        message = "symfio #{clc.yellow "warn"} #{clc.blackBright "hello world"}"
         logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"
@@ -79,7 +79,7 @@ describe "symfio.logger()", ->
 
     describe "#error()", ->
       it "should output message and terminate application", sinon.test ->
-        message = "symfio #{"error".red} #{"hello world".grey}"
+        message = "symfio #{clc.red "error"} #{clc.blackBright "hello world"}"
         logger = new symfio.logger.Logger "symfio"
 
         @stub console, "log"

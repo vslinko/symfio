@@ -1,4 +1,4 @@
-require "colors"
+clc = require "cli-color"
 
 class Logger
   constructor: (@name, @silent = false) ->
@@ -18,8 +18,8 @@ class Logger
 
     output = [name]
     if action
-      output.push String(action)[color]
-      output.push String(message).grey if message
+      output.push clc[color] action
+      output.push clc.blackBright message if message
 
     console.log output.join " "
 
