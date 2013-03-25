@@ -26,7 +26,7 @@ module.exports = (grunt) ->
     docco:
       lib: [
         "lib/symfio.coffee",
-        "lib/symfio/!(plugins).coffee",
+        "lib/symfio/!(plugins|test).coffee",
         "lib/symfio/plugins/*.coffee"
       ]
       options: output: "docs"

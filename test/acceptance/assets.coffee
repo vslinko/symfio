@@ -1,13 +1,14 @@
-exampleTest = require "../support/example_test"
+symfio = require "../.."
+
 
 describe "assets", ->
-  wrapper = exampleTest "assets"
+  test = symfio.test.example require "../../examples/assets"
 
-  before wrapper.loader()
-  after wrapper.unloader()
+  before test.before()
+  after test.after()
 
   describe "GET /stylus-example.css", ->
-    it "should respond with compiled stylus", wrapper.wrap (callback) ->
+    it "should respond with compiled stylus", test.wrap (callback) ->
       text = ".selector {\n  color: #f00;\n}\n"
 
       req = @get "/stylus-example.css"
@@ -15,7 +16,7 @@ describe "assets", ->
 
   describe "GET /stylus-nib-example.css", ->
     it "should respond with compiled stylus with imported nib",
-      wrapper.wrap (callback) ->
+      test.wrap (callback) ->
         text = ".selector {\n  border: 1px solid #f00;\n}\n"
 
         req = @get "/stylus-nib-example.css"
@@ -23,7 +24,7 @@ describe "assets", ->
 
   describe "GET /stylus-responsive-example.css", ->
     it "should respond with compiled stylus with imported responsive",
-      wrapper.wrap (callback) ->
+      test.wrap (callback) ->
         text = """
         .selector {
           width: 100px;
@@ -39,21 +40,21 @@ describe "assets", ->
         req.expect 200, text, callback
 
   describe "GET /jade-example.html", ->
-    it "should respond with compiled jade", wrapper.wrap (callback) ->
+    it "should respond with compiled jade", test.wrap (callback) ->
       text = "<!DOCTYPE html><head><title>Test</title></head>"
 
       req = @get "/jade-example.html"
       req.expect 200, text, callback
 
   describe "GET /coffeescript-example.js", ->
-    it "should respond with compiled coffeescript", wrapper.wrap (callback) ->
+    it "should respond with compiled coffeescript", test.wrap (callback) ->
       text = "(function() {\n  alert(\"Hello World!\");\n\n}).call(this);\n"
 
       req = @get "/coffeescript-example.js"
       req.expect 200, text, callback
 
   describe "GET /robots.txt", ->
-    it "should respond with static file", wrapper.wrap (callback) ->
+    it "should respond with static file", test.wrap (callback) ->
       text = "User-agent: *\nDisallow: /\n"
 
       req = @get "/robots.txt"

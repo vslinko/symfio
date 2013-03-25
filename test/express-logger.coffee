@@ -1,20 +1,19 @@
-containerTest = require "./support/container_test"
-express       = require "express"
-symfio        = require ".."
+express = require "express"
+symfio  = require ".."
 require "should"
 
 describe "symfio.plugins.expressLogger()", ->
-  wrapper = containerTest ->
+  test = symfio.test.plugin ->
     @stub express.logger, "format"
     @format = express.logger.format
 
     @container.set "express", express
     @container.set "app", express()
 
-  beforeEach wrapper.loader()
-  afterEach wrapper.unloader()
+  beforeEach test.beforeEach()
+  afterEach test.afterEach()
 
-  it "should log requests", wrapper.wrap ->
+  it "should log requests", test.wrap ->
     req = method: "GET", originalUrl: "/", _startTime: new Date
     res = statusCode: 200
 

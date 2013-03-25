@@ -1,11 +1,10 @@
-containerTest = require "./support/container_test"
-mongoose      = require "mongoose"
-express       = require "express"
-symfio        = require ".."
+mongoose = require "mongoose"
+express  = require "express"
+symfio   = require ".."
 require "should"
 
 describe "symfio.plugins.auth()", ->
-  wrapper = containerTest ->
+  test = symfio.test.plugin ->
     @tokenHash = "tokenHash"
     @app       = express()
     @req       = get: @stub().returns "Token #{@tokenHash}"
@@ -21,10 +20,10 @@ describe "symfio.plugins.auth()", ->
     @container.set "mongoose", mongoose
     @container.set "app", @app
 
-  beforeEach wrapper.loader()
-  afterEach wrapper.unloader()
+  beforeEach test.beforeEach()
+  afterEach test.afterEach()
 
-  it "should populate user in request object", wrapper.wrap ->
+  it "should populate user in request object", test.wrap ->
     user = username: "username", tokens: [
       hash: @tokenHash, expires: new Date Date.now() + 10000
     ]
@@ -37,7 +36,7 @@ describe "symfio.plugins.auth()", ->
     @req.user.username.should.equal user.username
     @req.user.token.hash.should.equal @tokenHash
 
-  it "shouldn't populate user if token is expired", wrapper.wrap ->
+  it "shouldn't populate user if token is expired", test.wrap ->
     user = username: "nameuser", tokens: [
       hash: "tokenHash", expires: new Date Date.now() - 10000
     ]
@@ -48,7 +47,7 @@ describe "symfio.plugins.auth()", ->
     populateMiddleware @req, null, ->
     @req.should.not.have.property "user"
 
-  it "should respond with 500 if mongodb request is failed", wrapper.wrap ->
+  it "should respond with 500 if mongodb request is failed", test.wrap ->
     @req.url    = "/sessions"
     @req.method = "POST"
     @req.body   = username: "username"
@@ -60,7 +59,7 @@ describe "symfio.plugins.auth()", ->
     @res.send.calledOnce.should.be.true
     @res.send.firstCall.args[0].should.equal 500
 
-  it "should respond with 200 if session exists", wrapper.wrap ->
+  it "should respond with 200 if session exists", test.wrap ->
     @req.url        = "/sessions/tokenHash"
     @req.method     = "GET"
     @req._parsedUrl = pathname: @req.url
@@ -76,7 +75,7 @@ describe "symfio.plugins.auth()", ->
     @res.send.calledOnce.should.be.true
     @res.send.firstCall.args[0].should.equal 200
 
-  it "should respond with 404 if session doesn't exists", wrapper.wrap ->
+  it "should respond with 404 if session doesn't exists", test.wrap ->
     @req.url        = "/sessions/tokenHash"
     @req.method     = "GET"
     @req._parsedUrl = pathname: @req.url

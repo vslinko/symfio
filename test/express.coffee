@@ -1,23 +1,22 @@
-containerTest = require "./support/container_test"
-symfio        = require ".."
-express       = require "express"
+express = require "express"
+symfio  = require ".."
 require "should"
 
 describe "symfio.plugins.express()", ->
-  wrapper = containerTest ->
+  test = symfio.test.plugin ->
     @stub express.application, "use"
     @use = express.application.use
 
-  beforeEach wrapper.loader()
-  afterEach wrapper.unloader()
+  beforeEach test.beforeEach()
+  afterEach test.afterEach()
 
-  it "should use bodyParser", wrapper.wrap ->
+  it "should use bodyParser", test.wrap ->
     @stub express.application, "defaultConfiguration"
     symfio.plugins.express @container, ->
     @use.calledOnce.should.be.true
     @use.firstCall.args[0].name.should.equal "bodyParser"
 
-  it "should use errorHandler in development environment", wrapper.wrap ->
+  it "should use errorHandler in development environment", test.wrap ->
     nodeEnv              = process.env.NODE_ENV
     process.env.NODE_ENV = "development"
 

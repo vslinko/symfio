@@ -1,12 +1,11 @@
-containerTest = require "./support/container_test"
-fileupload    = require "fileupload"
-symfio        = require ".."
-express       = require "express"
-errors        = require "../lib/symfio/errors"
+fileupload = require "fileupload"
+symfio     = require ".."
+express    = require "express"
+errors     = require "../lib/symfio/errors"
 require "should"
 
 describe "symfio.plugins.uploads()", ->
-  wrapper = containerTest ->
+  test = symfio.test.plugin ->
     @app = express()
 
     @stub @app, "use"
@@ -15,10 +14,10 @@ describe "symfio.plugins.uploads()", ->
     @container.set "uploads directory", __dirname
     @container.set "app", @app
 
-  beforeEach wrapper.loader()
-  afterEach wrapper.unloader()
+  beforeEach test.beforeEach()
+  afterEach test.afterEach()
 
-  it "should catch only POST /uploads", wrapper.wrap ->
+  it "should catch only POST /uploads", test.wrap ->
     callback = @stub()
     req      = url: "/", method: "GET"
 
@@ -27,7 +26,7 @@ describe "symfio.plugins.uploads()", ->
     middleware req, null, callback
     callback.calledOnce.should.be.true
 
-  it "should respond with 400 if no file sent", wrapper.wrap ->
+  it "should respond with 400 if no file sent", test.wrap ->
     req = url: "/uploads", method: "POST", body: [], files: []
     res = send: @stub()
 
@@ -37,7 +36,7 @@ describe "symfio.plugins.uploads()", ->
     res.send.calledOnce.should.be.true
     res.send.firstCall.args[0].should.equal 400
 
-  it "should exit if uploads directory not in public directory", wrapper.wrap ->
+  it "should exit if uploads directory not in public directory", test.wrap ->
     error = @logger.error
 
     @container.set "public directory", "/a"
@@ -47,7 +46,7 @@ describe "symfio.plugins.uploads()", ->
     error.calledOnce.should.be.true
     error.firstCall.args[0].should.eql errors.UPLOAD_DIRECTORY_IS_NOT_PUBLIC
 
-  it "should return filepath with uploads in public", wrapper.wrap ->
+  it "should return filepath with uploads in public", test.wrap ->
     file = file: [path: "p/", basename: "f.jpg"]
     req  = url: "/uploads", method: "POST", body: [], files: file
     res  = send: @stub(), set: @stub()

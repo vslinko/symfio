@@ -1,14 +1,15 @@
-exampleTest = require "../support/example_test"
+symfio = require "../.."
 require "should"
 
-describe "uploads", ->
-  wrapper = exampleTest "uploads"
 
-  before wrapper.loader()
-  after wrapper.unloader()
+describe "uploads", ->
+  test = symfio.test.example require "../../examples/uploads"
+
+  before test.before()
+  after test.after()
 
   describe "POST /uploads", ->
-    it "should upload file", wrapper.wrap (callback) ->
+    it "should upload file", test.wrap (callback) ->
       req = @post "/uploads"
       req.attach "file", __filename
       req.end (err, res) =>

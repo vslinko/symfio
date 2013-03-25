@@ -23,6 +23,8 @@
     "coffee-script": "~1.6",
     "async": "~0.2",
     "colors": "~0.6",
+    "sinon": "~1.6",
+    "supertest": "~0.5",
     "connect-coffee-script": "~0.1",
     "stylus-responsive": "~0.0",
     "jade-static": "git://github.com/vslinko/jade-static.git#patch-1",
@@ -36,9 +38,7 @@
     "mongoose": "~3.5"
   },
   "devDependencies": {
-    "supertest": "~0.5",
     "should": "~1.2",
-    "sinon": "~1.6",
     "fs.extra": "~1.2",
     "html-file-cov": "~0.0",
     "grunt": "~0.4",

@@ -1,11 +1,10 @@
-containerTest = require "./support/container_test"
-mongoose      = require "mongoose"
-symfio        = require ".."
-fs            = require "fs"
+mongoose = require "mongoose"
+symfio   = require ".."
+fs       = require "fs"
 require "should"
 
 describe "symfio.plugins.fixtures()", ->
-  wrapper = containerTest ->
+  test = symfio.test.plugin ->
     @model           = ->
     @model.count     = @stub()
     @model.prototype = save: @stub()
@@ -26,11 +25,11 @@ describe "symfio.plugins.fixtures()", ->
 
     @container.set "connection", new mongoose.Connection
 
-  beforeEach wrapper.loader()
-  afterEach wrapper.unloader()
+  beforeEach test.beforeEach()
+  afterEach test.afterEach()
 
   it "should load fixtures only if collection is empty",
-    wrapper.wrap (callback) ->
+    test.wrap (callback) ->
       @model.count.yields null, 0
       @model.prototype.save.yields()
 
@@ -45,14 +44,14 @@ describe "symfio.plugins.fixtures()", ->
           @model.prototype.save.called.should.be.false
           callback()
 
-  it "should warn if mongoose module isn't defined", wrapper.wrap (callback) ->
+  it "should warn if mongoose module isn't defined", test.wrap (callback) ->
     mongoose.Connection.prototype.model.throws()
 
     symfio.plugins.fixtures @container, =>
       @logger.warn.calledOnce.should.be.true
       callback()
 
-  it "should skip loading if json is invalid", wrapper.wrap (callback) ->
+  it "should skip loading if json is invalid", test.wrap (callback) ->
     fs.readFile.resetBehavior()
     fs.readFile.yields null, "invalid json"
 

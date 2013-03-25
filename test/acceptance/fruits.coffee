@@ -1,15 +1,16 @@
-exampleTest = require "../support/example_test"
+symfio = require "../.."
 require "should"
 
-describe "fruits", ->
-  wrapper = exampleTest "fruits"
 
-  before wrapper.loader()
-  after wrapper.unloader()
+describe "fruits", ->
+  test = symfio.test.example require "../../examples/fruits"
+
+  before test.before()
+  after test.after()
 
   describe "GET /fruits", ->
     it "should respond with sorted array with fruits",
-      wrapper.wrap (callback) ->
+      test.wrap (callback) ->
         req = @get "/fruits"
         req.end (err, res) ->
           res.should.have.status 200

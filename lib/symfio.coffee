@@ -8,6 +8,7 @@ unloader  = require "./symfio/unloader"
 plugins   = require "./symfio/plugins"
 loader    = require "./symfio/loader"
 logger    = require "./symfio/logger"
+test      = require "./symfio/test"
 path      = require "path"
 
 createInstance = (name, applicationDirectory) ->
@@ -34,4 +35,5 @@ module.exports.container = container
 module.exports.loader    = loader
 module.exports.logger    = logger
 module.exports.plugins   = plugins
+module.exports.test      = test
 module.exports.unloader  = unloader

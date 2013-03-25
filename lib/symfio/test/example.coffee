@@ -1,11 +1,11 @@
 supertest = require "supertest"
 
+
 class ExampleTest
-  constructor: (example) ->
-    @container = require "../../examples/#{example}"
+  constructor: (@container) ->
     @container.set "silent", true
 
-  loader: ->
+  before: ->
     load = (callback) =>
       loader = @container.get "loader"
       loader.load =>
@@ -16,7 +16,7 @@ class ExampleTest
       @timeout 10000
       load callback
 
-  unloader: ->
+  after: ->
     unload = (callback) =>
       unloader = @container.get "unloader"
       unloader.unload callback
@@ -28,6 +28,7 @@ class ExampleTest
   wrap: (test) ->
     (callback) =>
       test.call @test, callback
+
 
 module.exports = (example) ->
   new ExampleTest example

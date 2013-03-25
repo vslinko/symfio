@@ -1,10 +1,9 @@
-containerTest = require "./support/container_test"
-express       = require "express"
-symfio        = require ".."
+express = require "express"
+symfio  = require ".."
 require "should"
 
 describe "symfio.plugins.assets()", ->
-  wrapper = containerTest ->
+  test = symfio.test.plugin ->
     app = express()
 
     @stub app, "use"
@@ -12,10 +11,10 @@ describe "symfio.plugins.assets()", ->
     @container.set "public directory", __dirname
     @container.set "app", app
 
-  beforeEach wrapper.loader()
-  afterEach wrapper.unloader()
+  beforeEach test.beforeEach()
+  afterEach test.afterEach()
 
-  it "should output message", wrapper.wrap ->
+  it "should output message", test.wrap ->
     symfio.plugins.assets @container, ->
     @logger.info.calledOnce.should.be.true
     @logger.info.firstCall.args[0].should.equal "loading plugin"

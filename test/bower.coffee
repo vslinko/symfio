@@ -1,11 +1,10 @@
-containerTest = require "./support/container_test"
-symfio        = require ".."
-bower         = require "bower"
-fs            = require "fs"
+symfio = require ".."
+bower  = require "bower"
+fs     = require "fs"
 require "should"
 
 describe "symfio.plugins.bower()", ->
-  wrapper = containerTest ->
+  test = symfio.test.plugin ->
     @installation = on: @stub()
 
     @stub process, "chdir"
@@ -20,10 +19,10 @@ describe "symfio.plugins.bower()", ->
     @container.set "public directory", __dirname
     @container.set "silent", false
 
-  beforeEach wrapper.loader()
-  afterEach wrapper.unloader()
+  beforeEach test.beforeEach()
+  afterEach test.afterEach()
 
-  it "should pipe bower output", wrapper.wrap (callback) ->
+  it "should pipe bower output", test.wrap (callback) ->
     @container.set "components", ["jquery"]
     symfio.plugins.bower @container, =>
       @installation.on.withArgs("data").calledOnce.should.be.true
@@ -35,7 +34,7 @@ describe "symfio.plugins.bower()", ->
       callback()
 
   it "should not install components if no components is provided",
-    wrapper.wrap (callback) ->
+    test.wrap (callback) ->
       symfio.plugins.bower @container, =>
         bower.commands.install.called.should.be.false
         callback()

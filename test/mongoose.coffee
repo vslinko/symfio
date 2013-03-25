@@ -1,22 +1,21 @@
-containerTest = require "./support/container_test"
-symfio        = require ".."
-mongoose      = require "mongoose"
+mongoose = require "mongoose"
+symfio   = require ".."
 require "should"
 
 describe "symfio.plugins.mongoose()", ->
-  wrapper = containerTest ->
+  test = symfio.test.plugin ->
     @stub mongoose.Connection.prototype, "open"
     @open = mongoose.Connection.prototype.open
 
-  beforeEach wrapper.loader()
-  afterEach wrapper.unloader()
+  beforeEach test.beforeEach()
+  afterEach test.afterEach()
 
-  it "should generate connection string using name value", wrapper.wrap ->
+  it "should generate connection string using name value", test.wrap ->
     symfio.plugins.mongoose @container, ->
     @open.calledOnce.should.be.true
     @open.firstCall.args[0].should.equal "mongodb://localhost/symfio"
 
-  it "should use MONGOHQ_URL as connection string", wrapper.wrap ->
+  it "should use MONGOHQ_URL as connection string", test.wrap ->
     mongohqUrl              = process.env.MONGOHQ_URL
     process.env.MONGOHQ_URL = "mongodb://127.0.0.1/abra-kadabra"
 
