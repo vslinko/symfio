@@ -1,6 +1,6 @@
 {
   "name": "symfio",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Glue for Node.js modules",
   "homepage": "http://symf.io/",
   "bugs": {
