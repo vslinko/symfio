@@ -1,4 +1,4 @@
-symfio = require ".."
+symfio = require "../index"
 sinon = require "sinon"
 chai = require "chai"
 clc = require "cli-color"
