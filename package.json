@@ -22,12 +22,11 @@
   "dependencies": {
     "coffee-script": "~1.6",
     "async": "~0.2",
-    "colors": "~0.6",
-    "sinon": "~1.6",
-    "supertest": "~0.5"
+    "colors": "~0.6"
   },
   "devDependencies": {
     "should": "~1.2",
+    "sinon": "~1.6",
     "html-file-cov": "~0.0",
     "grunt": "~0.4",
     "grunt-cli": "~0.1",
