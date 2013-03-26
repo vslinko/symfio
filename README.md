@@ -1,5 +1,7 @@
 # Symfio
 
+![Symfio](https://s3-eu-west-1.amazonaws.com/vslinko/symfio/logo@2x.png)
+
 Modular framework based on Node.js and AngularJS.
 
 ## Example
