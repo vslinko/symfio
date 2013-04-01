@@ -11,6 +11,7 @@ class Unloader extends events.EventEmitter
   unload: ->
     async.series @workers, =>
       @emit "unloaded"
+      @workers = []
 
 module.exports = ->
   new Unloader
