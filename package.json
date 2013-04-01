@@ -1,6 +1,6 @@
 {
   "name": "symfio"
-, "version": "1.0.0"
+, "version": "1.0.1"
 , "description": "Modular framework based on Node.js and AngularJS."
 , "homepage": "http://symf.io"
 , "bugs": {
