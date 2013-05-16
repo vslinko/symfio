@@ -24,13 +24,13 @@
   , "cli-color": "~0.2"
   }
 , "devDependencies": {
-    "chai": "~1.5"
-  , "sinon": "~1.6"
-  , "sinon-chai": "~2.3"
+    "chai": "~1.6"
+  , "sinon": "~1.7"
+  , "sinon-chai": "~2.4"
   , "html-file-cov": "~0.0"
   , "grunt": "~0.4"
   , "grunt-contrib-clean": "~0.4"
-  , "grunt-simple-mocha": "~0.3"
+  , "grunt-simple-mocha": "~0.4"
   , "grunt-coffee-coverage": "~0.1"
   , "grunt-coffeelint": "~0.0"
   }
