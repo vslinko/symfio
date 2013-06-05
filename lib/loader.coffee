@@ -1,18 +1,15 @@
+sequence = require "when/sequence"
 events = require "events"
-async = require "async"
 
 class Loader extends events.EventEmitter
   constructor: (@container) ->
     @plugins = []
 
   use: (plugin) ->
-    @plugins.push plugin
+    @plugins.push @container.inject plugin
 
   load: ->
-    pluginWorker = (plugin, callback) =>
-      plugin @container, callback
-
-    async.forEachSeries @plugins, pluginWorker, =>
+    sequence(@plugins).then =>
       @emit "loaded"
 
 module.exports = (container) ->

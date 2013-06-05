@@ -22,9 +22,12 @@
 , "dependencies": {
     "async": "~0.2"
   , "cli-color": "~0.2"
+  , "kantaina": "~0.1"
+  , "when": "~2.1"
   }
 , "devDependencies": {
     "chai": "~1.6"
+  , "chai-as-promised": "~3.3"
   , "sinon": "~1.7"
   , "sinon-chai": "~2.4"
   , "html-file-cov": "~0.0"

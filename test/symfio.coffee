@@ -1,16 +1,27 @@
 symfio = require "../index"
 chai = require "chai"
+w = require "when"
 
 
 describe "symfio()", ->
-  expect = chai.expect
+  chai.use require "chai-as-promised"
+  chai.should()
 
-  it "should return configured container", ->
+  it "should return configured container", (callback) ->
     container = symfio "test", __dirname
 
-    expect(container.get "name").to.equal "test"
-    expect(container.get "application directory").to.equal __dirname
-    expect(container.get "silent").to.be.false
-    expect(container.get "logger").is.an.instanceof symfio.logger.Logger
-    expect(container.get "loader").is.an.instanceof symfio.loader.Loader
-    expect(container.get "unloader").is.an.instanceof symfio.unloader.Unloader
+    w.all([
+      container.get("name")
+      container.get("application directory")
+      container.get("silent")
+      container.get("logger")
+      container.get("loader")
+      container.get("unloader")
+    ]).then (dependencies) ->
+      dependencies[0].should.equal "test"
+      dependencies[1].should.equal __dirname
+      dependencies[2].should.be.false
+      dependencies[3].should.be.instanceOf symfio.logger.Logger
+      dependencies[4].should.be.instanceOf symfio.loader.Loader
+      dependencies[5].should.be.instanceOf symfio.unloader.Unloader
+    .should.notify callback

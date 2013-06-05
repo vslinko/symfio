@@ -1,56 +1,49 @@
+kantaina = require "kantaina"
 symfio = require "../index"
 sinon = require "sinon"
 chai = require "chai"
 
 
 describe "symfio.loader()", ->
+  chai.use require "chai-as-promised"
   chai.use require "sinon-chai"
-  expect = chai.expect
+  chai.should()
 
   describe "Loader", ->
     describe "#use()", ->
-      it "should add plugin to tail of queue", ->
-        plugin0 = ->
-        plugin1 = ->
-        loader = new symfio.loader.Loader
-
-        expect(loader.plugins).to.have.length 0
-
-        loader.use plugin0
-        loader.use plugin1
-
-        expect(loader.plugins).to.have.length 2
-        expect(loader.plugins[0]).to.equal plugin0
-        expect(loader.plugins[1]).to.equal plugin1
+      it "should add plugin to queue", ->
+        loader = new symfio.loader.Loader kantaina()
+        loader.plugins.should.have.length 0
+        loader.use ->
+        loader.plugins.should.have.length 1
 
     describe "#load()", ->
-      it "should load plugins", ->
-        loader = new symfio.loader.Loader
-        plugin = sinon.stub().yields()
-
+      it "should load plugins", (callback) ->
+        loader = new symfio.loader.Loader kantaina()
+        plugin = sinon.spy()
+        plugin.displayName = "function () {}"
         loader.use plugin
-        loader.load()
+        loader.load().then ->
+          plugin.should.have.been.calledOnce
+        .should.notify callback
 
-        expect(plugin).to.have.been.calledOnce
-
-      it "should emit 'loaded' event after all plugins is loaded", ->
+      it "should emit 'loaded' event after all plugins is loaded", (callback) ->
         listener = sinon.spy()
-        loader = new symfio.loader.Loader
-        plugin = sinon.stub().yields()
-
-        loader.use plugin
+        loader = new symfio.loader.Loader kantaina()
+        loader.use ->
         loader.once "loaded", listener
-        loader.load()
+        loader.load().then ->
+          listener.should.have.been.calledOnce
+        .should.notify callback
 
-        expect(listener).to.have.been.calledOnce
-
-      it "should provide container to plugin as first argument", ->
-        container = new symfio.container.Container
+      it "should inject dependencies to plugin as first argument", (callback) ->
+        container = kantaina()
         loader = new symfio.loader.Loader container
-        plugin = sinon.stub().yields()
+        plugin = sinon.spy()
+        plugin.displayName = "function (container) {}"
 
         loader.use plugin
-        loader.load()
-
-        expect(plugin).to.have.been.calledOnce
-        expect(plugin).to.have.been.calledWith container
+        loader.load().then ->
+          plugin.should.have.been.calledOnce
+          plugin.should.have.been.calledWith container
+        .should.notify callback
