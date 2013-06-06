@@ -1,5 +1,5 @@
+sequence = require "when/sequence"
 events = require "events"
-async = require "async"
 
 class Unloader extends events.EventEmitter
   constructor: ->
@@ -9,7 +9,7 @@ class Unloader extends events.EventEmitter
     @workers.unshift worker
 
   unload: ->
-    async.series @workers, =>
+    sequence(@workers).then =>
       @emit "unloaded"
       @workers = []
 

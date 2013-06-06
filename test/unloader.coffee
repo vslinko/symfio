@@ -4,8 +4,9 @@ chai = require "chai"
 
 
 describe "symfio.unloader()", ->
+  chai.use require "chai-as-promised"
   chai.use require "sinon-chai"
-  expect = chai.expect
+  chai.should()
 
   describe "Unloader", ->
     describe "#register()", ->
@@ -14,32 +15,32 @@ describe "symfio.unloader()", ->
         worker0 = ->
         worker1 = ->
 
-        expect(unloader.workers).to.have.length 0
+        unloader.workers.should.have.length 0
 
         unloader.register worker0
         unloader.register worker1
 
-        expect(unloader.workers).to.have.length 2
-        expect(unloader.workers[0]).to.equal worker1
-        expect(unloader.workers[1]).to.equal worker0
+        unloader.workers.should.have.length 2
+        unloader.workers[0].should.equal worker1
+        unloader.workers[1].should.equal worker0
 
     describe "#unload()", ->
-      it "should run workers", ->
+      it "should run workers", (callback) ->
         unloader = new symfio.unloader.Unloader
-        worker = sinon.stub().yields()
+        worker = sinon.spy()
 
         unloader.register worker
-        unloader.unload()
+        unloader.unload().then ->
+          worker.should.have.been.calledOnce
+        .should.notify callback
 
-        expect(worker).to.have.been.calledOnce
-
-      it "should emit 'unloaded' event after all workers is done", ->
+      it "should emit 'unloaded' event after all workers is done", (callback) ->
         unloader = new symfio.unloader.Unloader
         listener = sinon.spy()
-        worker = sinon.stub().yields()
+        worker = sinon.spy()
 
         unloader.register worker
         unloader.on "unloaded", listener
-        unloader.unload()
-
-        expect(listener).to.have.been.calledOnce
+        unloader.unload().then ->
+          listener.should.have.been.calledOnce
+        .should.notify callback
