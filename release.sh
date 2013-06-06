@@ -7,11 +7,10 @@ if [ "x$VERSION" == "x" ]; then
   exit 1
 fi
 
-git checkout master
 sed -i '' -E 's/"version": "[^"]+"/"version": "'"$VERSION"'"/' package.json
 git add package.json
 git commit -m "Bumped $VERSION"
 git tag "$VERSION" HEAD
-git push origin master
+git push origin
 git push origin --tags
 npm publish
