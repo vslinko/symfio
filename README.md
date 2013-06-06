@@ -9,36 +9,35 @@ Modular framework based on Node.js and AngularJS.
 ```coffeescript
 symfio = require "symfio"
 
+
+fruitsExamplePlugin = (container) ->
+    container.set "FruitSchema", (mongoose) ->
+      new mongoose.Schema
+        name: String
+
+    container.set "Fruit", (connection, FruitSchema) ->
+      connection.model "fruits", FruitSchema
+
+    do container.inject (app, Fruit) ->
+      app.get "/fruits", (req, res) ->
+        Fruit.findOne (err, fruit) ->
+          return res.send 500 if err
+          return res.send 404 unless fruit
+          res.send fruit
+
+    do container.inject (unloader, connection) ->
+      unloader.register (callback) ->
+        connection.db.dropDatabase ->
+          callback()
+
+
 container = symfio "fruits-example", __dirname
-loader = container.get "loader"
 
-loader.use require "symfio-contrib-express"
-loader.use require "symfio-contrib-mongoose"
-
-loader.use (container, callback) ->
-  connection = container.get "connection"
-  mongoose = container.get "mongoose"
-  unloader = container.get "unloader"
-  app = container.get "app"
-
-  FruitSchema = new mongoose.Schema
-    name: String
-
-  Fruit = connection.model "fruits", FruitSchema
-
-  app.get "/fruits", (req, res) ->
-    Fruit.findOne (err, fruit) ->
-      return res.send 500 if err
-      return res.send 404 unless fruit
-      res.send fruit
-
-  unloader.register (callback) ->
-    connection.db.dropDatabase ->
-      callback()
-
-  callback()
-
-loader.load()
+do container.inject (loader) ->
+  loader.use require "symfio-contrib-express"
+  loader.use require "symfio-contrib-mongoose"
+  loader.use fruitsExamplePlugin
+  loader.load()
 ```
 
 ## Quick Start
