@@ -30,6 +30,7 @@ describe "symfio.unloader()", ->
         worker = sinon.spy()
 
         unloader.register worker
+
         unloader.unload().then ->
           worker.should.have.been.calledOnce
         .should.notify callback
@@ -41,6 +42,7 @@ describe "symfio.unloader()", ->
 
         unloader.register worker
         unloader.on "unloaded", listener
+
         unloader.unload().then ->
           listener.should.have.been.calledOnce
         .should.notify callback

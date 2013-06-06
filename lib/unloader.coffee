@@ -1,6 +1,7 @@
 sequence = require "when/sequence"
 events = require "events"
 
+
 class Unloader extends events.EventEmitter
   constructor: ->
     @workers = []
@@ -13,7 +14,9 @@ class Unloader extends events.EventEmitter
       @emit "unloaded"
       @workers = []
 
+
 module.exports = ->
   new Unloader
+
 
 module.exports.Unloader = Unloader

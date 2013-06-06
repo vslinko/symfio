@@ -1,6 +1,7 @@
 sequence = require "when/sequence"
 events = require "events"
 
+
 class Loader extends events.EventEmitter
   constructor: (@container) ->
     @plugins = []
@@ -12,7 +13,9 @@ class Loader extends events.EventEmitter
     sequence(@plugins).then =>
       @emit "loaded"
 
+
 module.exports = (container) ->
   new Loader container
+
 
 module.exports.Loader = Loader

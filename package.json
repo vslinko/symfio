@@ -36,8 +36,8 @@
   , "grunt-coffeelint": "~0.0"
   }
 , "engines": {
-    "node": "~0.8"
-  , "npm": "~1.2"
+    "node": ">=0.8"
+  , "npm": ">=1.2"
   , "coffee-script": "~1.6"
   , "grunt-cli": "~0.4"
   }
