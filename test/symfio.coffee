@@ -14,14 +14,12 @@ describe "symfio()", ->
       container.get("name")
       container.get("application directory")
       container.get("silent")
-      container.get("logger")
       container.get("loader")
       container.get("unloader")
     ]).then (dependencies) ->
       dependencies[0].should.equal "test"
       dependencies[1].should.equal __dirname
       dependencies[2].should.be.false
-      dependencies[3].should.be.instanceOf symfio.logger.Logger
-      dependencies[4].should.be.instanceOf symfio.loader.Loader
-      dependencies[5].should.be.instanceOf symfio.unloader.Unloader
+      dependencies[3].should.be.instanceOf symfio.loader.Loader
+      dependencies[4].should.be.instanceOf symfio.unloader.Unloader
     .should.notify callback

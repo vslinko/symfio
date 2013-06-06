@@ -21,7 +21,6 @@
   }
 , "dependencies": {
     "async": "~0.2"
-  , "cli-color": "~0.2"
   , "kantaina": "~0.1"
   , "when": "~2.1"
   }
