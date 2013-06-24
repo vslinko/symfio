@@ -9,35 +9,31 @@ Modular framework based on Node.js and AngularJS.
 ```coffeescript
 symfio = require "symfio"
 
-
-fruitsExamplePlugin = (container) ->
-    container.set "FruitSchema", (mongoose) ->
-      new mongoose.Schema
-        name: String
-
-    container.set "Fruit", (connection, FruitSchema) ->
-      connection.model "fruits", FruitSchema
-
-    do container.inject (app, Fruit) ->
-      app.get "/fruits", (req, res) ->
-        Fruit.findOne (err, fruit) ->
-          return res.send 500 if err
-          return res.send 404 unless fruit
-          res.send fruit
-
-    do container.inject (unloader, connection) ->
-      unloader.register (callback) ->
-        connection.db.dropDatabase ->
-          callback()
-
-
+# create container
 container = symfio "fruits-example", __dirname
 
-do container.inject (loader) ->
-  loader.use require "symfio-contrib-express"
-  loader.use require "symfio-contrib-mongoose"
-  loader.use fruitsExamplePlugin
-  loader.load()
+# add plugins
+container.use require "symfio-contrib-express"
+container.use require "symfio-contrib-mongoose"
+
+# define own plugin
+container.use (container) ->
+  container.set "FruitSchema", (mongoose) ->
+    new mongoose.Schema
+      name: String
+
+  container.set "Fruit", (connection, FruitSchema) ->
+    connection.model "fruits", FruitSchema
+
+  container.call (app, Fruit) ->
+    app.get "/fruits", (req, res) ->
+      Fruit.findOne (err, fruit) ->
+        return res.send 500 if err
+        return res.send 404 unless fruit
+        res.send fruit
+
+# load all
+container.load()
 ```
 
 ## Quick Start

@@ -1,18 +1,27 @@
+sequence = require "when/sequence"
 kantaina = require "kantaina"
-unloader = require "./unloader"
-loader = require "./loader"
+
+
+class Symfio extends kantaina.Container
+  constructor: ->
+    super()
+    @plugins = []
+
+  use: (plugin) ->
+    @plugins.push @inject plugin
+
+  load: ->
+    sequence(@plugins).then =>
+      @emit "loaded"
 
 
 module.exports = (name, applicationDirectory) ->
-  container = kantaina()
+  symfio = new Symfio
 
-  container.set "name", name
-  container.set "applicationDirectory", applicationDirectory
-  container.set "loader", loader
-  container.set "unloader", unloader
+  symfio.set "name", name
+  symfio.set "applicationDirectory", applicationDirectory
 
-  container
+  symfio
 
 
-module.exports.loader = loader
-module.exports.unloader = unloader
+module.exports.Symfio = Symfio
