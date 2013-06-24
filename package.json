@@ -17,7 +17,7 @@
   , "url": "git://github.com/symfio/symfio.git"
   }
 , "scripts": {
-    "test": "grunt simplemocha"
+    "test": "npm install && grunt"
   }
 , "dependencies": {
     "kantaina": "~0.1"
@@ -28,11 +28,8 @@
   , "chai-as-promised": "~3.3"
   , "sinon": "~1.7"
   , "sinon-chai": "~2.4"
-  , "html-file-cov": "~0.0"
   , "grunt": "~0.4"
-  , "grunt-contrib-clean": "~0.4"
   , "grunt-simple-mocha": "~0.4"
-  , "grunt-coffee-coverage": "~0.1"
   , "grunt-coffeelint": "~0.0"
   }
 , "engines": {

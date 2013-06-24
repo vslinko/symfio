@@ -1,4 +1,4 @@
-symfio = require "../index"
+symfio = require ".."
 sinon = require "sinon"
 chai = require "chai"
 

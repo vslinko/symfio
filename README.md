@@ -46,8 +46,6 @@ bootstrap your first Symfio project.
 [![Build Status](http://teamcity.rithis.com/httpAuth/app/rest/builds/buildType:id:bt4,branch:master/statusIcon?guest=1)](http://teamcity.rithis.com/viewType.html?buildTypeId=bt4&guest=1)
 [![Dependency Status](https://gemnasium.com/symfio/symfio.png)](https://gemnasium.com/symfio/symfio)
 
-[Code Coverage Report](http://symf.io/coverage-report)
-
 ## Tests
 
 If you haven't already done so, install [grunt](http://gruntjs.com).
@@ -57,6 +55,5 @@ Once grunt is installed, clone Symfio repository and run tests:
 ```shell
 git clone git://github.com/symfio/symfio.git
 cd symfio
-npm install
-grunt test
+npm test
 ```
