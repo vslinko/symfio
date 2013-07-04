@@ -3,9 +3,20 @@ kantaina = require "kantaina"
 
 
 class Symfio extends kantaina.Container
-  constructor: ->
+  constructor: (name, applicationDirectory) ->
     super()
     @plugins = []
+
+    @set "name", name
+    @set "applicationDirectory", applicationDirectory
+    @set "env", process.env.NODE_ENV or "development"
+    @set "logger",
+      silly: ->
+      debug: ->
+      verbose: ->
+      info: ->
+      warn: ->
+      error: ->
 
   use: (plugin) ->
     @plugins.push @inject plugin
@@ -16,20 +27,6 @@ class Symfio extends kantaina.Container
 
 
 module.exports = (name, applicationDirectory) ->
-  symfio = new Symfio
-
-  symfio.set "name", name
-  symfio.set "applicationDirectory", applicationDirectory
-  symfio.set "env", process.env.NODE_ENV or "development"
-  symfio.set "logger",
-    silly: ->
-    debug: ->
-    verbose: ->
-    info: ->
-    warn: ->
-    error: ->
-
-  symfio
-
+  new Symfio name, applicationDirectory
 
 module.exports.Symfio = Symfio
