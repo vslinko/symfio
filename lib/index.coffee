@@ -21,6 +21,13 @@ module.exports = (name, applicationDirectory) ->
   symfio.set "name", name
   symfio.set "applicationDirectory", applicationDirectory
   symfio.set "env", process.env.NODE_ENV or "development"
+  symfio.set "logger",
+    silly: ->
+    debug: ->
+    verbose: ->
+    info: ->
+    warn: ->
+    error: ->
 
   symfio
 
