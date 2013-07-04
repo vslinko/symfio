@@ -15,9 +15,19 @@ describe "symfio()", ->
     container.get([
       "name"
       "applicationDirectory"
+      "env"
     ]).then (dependencies) ->
       dependencies[0].should.equal "test"
       dependencies[1].should.equal __dirname
+      dependencies[2].should.equal "development"
+    .should.notify callback
+
+  it "should use NODE_ENV as env", (callback) ->
+    process.env.NODE_ENV = "production"
+    container = symfio "test", __dirname
+
+    container.get("env").then (env) ->
+      env.should.equal "production"
     .should.notify callback
 
   describe "Symfio", ->
