@@ -2,6 +2,15 @@ sequence = require "when/sequence"
 kantaina = require "kantaina"
 
 
+logger =
+  silly: ->
+  debug: ->
+  verbose: ->
+  info: ->
+  warn: ->
+  error: ->
+
+
 class Symfio extends kantaina.Container
   constructor: (name, applicationDirectory) ->
     super()
@@ -10,13 +19,7 @@ class Symfio extends kantaina.Container
     @set "name", name
     @set "applicationDirectory", applicationDirectory
     @set "env", process.env.NODE_ENV or "development"
-    @set "logger",
-      silly: ->
-      debug: ->
-      verbose: ->
-      info: ->
-      warn: ->
-      error: ->
+    @set "logger", logger
 
   use: (plugin) ->
     @plugins.push @inject plugin
