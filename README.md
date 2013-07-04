@@ -2,7 +2,8 @@
 
 ![Symfio](https://s3-eu-west-1.amazonaws.com/vslinko/symfio/logo@2x.png)
 
-Modular framework based on Node.js and AngularJS.
+> Modular framework based on Node.js and
+[kantaina](https://github.com/rithis/kantaina).
 
 ## Example
 
@@ -12,28 +13,29 @@ symfio = require "symfio"
 # create container
 container = symfio "fruits-example", __dirname
 
-# add plugins
-container.use require "symfio-contrib-express"
-container.use require "symfio-contrib-mongoose"
-
 # define own plugin
-container.use (container) ->
-  container.set "FruitSchema", (mongoose) ->
+fruitsPlugin = (model, get) ->
+  model "Fruit", "fruits", (mongoose) ->
     new mongoose.Schema
       name: String
 
-  container.set "Fruit", (connection, FruitSchema) ->
-    connection.model "fruits", FruitSchema
-
-  container.call (app, Fruit) ->
-    app.get "/fruits", (req, res) ->
+  get "/fruits", (Fruit) ->
+    (req, res) ->
       Fruit.findOne (err, fruit) ->
         return res.send 500 if err
         return res.send 404 unless fruit
         res.send fruit
 
-# load all
-container.load()
+# load plugins
+container.injectAll([
+  require "symfio-contrib-winston"
+  require "symfio-contrib-express"
+  require "symfio-contrib-mongoose"
+  fruitsPlugin
+]).then ->
+  container.get "listener"
+.then (listener) ->
+  listener.listen()
 ```
 
 ## Quick Start

@@ -1,7 +1,7 @@
 module.exports = (grunt) ->
   grunt.initConfig
     simplemocha:
-      all: "test/*.coffee"
+      symfio: "test/symfio.coffee"
       options: reporter: process.env.REPORTER or "spec"
     coffeelint:
       lib: "lib/**/*.coffee"

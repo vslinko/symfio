@@ -9,8 +9,8 @@ fi
 
 sed -i '' -E 's/"version": "[^"]+"/"version": "'"$VERSION"'"/' package.json
 git add package.json
-git commit -m "Bumped $VERSION"
-git tag "$VERSION" HEAD
+git commit -m "Release $VERSION"
+git tag "v$VERSION" HEAD
 git push origin
-git push origin --tags
+git push origin "v$VERSION"
 npm publish

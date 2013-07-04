@@ -1,75 +1,60 @@
 symfio = require ".."
-sinon = require "sinon"
 chai = require "chai"
 
 
-chai.use require "chai-as-promised"
-chai.use require "sinon-chai"
-chai.should()
-
-
 describe "symfio()", ->
-  it "should return configured container", (callback) ->
+  chai.use require "chai-as-promised"
+  chai.should()
+
+  it "should return new symfio.Symfio()", ->
     container = symfio "test", __dirname
-
-    container.get([
-      "name"
-      "applicationDirectory"
-      "env"
-    ]).then (dependencies) ->
-      dependencies[0].should.equal "test"
-      dependencies[1].should.equal __dirname
-      dependencies[2].should.equal "development"
-    .should.notify callback
-
-  it "should use NODE_ENV as env", (callback) ->
-    process.env.NODE_ENV = "production"
-    container = symfio "test", __dirname
-
-    container.get("env").then (env) ->
-      env.should.equal "production"
-    .should.notify callback
+    container.should.be.instanceOf symfio.Symfio
 
   describe "Symfio", ->
-    describe "#use()", ->
-      it "should add plugin to queue", ->
-        container = new symfio.Symfio
-        container.plugins.should.have.length 0
+    it "should return configured container", (callback) ->
+      container = new symfio.Symfio "test", __dirname
 
-        container.use ->
-        container.plugins.should.have.length 1
+      container.get([
+        "name"
+        "applicationDirectory"
+        "env"
+        "logger"
+      ]).spread (name, applicationDirectory, env, logger) ->
+        name.should.equal "test"
+        applicationDirectory.should.equal __dirname
+        env.should.equal "development"
+        logger.should.be.a "object"
+      .should.notify callback
 
-    describe "#load()", ->
-      it "should load plugins", (callback) ->
-        container = new symfio.Symfio
-        plugin = sinon.spy()
-        plugin.displayName = "function () {}"
+    it "should use NODE_ENV as env", (callback) ->
+      process.env.NODE_ENV = "production"
+      container = new symfio.Symfio "test", __dirname
 
-        container.use plugin
+      container.get("env").then (env) ->
+        env.should.equal "production"
+      .should.notify callback
 
-        container.load().then ->
-          plugin.should.have.been.calledOnce
-        .should.notify callback
+    describe "#injectAll()", ->
+      it "should inject all plugins", (callback) ->
+        pluginA = (container) ->
+          container.set "a", 1
 
-      it "should emit 'loaded' event after all plugins is loaded", (callback) ->
-        listener = sinon.spy()
-        container = new symfio.Symfio
+        pluginB = (container) ->
+          container.set "b", (a) ->
+            a + 1
 
-        container.use ->
-        container.once "loaded", listener
+        pluginC = (container) ->
+          container.set "c", (a, b) ->
+            a + b
 
-        container.load().then ->
-          listener.should.have.been.calledOnce
-        .should.notify callback
+        container = symfio "test", __dirname
 
-      it "should inject dependencies to plugin as first argument", (callback) ->
-        container = new symfio.Symfio
-        plugin = sinon.spy()
-        plugin.displayName = "function (container) {}"
-
-        container.use plugin
-
-        container.load().then ->
-          plugin.should.have.been.calledOnce
-          plugin.should.have.been.calledWith container
+        container.injectAll([
+          pluginC
+          pluginB
+          pluginA
+        ]).then ->
+          container.get "c"
+        .then (c) ->
+          c.should.equal 3
         .should.notify callback
