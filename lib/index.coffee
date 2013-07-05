@@ -1,5 +1,5 @@
 kantaina = require "kantaina"
-w = require "when"
+sequence = require "when/sequence"
 
 
 logger =
@@ -20,7 +20,8 @@ class Symfio extends kantaina.Container
     @set "logger", logger
 
   injectAll: (plugins) ->
-    w.map plugins, @inject.bind @
+    sequence plugins.map (plugin) =>
+      @inject.bind @, plugin
 
 
 module.exports = (name, applicationDirectory) ->
