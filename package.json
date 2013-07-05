@@ -1,6 +1,6 @@
 {
   "name": "symfio"
-, "version": "2.0.1"
+, "version": "2.0.2"
 , "description": "Modular framework based on Node.js and kantaina."
 , "homepage": "http://symf.io"
 , "bugs": {
