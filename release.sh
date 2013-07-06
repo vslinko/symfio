@@ -9,7 +9,7 @@ fi
 
 sed -i '' -E 's/"version": "[^"]+"/"version": "'"$VERSION"'"/' package.json
 git add package.json
-git commit -m "Release $VERSION"
+git commit -m "chore[package.json]: release $VERSION"
 git tag "v$VERSION" HEAD
 git push origin
 git push origin "v$VERSION"
