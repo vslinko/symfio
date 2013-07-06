@@ -34,6 +34,6 @@
     "node": ">=0.8"
   , "npm": ">=1.2"
   , "coffee-script": "~1.6"
-  , "grunt-cli": "~0.4"
+  , "grunt-cli": "~0.1"
   }
 }
