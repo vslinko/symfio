@@ -12,15 +12,18 @@ logger =
 
 
 class Symfio extends kantaina.Container
-  constructor: (name, applicationDirectory) ->
+  constructor: (@name, @applicationDirectory) ->
     super()
-    @set "name", name
-    @set "applicationDirectory", applicationDirectory
-    @set "env", process.env.NODE_ENV or "development"
-    @set "logger", logger
 
   injectAll: (plugins) ->
     w.map plugins, @inject.bind @
+
+  clean: ->
+    super()
+    @set "name", @name
+    @set "applicationDirectory", @applicationDirectory
+    @set "env", process.env.NODE_ENV or "development"
+    @set "logger", logger
 
 
 module.exports = (name, applicationDirectory) ->

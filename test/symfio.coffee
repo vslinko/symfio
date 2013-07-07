@@ -58,3 +58,15 @@ describe "symfio()", ->
         .then (c) ->
           c.should.equal 3
         .should.notify callback
+
+    describe "#clean()", ->
+      it "should clean container", (callback) ->
+        container = symfio "test", __dirname
+        container.set "name", "mest"
+        container.inject (name) ->
+          name.should.equal "mest"
+          container.clean()
+          container.get "name"
+        .then (name) ->
+          name.should.equal "test"
+        .should.notify callback
