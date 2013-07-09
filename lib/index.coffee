@@ -21,9 +21,10 @@ class Symfio extends kantaina.Container
     if typeof name is "function"
       _require = name
     else
-      @unless name, (logger) ->
-        logger.debug "require module", name: module
-        _require module
+      do (_require) =>
+        @unless name, (logger) ->
+          logger.debug "require module", name: module
+          _require module
 
   injectAll: (plugins) ->
     w.map plugins, @inject.bind @
