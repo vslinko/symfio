@@ -12,13 +12,18 @@ logger =
 
 
 class Symfio extends kantaina.Container
+  _require = require
+
   constructor: (@name, @applicationDirectory) ->
     super()
 
   require: (name, module = name) ->
-    @unless name, (logger) ->
-      logger.debug "require module", name: module
-      require module
+    if typeof name is "function"
+      _require = name
+    else
+      @unless name, (logger) ->
+        logger.debug "require module", name: module
+        _require module
 
   injectAll: (plugins) ->
     w.map plugins, @inject.bind @
