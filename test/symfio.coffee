@@ -19,11 +19,15 @@ describe "symfio()", ->
         "applicationDirectory"
         "env"
         "logger"
-      ]).spread (name, applicationDirectory, env, logger) ->
+        "kantaina"
+        "w"
+      ]).spread (name, applicationDirectory, env, logger, kantaina, w) ->
         name.should.equal "test"
         applicationDirectory.should.equal __dirname
         env.should.equal "development"
         logger.should.be.a "object"
+        kantaina.should.equal require "kantaina"
+        w.should.equal require "when"
       .should.notify callback
 
     it "should use NODE_ENV as env", (callback) ->
