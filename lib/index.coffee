@@ -14,7 +14,7 @@ logger =
 class Symfio extends kantaina.Container
   _require = require
 
-  constructor: (@name, @applicationDirectory) ->
+  constructor: (@name = "symfio", @applicationDirectory = process.cwd()) ->
     super()
 
   require: (name, module = name) ->
