@@ -16,7 +16,8 @@ class Symfio extends kantaina.Container
     super()
 
   require: (name, module = name) ->
-    @unless name, ->
+    @unless name, (logger) ->
+      logger.debug "require module", name: module
       require module
 
   injectAll: (plugins) ->
