@@ -15,6 +15,10 @@ class Symfio extends kantaina.Container
   constructor: (@name, @applicationDirectory) ->
     super()
 
+  require: (name, module = name) ->
+    @unless name, ->
+      require module
+
   injectAll: (plugins) ->
     w.map plugins, @inject.bind @
 

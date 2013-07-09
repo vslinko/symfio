@@ -34,6 +34,17 @@ describe "symfio()", ->
         env.should.equal "production"
       .should.notify callback
 
+    describe "#require()", ->
+      it "should set module", (callback) ->
+        container = symfio "test", __dirname
+        container.require "chai"
+        container.get("chai").should.eventually.equal(chai).and.notify callback
+
+      it "should set module to different key", (callback) ->
+        container = symfio "test", __dirname
+        container.require "c", "chai"
+        container.get("c").should.eventually.equal(chai).and.notify callback
+
     describe "#injectAll()", ->
       it "should inject all plugins", (callback) ->
         pluginA = (container) ->
