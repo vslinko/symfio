@@ -14,8 +14,6 @@ logger =
 class Symfio extends kantaina.Container
   constructor: (@name, @applicationDirectory) ->
     super()
-    @require "kantaina"
-    @require "w", "when"
 
   require: (name, module = name) ->
     @unless name, ->
@@ -30,6 +28,8 @@ class Symfio extends kantaina.Container
     @set "applicationDirectory", @applicationDirectory
     @set "env", process.env.NODE_ENV or "development"
     @set "logger", logger
+    @require "kantaina"
+    @require "w", "when"
 
 
 module.exports = (name, applicationDirectory) ->

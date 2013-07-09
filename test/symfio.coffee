@@ -81,7 +81,8 @@ describe "symfio()", ->
         container.inject (name) ->
           name.should.equal "mest"
           container.clean()
-          container.get "name"
-        .then (name) ->
+          container.get ["name", "w"]
+        .spread (name, w) ->
           name.should.equal "test"
+          w.should.equal require "when"
         .should.notify callback
