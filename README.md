@@ -5,6 +5,8 @@
 > Modular framework based on Node.js and
 [kantaina](https://github.com/rithis/kantaina).
 
+[![Build Status](https://travis-ci.org/symfio/symfio.png?branch=master)](https://travis-ci.org/symfio/symfio) [![Dependency Status](https://gemnasium.com/symfio/symfio.png)](https://gemnasium.com/symfio/symfio)
+
 ## Example
 
 ```coffeescript
@@ -42,11 +44,6 @@ container.injectAll([
 
 Use [grunt-init-symfio](https://github.com/symfio/grunt-init-symfio) to
 bootstrap your first Symfio project.
-
-## Project Status
-
-[![Build Status](http://teamcity.rithis.com/httpAuth/app/rest/builds/buildType:id:bt4,branch:master/statusIcon?guest=1)](http://teamcity.rithis.com/viewType.html?buildTypeId=bt4&guest=1)
-[![Dependency Status](https://gemnasium.com/symfio/symfio.png)](https://gemnasium.com/symfio/symfio)
 
 ## Tests
 
