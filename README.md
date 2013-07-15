@@ -5,7 +5,10 @@
 > Modular framework based on Node.js and
 [kantaina](https://github.com/rithis/kantaina).
 
-[![Build Status](https://travis-ci.org/symfio/symfio.png?branch=master)](https://travis-ci.org/symfio/symfio) [![Dependency Status](https://gemnasium.com/symfio/symfio.png)](https://gemnasium.com/symfio/symfio)
+[![Build Status](https://travis-ci.org/symfio/symfio.png?branch=master)](https://travis-ci.org/symfio/symfio)
+[![Coverage Status](https://coveralls.io/repos/symfio/symfio/badge.png?branch=master)](https://coveralls.io/r/symfio/symfio?branch=master)
+[![Dependency Status](https://gemnasium.com/symfio/symfio.png)](https://gemnasium.com/symfio/symfio)
+[![NPM version](https://badge.fury.io/js/symfio.png)](http://badge.fury.io/js/symfio)
 
 ## Example
 
