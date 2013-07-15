@@ -38,9 +38,9 @@ container.injectAll([
   require "symfio-contrib-mongoose"
   fruitsPlugin
 ]).then ->
-  container.get "listener"
-.then (listener) ->
-  listener.listen()
+  container.get "startExpressServer"
+.then (startExpressServer) ->
+  startExpressServer()
 ```
 
 ## Quick Start
